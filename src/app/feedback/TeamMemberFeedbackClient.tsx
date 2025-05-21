@@ -139,6 +139,12 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
     setLoading(true);
     setError('');
 
+    if (!selectedProject) {
+      setError('Please select a project');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { error: supabaseError } = await supabase
         .from('team_member_feedback')
@@ -210,7 +216,7 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project
+                Project <span className="text-red-500">*</span>
               </label>
               <Select
                 options={projects}
@@ -221,6 +227,7 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
                 placeholder="Select a project"
                 className="basic-single"
                 classNamePrefix="select"
+                isClearable={false}
               />
             </div>
 

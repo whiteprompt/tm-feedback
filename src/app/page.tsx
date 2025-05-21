@@ -109,6 +109,9 @@ export default function Home() {
                             Role: {feedback.role}
                           </p>
                           <p className="mt-1 text-sm text-gray-600">
+                            Responsibilities: {feedback.responsibilities}
+                          </p>
+                          <p className="mt-1 text-sm text-gray-600">
                             Technologies: {feedback.technologies.join(', ')}
                           </p>
                           <p className="mt-1 text-sm text-gray-500">
