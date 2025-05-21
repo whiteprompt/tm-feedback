@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const { email } = await request.json();
@@ -8,10 +10,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const notionUrl =
-      "https://api.notion.com/v1/databases/69b53c12-3398-497b-ba9d-af0a494064ed/query";
+    const notionUrl = new URL(
+      "https://api.notion.com/v1/databases/69b53c12-3398-497b-ba9d-af0a494064ed/query"
+    );
 
-    const response = await fetch(notionUrl, {
+    const response = await fetch(notionUrl.toString(), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
@@ -32,6 +35,10 @@ export async function POST(request: Request) {
         },
       }),
     });
+
+    if (!response.ok) {
+      throw new Error(`Notion API responded with status: ${response.status}`);
+    }
 
     const data = await response.json();
     return NextResponse.json(data);
