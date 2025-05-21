@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const { email } = await request.json();
+
+    if (!email) {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    }
+
     const notionUrl =
       "https://api.notion.com/v1/databases/69b53c12-3398-497b-ba9d-af0a494064ed/query";
 
@@ -14,9 +20,14 @@ export async function POST() {
       },
       body: JSON.stringify({
         filter: {
-          property: "*TeamMember",
-          relation: {
-            contains: "192424dd-83e1-81fd-b852-df29f7d71ad9",
+          property: "*TeamMembersDB (email)",
+          rollup: {
+            any: {
+              property: "email",
+              rich_text: {
+                contains: email,
+              },
+            },
           },
         },
       }),
