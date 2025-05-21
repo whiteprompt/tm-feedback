@@ -43,9 +43,18 @@ interface NotionResponse {
   results: NotionResult[];
 }
 
-export default function TeamMemberFeedbackClient() {
+interface TeamMemberFeedbackClientProps {
+  initialData: NotionResponse;
+}
+
+export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeedbackClientProps) {
   const { data: session, status } = useSession();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>(() => {
+    return initialData.results?.map((result: NotionResult) => ({
+      id: result.id,
+      name: result.properties['*ProjectsDB (wpId)']?.rollup?.array?.[0]?.title?.[0]?.plain_text || 'Unnamed Project'
+    })).filter((project: Project) => project.name) || [];
+  });
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState<FeedbackForm>({
     projectId: '',
