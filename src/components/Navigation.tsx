@@ -16,14 +16,7 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center space-x-8">
-            <Link
-              href="/"
-              className={`text-lg font-semibold ${
-                isActive('/') ? 'text-blue-600' : 'text-gray-900'
-              }`}
-            >
-              My App
-            </Link>
+            
             <div className="hidden sm:flex sm:space-x-4">
               <Link
                 href="/"
@@ -43,7 +36,7 @@ export default function Navigation() {
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                Team Member Feedback
+                Submit Feedback
               </Link>
             </div>
           </div>

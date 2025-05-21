@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import Select from 'react-select';
 import { supabase } from '@/lib/supabase';
 import Navigation from '@/components/Navigation';
+import { useRouter } from 'next/navigation';
 
 interface Project {
   id: string;
@@ -49,6 +50,7 @@ interface TeamMemberFeedbackClientProps {
 
 export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeedbackClientProps) {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>(() => {
     return initialData.results?.map((result: NotionResult) => ({
       id: result.id,
@@ -143,7 +145,7 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
         .insert([
           {
             user_email: session?.user?.email,
-            project_id: formData.projectId,
+            project_id: selectedProject?.name || '',
             role: formData.role,
             responsibilities: formData.responsibilities,
             technologies: formData.technologies,
@@ -160,7 +162,9 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
         technologies: [],
       });
       setSelectedProject(null);
-      alert('Feedback submitted successfully!');
+      
+      // Redirect to home page
+      router.push('/');
     } catch (error) {
       setError('Failed to submit feedback');
       console.error('Error submitting feedback:', error);

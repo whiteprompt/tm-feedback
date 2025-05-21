@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "My App",
+  title: "Team Member Feedback",
   description: "A Next.js application with Google authentication",
 };
 
