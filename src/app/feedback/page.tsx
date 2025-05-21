@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Select from 'react-select';
@@ -17,6 +16,31 @@ interface FeedbackForm {
   role: string;
   responsibilities: string;
   technologies: string[];
+}
+
+interface NotionTitle {
+  plain_text: string;
+}
+
+interface NotionRollup {
+  array: Array<{
+    title: NotionTitle[];
+  }>;
+}
+
+interface NotionProperties {
+  '*ProjectsDB (wpId)': {
+    rollup: NotionRollup;
+  };
+}
+
+interface NotionResult {
+  id: string;
+  properties: NotionProperties;
+}
+
+interface NotionResponse {
+  results: NotionResult[];
 }
 
 function TeamMemberFeedback() {
@@ -54,9 +78,9 @@ function TeamMemberFeedback() {
         throw new Error('Failed to fetch projects');
       }
 
-      const data = await response.json();
+      const data: NotionResponse = await response.json();
       
-      const projectList = data.results?.map((result: any) => ({
+      const projectList = data.results?.map((result: NotionResult) => ({
         id: result.id,
         name: result.properties['*ProjectsDB (wpId)']?.rollup?.array?.[0]?.title?.[0]?.plain_text || 'Unnamed Project'
       })).filter((project: Project) => project.name) || [];
