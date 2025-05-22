@@ -70,6 +70,12 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push(`/auth/signin?callbackUrl=${encodeURIComponent('/feedback')}`);
+    }
+  }, [status, router]);
+
+  useEffect(() => {
     setIsClient(true);
   }, []);
 
