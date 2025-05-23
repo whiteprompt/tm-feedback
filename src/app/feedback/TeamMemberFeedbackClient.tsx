@@ -19,44 +19,10 @@ interface FeedbackForm {
   technologies: string[];
 }
 
-interface NotionTitle {
-  plain_text: string;
-}
-
-interface NotionRollup {
-  array: Array<{
-    title: NotionTitle[];
-  }>;
-}
-
-interface NotionProperties {
-  '*ProjectsDB (wpId)': {
-    rollup: NotionRollup;
-  };
-}
-
-interface NotionResult {
-  id: string;
-  properties: NotionProperties;
-}
-
-interface NotionResponse {
-  results: NotionResult[];
-}
-
-interface TeamMemberFeedbackClientProps {
-  initialData: NotionResponse;
-}
-
-export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeedbackClientProps) {
+export default function TeamMemberFeedbackClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [projects, setProjects] = useState<Project[]>(() => {
-    return initialData.results?.map((result: NotionResult) => ({
-      id: result.id,
-      name: result.properties['*ProjectsDB (wpId)']?.rollup?.array?.[0]?.title?.[0]?.plain_text || 'Unnamed Project'
-    })).filter((project: Project) => project.name) || [];
-  });
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState<FeedbackForm>({
     projectId: '',
@@ -79,11 +45,11 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
     setIsClient(true);
   }, []);
 
-  const fetchProjects = useCallback(async () => {
+  const fetchTeamMemberInfo = useCallback(async () => {
     if (!session?.user?.email) return;
 
     try {
-      const response = await fetch("/api/projects", {
+      const response = await fetch("/api/team-member", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,21 +58,27 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch projects");
+        throw new Error("Failed to fetch team member info");
       }
 
-      const data = await response.json();
-      setProjects(data);
+      const teamMember = await response.json();
+      setProjects(teamMember.allocations.map((allocation: {
+        project: string
+      }) => ({
+        id: allocation.project,
+        name: allocation.project
+      })));
     } catch (error) {
-      console.error("Error fetching projects:", error);
+      console.error("Error fetching team member info:", error);
+      setProjects([]);
     }
   }, [session?.user?.email]);
 
   useEffect(() => {
     if (session?.user?.email && isClient) {
-      fetchProjects();
+      fetchTeamMemberInfo();
     }
-  }, [session, isClient, fetchProjects]);
+  }, [session, isClient, fetchTeamMemberInfo]);
 
   const handleProjectChange = (selected: Project | null) => {
     setSelectedProject(selected);
@@ -169,7 +141,7 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
       setSelectedProject(null);
       
       // Redirect to home page
-      router.push('/');
+      router.push('/submitted-feedbacks');
     } catch (error) {
       setError('Failed to submit feedback');
       console.error('Error submitting feedback:', error);
