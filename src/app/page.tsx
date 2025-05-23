@@ -4,20 +4,33 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Navigation from '@/components/Navigation';
+import { formatDate } from '@/utils/date';
 
-interface Feedback {
+interface Allocation {
   id: string;
-  role: string;
-  responsibilities: string;
-  technologies: string[];
-  created_at: string;
-  project_id: string;
+  project: string;
+  startDate: string;
+  endDate: string;
 }
 
-export default function Home() {
+interface TeamMember {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  startDate: string;
+  personalEmail: string;
+  mobile: string;
+  identificationType: string;
+  identificationNumber: string;
+  allocations: Allocation[];
+  accesses: string[];
+}
+
+export default function TeamMemberPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [teamMember, setTeamMember] = useState<TeamMember | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -29,13 +42,13 @@ export default function Home() {
 
   useEffect(() => {
     if (session?.user?.email) {
-      fetchFeedbacks();
+      fetchTeamMemberInfo();
     }
   }, [session]);
 
-  const fetchFeedbacks = async () => {
+  const fetchTeamMemberInfo = async () => {
     try {
-      const response = await fetch('/api/feedbacks', {
+      const response = await fetch('/api/team-member', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,14 +59,14 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch feedbacks');
+        throw new Error('Failed to fetch team member information');
       }
 
       const data = await response.json();
-      setFeedbacks(data);
+      setTeamMember(data);
     } catch (error) {
-      setError('Failed to fetch feedbacks');
-      console.error('Error fetching feedbacks:', error);
+      setError('Failed to fetch team member information');
+      console.error('Error fetching team member information:', error);
     } finally {
       setLoading(false);
     }
@@ -74,59 +87,106 @@ export default function Home() {
         <div className="px-4 py-6 sm:px-0">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-              Welcome to the app
+              Team Member Information
             </h2>
-            {session?.user?.email && (
-              <p className="mt-2 text-gray-600">
-                Signed in as {session.user.email}
-              </p>
-            )}
           </div>
 
           <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Your Submitted Feedbacks
-              </h3>
-            </div>
             {error ? (
               <div className="px-4 py-5 sm:px-6 text-red-600">{error}</div>
-            ) : feedbacks.length === 0 ? (
+            ) : !teamMember ? (
               <div className="px-4 py-5 sm:px-6 text-gray-500">
-                No feedbacks submitted yet.
+                No team member information available.
               </div>
             ) : (
-              <div className="border-t border-gray-200">
-                <ul className="divide-y divide-gray-200">
-                  {feedbacks.map((feedback) => (
-                    <li key={feedback.id} className="px-4 py-4 sm:px-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-blue-600 truncate">
-                            {feedback.project_id}
-                          </p>
-                          <p className="mt-1 text-sm text-gray-600">
-                            Role: {feedback.role}
-                          </p>
-                          <p className="mt-1 text-sm text-gray-600">
-                            Responsibilities: {feedback.responsibilities}
-                          </p>
-                          <p className="mt-1 text-sm text-gray-600">
-                            Technologies: {feedback.technologies.join(', ')}
-                          </p>
-                          <p className="mt-1 text-sm text-gray-500">
-                            Submitted on: {new Date(feedback.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <>
+                <div className="px-4 py-5 sm:px-6">
+                  <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Full Name</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {teamMember.firstName} {teamMember.lastName}
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Work Email</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{teamMember.email}</dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Start Date</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {formatDate(teamMember.startDate)}
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Personal Email</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{teamMember.personalEmail}</dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Mobile</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{teamMember.mobile}</dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Identification Type</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{teamMember.identificationType}</dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Identification Number</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{teamMember.identificationNumber}</dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Access list</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{teamMember.accesses.join(", ")}</dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    Project Allocations
+                  </h3>
+                  {teamMember.allocations && teamMember.allocations.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Project
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Start Date
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              End Date
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {teamMember.allocations.map((allocation, index) => (
+                            <tr key={index}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {allocation.project}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {allocation.startDate}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {allocation.endDate}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">No project allocations found.</p>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
       </main>
     </div>
   );
-}
+} 

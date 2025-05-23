@@ -29,6 +29,16 @@ export default function Navigation() {
                 Home
               </Link>
               <Link
+                href="/submitted-feedbacks"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive('/submitted-feedbacks')
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Submitted Feedbacks
+              </Link>
+              <Link
                 href="/feedback"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isActive('/feedback')
