@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Navigation from '@/components/Navigation';
 import { formatDate } from '@/utils/date';
 
@@ -40,37 +40,35 @@ export default function TeamMemberPage() {
     }
   }, [status, router]);
 
-  useEffect(() => {
-    if (session?.user?.email) {
-      fetchTeamMemberInfo();
-    }
-  }, [session]);
+  const fetchTeamMemberInfo = useCallback(async () => {
+    if (!session?.user?.email) return;
 
-  const fetchTeamMemberInfo = async () => {
     try {
-      const response = await fetch('/api/team-member', {
-        method: 'POST',
+      const response = await fetch("/api/team-member", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: session?.user?.email
-        })
+        body: JSON.stringify({ email: session.user.email }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch team member information');
+        throw new Error("Failed to fetch team member info");
       }
 
       const data = await response.json();
       setTeamMember(data);
     } catch (error) {
-      setError('Failed to fetch team member information');
-      console.error('Error fetching team member information:', error);
+      setError("Failed to fetch team member info");
+      console.error("Error fetching team member info:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [session?.user?.email]);
+
+  useEffect(() => {
+    fetchTeamMemberInfo();
+  }, [fetchTeamMemberInfo]);
 
   if (status === 'loading' || loading) {
     return (

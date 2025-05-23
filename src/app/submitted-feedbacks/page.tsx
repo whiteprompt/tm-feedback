@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Navigation from '@/components/Navigation';
 
 interface Feedback {
@@ -21,6 +21,32 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const fetchFeedbacks = useCallback(async () => {
+    if (!session?.user?.email) return;
+
+    try {
+      const response = await fetch("/api/feedbacks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: session.user.email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch feedbacks");
+      }
+
+      const data = await response.json();
+      setFeedbacks(data);
+    } catch (error) {
+      setError("Failed to fetch feedbacks");
+      console.error("Error fetching feedbacks:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [session?.user?.email]);
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/signin');
@@ -31,33 +57,7 @@ export default function Home() {
     if (session?.user?.email) {
       fetchFeedbacks();
     }
-  }, [session]);
-
-  const fetchFeedbacks = async () => {
-    try {
-      const response = await fetch('/api/feedbacks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: session?.user?.email
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch feedbacks');
-      }
-
-      const data = await response.json();
-      setFeedbacks(data);
-    } catch (error) {
-      setError('Failed to fetch feedbacks');
-      console.error('Error fetching feedbacks:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [session, fetchFeedbacks]);
 
   if (status === 'loading' || loading) {
     return (

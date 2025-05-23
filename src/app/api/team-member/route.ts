@@ -4,8 +4,54 @@ import { formatDate } from "@/utils/date";
 // Cache duration in seconds (24 hours)
 const CACHE_DURATION = 24 * 60 * 60;
 
+interface CacheData {
+  data: TeamMember;
+  timestamp: number;
+}
+
+interface Allocation {
+  project: string;
+  start: string;
+  end?: string;
+}
+
+interface AccessTool {
+  toolName: string;
+}
+
+interface NotionResponse {
+  id: string;
+  firstName: string;
+  lastName: string;
+  startDate: string;
+  personalEmail: string;
+  mobile: string;
+  identificationType: string;
+  identificationNumber: string;
+  allocations: Allocation[];
+  accessTools?: AccessTool[];
+}
+
+interface TeamMember {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  startDate: string;
+  personalEmail: string;
+  mobile: string;
+  identificationType: string;
+  identificationNumber: string;
+  allocations: {
+    project: string;
+    startDate: string;
+    endDate: string;
+  }[];
+  accesses: string[];
+}
+
 // In-memory cache
-const cache = new Map<string, { data: any; timestamp: number }>();
+const cache = new Map<string, CacheData>();
 
 export async function POST(request: Request) {
   try {
@@ -44,9 +90,9 @@ export async function POST(request: Request) {
       throw new Error(`Notion API responded with status: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: NotionResponse = await response.json();
 
-    const teamMember = {
+    const teamMember: TeamMember = {
       id: data.id,
       firstName: data.firstName,
       lastName: data.lastName,
@@ -56,17 +102,16 @@ export async function POST(request: Request) {
       mobile: data.mobile,
       identificationType: data.identificationType,
       identificationNumber: data.identificationNumber,
-      allocations: data.allocations.map((allocation: any) => ({
+      allocations: data.allocations.map((allocation) => ({
         project: allocation.project,
         startDate: formatDate(allocation.start),
         endDate: allocation.end ? formatDate(allocation.end) : "",
       })),
       accesses: (data?.accessTools || [])
-        ?.filter(
-          (access: any) =>
-            !["Zoho Recruit", "Freshbooks"].includes(access.toolName)
+        .filter(
+          (access) => !["Zoho Recruit", "Freshbooks"].includes(access.toolName)
         )
-        .map((access: any) => access.toolName),
+        .map((access) => access.toolName),
     };
 
     // Store in cache

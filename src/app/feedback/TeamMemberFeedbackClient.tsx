@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Select from 'react-select';
 import { supabase } from '@/lib/supabase';
@@ -79,41 +79,34 @@ export default function TeamMemberFeedbackClient({ initialData }: TeamMemberFeed
     setIsClient(true);
   }, []);
 
+  const fetchProjects = useCallback(async () => {
+    if (!session?.user?.email) return;
+
+    try {
+      const response = await fetch("/api/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: session.user.email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch projects");
+      }
+
+      const data = await response.json();
+      setProjects(data);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  }, [session?.user?.email]);
+
   useEffect(() => {
     if (session?.user?.email && isClient) {
       fetchProjects();
     }
-  }, [session, isClient]);
-
-  const fetchProjects = async () => {
-    try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: session?.user?.email
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch projects');
-      }
-
-      const data: NotionResponse = await response.json();
-      
-      const projectList = data.results?.map((result: NotionResult) => ({
-        id: result.id,
-        name: result.properties['*ProjectsDB (wpId)']?.rollup?.array?.[0]?.title?.[0]?.plain_text || 'Unnamed Project'
-      })).filter((project: Project) => project.name) || [];
-      
-      setProjects(projectList);
-    } catch (error) {
-      setError('Failed to fetch projects');
-      console.error('Error fetching projects:', error);
-    }
-  };
+  }, [session, isClient, fetchProjects]);
 
   const handleProjectChange = (selected: Project | null) => {
     setSelectedProject(selected);
