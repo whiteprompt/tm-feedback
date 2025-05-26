@@ -325,8 +325,12 @@ export default function TeamMemberFeedbackClient() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Responsibilities
+                Responsibilities <span className="text-red-500">*</span>
               </label>
+              <p className="mt-1 text-sm text-gray-500">
+                Please describe your main tasks and areas of responsibility in the project. Include any significant milestones or achievements from the recent period.
+              </p>
+              <br />
               <textarea
                 value={formData.responsibilities}
                 onChange={(e) => setFormData(prev => ({ ...prev, responsibilities: e.target.value }))}
@@ -336,7 +340,6 @@ export default function TeamMemberFeedbackClient() {
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Technologies
