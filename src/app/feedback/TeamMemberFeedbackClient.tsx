@@ -415,7 +415,7 @@ export default function TeamMemberFeedbackClient() {
                 Comments
               </label>
               <p className="mt-1 text-sm text-gray-500">
-                Please share any additional comments or feedback you'd like to provide. Please also consider issues or challenges you're facing in the project.
+                {`Please share any additional comments or feedback you'd like to provide. Please also consider issues or challenges you're facing in the project.`}
               </p>
               <br />
               <textarea
@@ -434,7 +434,7 @@ export default function TeamMemberFeedbackClient() {
                 type="button"
                 onClick={() => {
                   if (hasUnsavedChanges) {
-                    const shouldLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+                    const shouldLeave = window.confirm("You have unsaved changes. Are you sure you want to leave?");
                     if (!shouldLeave) return;
                   }
                   router.push('/submitted-feedbacks');
