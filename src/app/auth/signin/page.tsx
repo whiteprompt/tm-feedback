@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import Image from 'next/image';
 
 function SignInContent() {
   const searchParams = useSearchParams();
@@ -12,14 +13,22 @@ function SignInContent() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <Image
+            src="/logo.svg"
+            alt="Whiteprompt Logo"
+            width={180}
+            height={45}
+            priority
+            className="mb-8"
+          />
+          <h2 className="text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
         </div>
         <div className="mt-8 space-y-6">
           <button
             onClick={() => signIn('google', { callbackUrl })}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#00A3B4] hover:bg-[#008C9A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3B4]"
           >
             Sign in with Google
           </button>
