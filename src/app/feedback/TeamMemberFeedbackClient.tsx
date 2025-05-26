@@ -44,6 +44,7 @@ export default function TeamMemberFeedbackClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -156,6 +157,56 @@ export default function TeamMemberFeedbackClient() {
     }));
   };
 
+  // Track form changes
+  useEffect(() => {
+    const initialFormData = {
+      projectId: '',
+      role: '',
+      responsibilities: '',
+      technologies: [],
+      overallSatisfaction: 'neutral',
+      projectIssue: '',
+    };
+
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+    setHasUnsavedChanges(hasChanges);
+  }, [formData]);
+
+  // Handle beforeunload event
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  // Handle navigation
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && hasUnsavedChanges) {
+        e.preventDefault();
+        const shouldLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+        if (!shouldLeave) {
+          // If user cancels, do nothing and stay on the page
+          return;
+        }
+        // Only navigate if user confirms
+        router.push(link.href);
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [hasUnsavedChanges, router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -184,7 +235,7 @@ export default function TeamMemberFeedbackClient() {
 
       if (supabaseError) throw supabaseError;
 
-      // Reset form
+      // Reset form and unsaved changes flag
       setFormData({
         projectId: '',
         role: '',
@@ -194,6 +245,7 @@ export default function TeamMemberFeedbackClient() {
         projectIssue: '',
       });
       setSelectedProject(null);
+      setHasUnsavedChanges(false);
       
       // Redirect to home page
       router.push('/submitted-feedbacks');
@@ -377,13 +429,28 @@ export default function TeamMemberFeedbackClient() {
               <div className="text-red-600 text-sm">{error}</div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              {loading ? 'Submitting...' : 'Submit Feedback'}
-            </button>
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  if (hasUnsavedChanges) {
+                    const shouldLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+                    if (!shouldLeave) return;
+                  }
+                  router.push('/submitted-feedbacks');
+                }}
+                className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#00A3B4] hover:bg-[#008C9A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3B4] disabled:opacity-50"
+              >
+                {loading ? 'Submitting...' : 'Submit Feedback'}
+              </button>
+            </div>
           </form>
         </div>
       </div>
