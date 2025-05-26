@@ -138,12 +138,13 @@ export default function TeamMemberFeedbackClient() {
   };
 
   const handleTechKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && currentTech.trim()) {
+    const value = currentTech.trim();
+    if ((e.key === 'Enter' || e.key === ',') && value) {
       e.preventDefault();
-      if (!formData.technologies.includes(currentTech.trim())) {
+      if (!formData.technologies.includes(value)) {
         setFormData(prev => ({
           ...prev,
-          technologies: [...prev.technologies, currentTech.trim()]
+          technologies: [...prev.technologies, value]
         }));
       }
       setCurrentTech('');
@@ -216,6 +217,21 @@ export default function TeamMemberFeedbackClient() {
       setError('Please select a project');
       setLoading(false);
       return;
+    }
+
+    // Check if there's any text in the technologies input
+    if (currentTech.trim()) {
+      const shouldSubmit = window.confirm('You have an unadded technology in the input. Would you like to add it before submitting?');
+      if (shouldSubmit) {
+        setFormData(prev => ({
+          ...prev,
+          technologies: [...prev.technologies, currentTech.trim()]
+        }));
+        setCurrentTech('');
+      } else {
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -341,6 +357,9 @@ export default function TeamMemberFeedbackClient() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Technologies
               </label>
+              <p className="mt-1 text-sm text-gray-500 mb-2">
+                Add technologies you're using in this project. Press Enter or type a comma (,) to add each technology.
+              </p>
               <div className="flex flex-wrap gap-2 mb-2">
                 {formData.technologies.map((tech) => (
                   <span
@@ -364,7 +383,7 @@ export default function TeamMemberFeedbackClient() {
                 onChange={(e) => setCurrentTech(e.target.value)}
                 onKeyDown={handleTechKeyDown}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Type technology and press Enter"
+                placeholder="Type technology and press Enter or comma (,)"
               />
             </div>
             <div>
