@@ -90,9 +90,50 @@ export default function TeamMemberFeedbackClient() {
     }
   }, [session, isClient, fetchTeamMemberInfo]);
 
-  const handleProjectChange = (selected: Project | null) => {
+  const handleProjectChange = async (selected: Project | null) => {
     setSelectedProject(selected);
     setFormData(prev => ({ ...prev, projectId: selected?.id || '' }));
+
+    if (selected && session?.user?.email) {
+      try {
+        const response = await fetch("/api/last-feedback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: session.user.email,
+            projectId: selected.id
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch last feedback");
+        }
+
+        const lastFeedback = await response.json();
+        setFormData(prev => ({
+          ...prev,
+          role: lastFeedback.role || '',
+          technologies: lastFeedback.technologies || [],
+        }));
+      } catch (error) {
+        console.error("Error fetching last feedback:", error);
+        // If there's an error, just keep the form fields empty
+        setFormData(prev => ({
+          ...prev,
+          role: '',
+          technologies: [],
+        }));
+      }
+    } else {
+      // Reset form fields if no project is selected
+      setFormData(prev => ({
+        ...prev,
+        role: '',
+        technologies: [],
+      }));
+    }
   };
 
   const handleTechKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
