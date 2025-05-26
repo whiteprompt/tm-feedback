@@ -124,7 +124,7 @@ export default function Home() {
                           </p>
                           {feedback.project_issue && (
                             <p className="mt-1 text-sm text-gray-600">
-                              Project Issue: {feedback.project_issue}
+                              Comments: {feedback.project_issue}
                             </p>
                           )}
                           <p className="mt-1 text-sm text-gray-500">

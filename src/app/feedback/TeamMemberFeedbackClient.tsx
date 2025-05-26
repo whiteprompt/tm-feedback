@@ -290,7 +290,6 @@ export default function TeamMemberFeedbackClient() {
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
             Team Member Feedback
           </h1>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -308,7 +307,6 @@ export default function TeamMemberFeedbackClient() {
                 isClearable={false}
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Role
@@ -322,7 +320,6 @@ export default function TeamMemberFeedbackClient() {
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Responsibilities <span className="text-red-500">*</span>
@@ -370,7 +367,6 @@ export default function TeamMemberFeedbackClient() {
                 placeholder="Type technology and press Enter"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Overall Satisfaction <span className="text-red-500">*</span>
@@ -414,11 +410,14 @@ export default function TeamMemberFeedbackClient() {
                 </label>
               </div>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project Issue
+                Comments
               </label>
+              <p className="mt-1 text-sm text-gray-500">
+                Please share any additional comments or feedback you'd like to provide. Please also consider issues or challenges you're facing in the project.
+              </p>
+              <br />
               <textarea
                 value={formData.projectIssue}
                 onChange={(e) => setFormData(prev => ({ ...prev, projectIssue: e.target.value }))}
@@ -427,11 +426,9 @@ export default function TeamMemberFeedbackClient() {
                 placeholder="Describe any issues or challenges you're facing in the project"
               />
             </div>
-
             {error && (
               <div className="text-red-600 text-sm">{error}</div>
             )}
-
             <div className="flex gap-4">
               <button
                 type="button"
