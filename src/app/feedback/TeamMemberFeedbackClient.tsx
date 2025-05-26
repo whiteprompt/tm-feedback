@@ -358,7 +358,7 @@ export default function TeamMemberFeedbackClient() {
                 Technologies
               </label>
               <p className="mt-1 text-sm text-gray-500 mb-2">
-                Add technologies you're using in this project. Press Enter or type a comma (,) to add each technology.
+                {`Add technologies you're using in this project. Press Enter or type a comma (,) to add each technology.`}
               </p>
               <div className="flex flex-wrap gap-2 mb-2">
                 {formData.technologies.map((tech) => (
