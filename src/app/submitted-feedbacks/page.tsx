@@ -10,9 +10,17 @@ interface Feedback {
   role: string;
   responsibilities: string;
   technologies: string[];
+  overall_satisfaction: string;
+  project_issue: string;
   created_at: string;
   project_id: string;
 }
+
+const SATISFACTION_MAP = {
+  'happy': '😊',
+  'neutral': '😐',
+  'sad': '😞'
+} as const;
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -114,6 +122,14 @@ export default function Home() {
                           <p className="mt-1 text-sm text-gray-600">
                             Technologies: {feedback.technologies.join(', ')}
                           </p>
+                          <p className="mt-1 text-sm text-gray-600">
+                            Overall Satisfaction: {SATISFACTION_MAP[feedback.overall_satisfaction as keyof typeof SATISFACTION_MAP]}
+                          </p>
+                          {feedback.project_issue && (
+                            <p className="mt-1 text-sm text-gray-600">
+                              Project Issue: {feedback.project_issue}
+                            </p>
+                          )}
                           <p className="mt-1 text-sm text-gray-500">
                             Submitted on: {new Date(feedback.created_at).toLocaleDateString()}
                           </p>

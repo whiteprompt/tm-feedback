@@ -17,7 +17,15 @@ interface FeedbackForm {
   role: string;
   responsibilities: string;
   technologies: string[];
+  overallSatisfaction: string;
+  projectIssue: string;
 }
+
+const SATISFACTION_MAP = {
+  'happy': '😊',
+  'neutral': '😐',
+  'sad': '😞'
+} as const;
 
 export default function TeamMemberFeedbackClient() {
   const { data: session, status } = useSession();
@@ -29,6 +37,8 @@ export default function TeamMemberFeedbackClient() {
     role: '',
     responsibilities: '',
     technologies: [],
+    overallSatisfaction: 'neutral',
+    projectIssue: '',
   });
   const [currentTech, setCurrentTech] = useState('');
   const [loading, setLoading] = useState(false);
@@ -126,6 +136,8 @@ export default function TeamMemberFeedbackClient() {
             role: formData.role,
             responsibilities: formData.responsibilities,
             technologies: formData.technologies,
+            overall_satisfaction: formData.overallSatisfaction,
+            project_issue: formData.projectIssue,
           }
         ]);
 
@@ -137,6 +149,8 @@ export default function TeamMemberFeedbackClient() {
         role: '',
         responsibilities: '',
         technologies: [],
+        overallSatisfaction: 'neutral',
+        projectIssue: '',
       });
       setSelectedProject(null);
       
@@ -258,6 +272,63 @@ export default function TeamMemberFeedbackClient() {
                 onKeyDown={handleTechKeyDown}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Type technology and press Enter"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Overall Satisfaction <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="satisfaction"
+                    value="happy"
+                    checked={formData.overallSatisfaction === 'happy'}
+                    onChange={(e) => setFormData(prev => ({ ...prev, overallSatisfaction: e.target.value }))}
+                    className="h-4 w-4 text-blue-600"
+                    required
+                  />
+                  <span className="text-2xl">{SATISFACTION_MAP.happy}</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="satisfaction"
+                    value="neutral"
+                    checked={formData.overallSatisfaction === 'neutral'}
+                    onChange={(e) => setFormData(prev => ({ ...prev, overallSatisfaction: e.target.value }))}
+                    className="h-4 w-4 text-blue-600"
+                    required
+                  />
+                  <span className="text-2xl">{SATISFACTION_MAP.neutral}</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="satisfaction"
+                    value="sad"
+                    checked={formData.overallSatisfaction === 'sad'}
+                    onChange={(e) => setFormData(prev => ({ ...prev, overallSatisfaction: e.target.value }))}
+                    className="h-4 w-4 text-blue-600"
+                    required
+                  />
+                  <span className="text-2xl">{SATISFACTION_MAP.sad}</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Project Issue
+              </label>
+              <textarea
+                value={formData.projectIssue}
+                onChange={(e) => setFormData(prev => ({ ...prev, projectIssue: e.target.value }))}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Describe any issues or challenges you're facing in the project"
               />
             </div>
 
