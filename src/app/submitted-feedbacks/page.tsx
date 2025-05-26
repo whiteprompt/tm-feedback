@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import Navigation from '@/components/Navigation';
+import Link from 'next/link';
 
 interface Feedback {
   id: string;
@@ -80,23 +81,19 @@ export default function Home() {
       <Navigation />
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="text-center mb-8">
+          <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-              Welcome to the app
+              Your Submitted Feedbacks
             </h2>
-            {session?.user?.email && (
-              <p className="mt-2 text-gray-600">
-                Signed in as {session.user.email}
-              </p>
-            )}
+            <Link
+              href="/feedback"
+              className="bg-[#00A3B4] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#008C9A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3B4]"
+            >
+              Submit New Feedback
+            </Link>
           </div>
 
           <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Your Submitted Feedbacks
-              </h3>
-            </div>
             {error ? (
               <div className="px-4 py-5 sm:px-6 text-red-600">{error}</div>
             ) : feedbacks.length === 0 ? (
@@ -110,7 +107,7 @@ export default function Home() {
                     <li key={feedback.id} className="px-4 py-4 sm:px-6">
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-blue-600 truncate">
+                          <p className="text-sm font-medium text-[#00A3B4] truncate">
                             {feedback.project_id}
                           </p>
                           <p className="mt-1 text-sm text-gray-600">
