@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     const response = await fetch(notionUrl.toString(), {
       method: "GET",
       headers: {
-        "x-api-key": `Yvw4eCTPWjUUqzy8`,
+        "x-api-key": process.env.STAFFING_TOOL_API_KEY || "",
       },
       // Add cache control headers
       cache: "force-cache",
