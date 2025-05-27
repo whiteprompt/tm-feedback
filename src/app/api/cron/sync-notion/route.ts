@@ -16,25 +16,21 @@ export async function GET(request: Request) {
       .from("team_member_feedback")
       .select("*")
       .is("notion_id", null)
-      .limit(1);
+      .limit(3);
 
     if (error) throw error;
 
     // Process each feedback
     for (const feedback of feedbacks) {
       try {
-        const context = `Role: ${feedback.role}\n
-            Responsibilities: ${feedback.responsibilities}\n
-            Technologies: ${feedback.technologies}\n
-            Overall Satisfaction: ${feedback.overall_satisfaction}\n
-            Comments: ${feedback.comments}
-        `;
+        const context = `Role:${feedback.role}\nResponsibilities:${feedback.responsibilities}\nTechnologies:${feedback.technologies}\nOverall Satisfaction:${feedback.overall_satisfaction}\nComments:${feedback.comments}`;
+
         const response = await fetch(
           "https://staffing.whiteprompt.com/notion-webhooks/project-context",
           {
             method: "POST",
             body: JSON.stringify({
-              context,
+              context: context,
               projectName: feedback.project_id,
               trigger: "TM feedback",
               teamMemberEmail: feedback.user_email,
@@ -42,11 +38,17 @@ export async function GET(request: Request) {
             }),
             headers: {
               "x-api-key": process.env.STAFFING_TOOL_API_KEY || "",
+              "Content-Type": "application/json",
             },
           }
         );
 
         const data = await response.json();
+
+        if (!response.ok) {
+          console.error(`Error processing feedback ${feedback.id}:`, feedback);
+          continue;
+        }
 
         // Update the feedback with the Notion page ID
         const { error: updateError } = await supabase
