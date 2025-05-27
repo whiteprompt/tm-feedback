@@ -219,6 +219,12 @@ export default function TeamMemberFeedbackClient() {
       return;
     }
 
+    if (!formData.technologies.length) {
+      setError('Please add at least one technology');
+      setLoading(false);
+      return;
+    }
+
     // Check if there's any text in the technologies input
     if (currentTech.trim()) {
       const shouldSubmit = window.confirm('You have an unadded technology in the input. Would you like to add it before submitting?');
@@ -355,7 +361,7 @@ export default function TeamMemberFeedbackClient() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Technologies
+                Technologies <span className="text-red-500">*</span>
               </label>
               <p className="mt-1 text-sm text-gray-500 mb-2">
                 {`Add technologies you're using in this project. Press Enter or type a comma (,) to add each technology.`}
