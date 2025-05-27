@@ -16,14 +16,14 @@ export async function GET(request: Request) {
       .from("team_member_feedback")
       .select("*")
       .is("notion_id", null)
-      .limit(3);
+      .limit(10); // TODO: Remove this limit
 
     if (error) throw error;
 
     // Process each feedback
     for (const feedback of feedbacks) {
       try {
-        const context = `Role:${feedback.role}\nResponsibilities:${feedback.responsibilities}\nTechnologies:${feedback.technologies}\nOverall Satisfaction:${feedback.overall_satisfaction}\nComments:${feedback.comments}`;
+        const context = `Role:${feedback.role}\nResponsibilities:${feedback.responsibilities}\nTechnologies:${feedback.technologies}\nOverall Satisfaction:${feedback.overall_satisfaction}\n${feedback.comments ? `Comments:${feedback.comments}` : ""}`;
 
         const response = await fetch(
           "https://staffing.whiteprompt.com/notion-webhooks/project-context",
