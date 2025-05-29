@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { formatDate } from "@/utils/date";
 
-// Cache duration in seconds (24 hours)
-const CACHE_DURATION = 24 * 60 * 60;
+// Cache duration in seconds (2 hours)
+const CACHE_DURATION = 2 * 60 * 60;
 
 interface CacheData {
   data: TeamMember;
