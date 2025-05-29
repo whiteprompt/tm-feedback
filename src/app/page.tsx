@@ -55,13 +55,7 @@ export default function TeamMemberPage() {
     const fetchSettings = async () => {
       if (!session?.user?.email) return;
       try {
-        const response = await fetch("/api/settings", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: session.user.email }),
-        });
+        const response = await fetch("/api/settings");
         if (response.ok) {
           const data = await response.json();
           setShowContracts(data.value.enabled);
