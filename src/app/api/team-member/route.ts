@@ -15,6 +15,16 @@ interface Allocation {
   end?: string;
 }
 
+interface Contract {
+  concept: string;
+  dailyHours: number;
+  amountType: string;
+  amount: number;
+  start: string;
+  end?: string;
+  active?: boolean;
+}
+
 interface AccessTool {
   toolName: string;
 }
@@ -28,7 +38,8 @@ interface NotionResponse {
   mobile: string;
   identificationType: string;
   identificationNumber: string;
-  allocations: Allocation[];
+  allocations?: Allocation[];
+  contracts?: Contract[];
   accessTools?: AccessTool[];
 }
 
@@ -42,12 +53,9 @@ interface TeamMember {
   mobile: string;
   identificationType: string;
   identificationNumber: string;
-  allocations: {
-    project: string;
-    startDate: string;
-    endDate: string;
-  }[];
-  accesses: string[];
+  contracts?: Contract[];
+  allocations?: Allocation[];
+  accesses?: string[];
 }
 
 // In-memory cache
@@ -71,7 +79,7 @@ export async function POST(request: Request) {
     }
 
     const notionUrl = new URL(
-      `https://staffing.whiteprompt.com/notion-webhooks/team-member?q=${email}&includeAllocations=true`
+      `https://staffing.whiteprompt.com/notion-webhooks/team-member?q=${email}&includeAllocations=true&includeContracts=true`
     );
 
     const response = await fetch(notionUrl.toString(), {
@@ -102,11 +110,30 @@ export async function POST(request: Request) {
       mobile: data.mobile,
       identificationType: data.identificationType,
       identificationNumber: data.identificationNumber,
-      allocations: data.allocations.map((allocation) => ({
-        project: allocation.project,
-        startDate: formatDate(allocation.start),
-        endDate: allocation.end ? formatDate(allocation.end) : "",
-      })),
+      allocations: data.allocations
+        ?.sort(
+          (a, b) => new Date(b.start).getTime() - new Date(a.start).getTime()
+        )
+        ?.map((allocation) => ({
+          project: allocation.project,
+          start: formatDate(allocation.start),
+          end: allocation.end ? formatDate(allocation.end) : "",
+          active: !allocation.end || new Date(allocation.end) > new Date(),
+        })),
+      contracts: data.contracts
+        ?.filter((contract) => contract.concept === "Service Fee")
+        ?.sort(
+          (a, b) => new Date(b.start).getTime() - new Date(a.start).getTime()
+        )
+        .map((contract) => ({
+          concept: contract.concept,
+          dailyHours: contract.dailyHours,
+          amountType: contract.amountType,
+          amount: contract.amount,
+          start: formatDate(contract.start),
+          end: contract.end ? formatDate(contract.end) : "",
+          active: !contract.end || new Date(contract.end) > new Date(),
+        })),
       accesses: (data?.accessTools || [])
         .filter(
           (access) => !["Zoho Recruit", "Freshbooks"].includes(access.toolName)

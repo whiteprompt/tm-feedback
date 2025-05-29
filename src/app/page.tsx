@@ -7,10 +7,19 @@ import Navigation from '@/components/Navigation';
 import { formatDate } from '@/utils/date';
 
 interface Allocation {
-  id: string;
   project: string;
-  startDate: string;
-  endDate: string;
+  start: string;
+  end: string;
+  active: boolean;
+}
+
+interface Contracts {
+  amountType: string;
+  amount: number;
+  start: string;
+  end?: string;
+  active: boolean;
+  dailyHours: number;
 }
 
 interface TeamMember {
@@ -23,8 +32,9 @@ interface TeamMember {
   mobile: string;
   identificationType: string;
   identificationNumber: string;
-  allocations: Allocation[];
-  accesses: string[];
+  allocations?: Allocation[];
+  contracts?: Contracts[];
+  accesses?: string[];
 }
 
 export default function TeamMemberPage() {
@@ -85,7 +95,7 @@ export default function TeamMemberPage() {
         <div className="px-4 py-6 sm:px-0">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-              Team Member Information
+              Main information
             </h2>
           </div>
 
@@ -94,7 +104,7 @@ export default function TeamMemberPage() {
               <div className="px-4 py-5 sm:px-6 text-red-600">{error}</div>
             ) : !teamMember ? (
               <div className="px-4 py-5 sm:px-6 text-gray-500">
-                No team member information available.
+                No information available.
               </div>
             ) : (
               <>
@@ -134,14 +144,13 @@ export default function TeamMemberPage() {
                     </div>
                     <div className="sm:col-span-1">
                       <dt className="text-sm font-medium text-gray-500">Access list</dt>
-                      <dd className="mt-1 text-sm text-gray-900">{teamMember.accesses.join(", ")}</dd>
+                      <dd className="mt-1 text-sm text-gray-900">{(teamMember?.accesses || []).join(", ")}</dd>
                     </div>
                   </dl>
                 </div>
-
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                    Project Allocations
+                    Your allocations
                   </h3>
                   {teamMember.allocations && teamMember.allocations.length > 0 ? (
                     <div className="overflow-x-auto">
@@ -161,15 +170,15 @@ export default function TeamMemberPage() {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {teamMember.allocations.map((allocation, index) => (
-                            <tr key={index}>
+                            <tr key={index} className={allocation.active ? 'bg-teal-50' : ''}>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {allocation.project}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {allocation.startDate}
+                                {allocation.start}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {allocation.endDate}
+                                {allocation.end}
                               </td>
                             </tr>
                           ))}
@@ -178,6 +187,59 @@ export default function TeamMemberPage() {
                     </div>
                   ) : (
                     <p className="text-sm text-gray-500">No project allocations found.</p>
+                  )}
+                </div>
+                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    Your contracts
+                  </h3>
+                  {(teamMember.contracts || []).length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Type
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Amount
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Daily Hours
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Start Date
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              End Date
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {teamMember?.contracts?.map((contract, index) => (
+                            <tr key={index} className={contract.active ? 'bg-teal-50' : ''}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {contract.amountType}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {contract.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {contract.dailyHours}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {contract.start}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {contract.end}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">No contracts found.</p>
                   )}
                 </div>
               </>
