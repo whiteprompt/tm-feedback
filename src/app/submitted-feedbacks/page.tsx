@@ -34,13 +34,7 @@ export default function Home() {
     if (!session?.user?.email) return;
 
     try {
-      const response = await fetch("/api/feedbacks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: session.user.email }),
-      });
+      const response = await fetch("/api/feedbacks");
 
       if (!response.ok) {
         throw new Error("Failed to fetch feedbacks");

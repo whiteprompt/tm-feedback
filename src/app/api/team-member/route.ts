@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { formatDate } from "@/utils/date";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // Cache duration in seconds (2 hours)
 const CACHE_DURATION = 2 * 60 * 60;
@@ -61,13 +63,15 @@ interface TeamMember {
 // In-memory cache
 const cache = new Map<string, CacheData>();
 
-export async function POST(request: Request) {
+export async function GET() {
   try {
-    const { email } = await request.json();
+    const session = await getServerSession(authOptions);
 
-    if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
+
+    const email = session.user.email;
 
     // Check cache first
     const cachedData = cache.get(email);

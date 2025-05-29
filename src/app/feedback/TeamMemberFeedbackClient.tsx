@@ -60,13 +60,7 @@ export default function TeamMemberFeedbackClient() {
     if (!session?.user?.email) return;
 
     try {
-      const response = await fetch("/api/team-member", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: session.user.email }),
-      });
+      const response = await fetch("/api/team-member");
 
       if (!response.ok) {
         throw new Error("Failed to fetch team member info");
@@ -103,7 +97,6 @@ export default function TeamMemberFeedbackClient() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: session.user.email,
             projectId: selected.id
           }),
         });
