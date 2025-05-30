@@ -74,11 +74,11 @@ export default function TeamMemberPage() {
       const response = await fetch("/api/team-member");
 
       if (!response.ok) {
-        throw new Error("Failed to fetch team member info");
+        setError("Failed to fetch team member info");
+      } else {
+        const data = await response.json();
+        setTeamMember(data);
       }
-
-      const data = await response.json();
-      setTeamMember(data);
     } catch (error) {
       setError("Failed to fetch team member info");
       console.error("Error fetching team member info:", error);

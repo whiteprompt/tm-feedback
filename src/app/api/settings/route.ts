@@ -1,28 +1,21 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-
-const ALLOWED_ADMIN_EMAILS = ["mariano.selvaggi@whiteprompt.com"];
+import { getAuthenticatedAdmin } from "@/lib/auth-utils";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const { error } = await getAuthenticatedAdmin();
 
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (error) {
+    return error;
   }
 
-  if (!ALLOWED_ADMIN_EMAILS.includes(session.user.email)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { data: settings, error } = await supabase
+  const { data: settings, error: dbError } = await supabase
     .from("settings")
     .select("*")
     .eq("key", "show_contracts")
     .single();
 
-  if (error) {
+  if (dbError) {
     return NextResponse.json(
       { error: "Error fetching settings" },
       { status: 500 }
@@ -33,26 +26,23 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+  const { error } = await getAuthenticatedAdmin();
 
-  if (!ALLOWED_ADMIN_EMAILS.includes(session.user.email)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (error) {
+    return error;
   }
 
   const body = await request.json();
   const { enabled } = body;
 
-  const { data: settings, error } = await supabase
+  const { data: settings, error: dbError } = await supabase
     .from("settings")
     .update({ value: { enabled } })
     .eq("key", "show_contracts")
     .select()
     .single();
 
-  if (error) {
+  if (dbError) {
     return NextResponse.json(
       { error: "Error updating settings" },
       { status: 500 }

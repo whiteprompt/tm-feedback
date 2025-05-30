@@ -4,10 +4,12 @@ import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useAdmin } from '@/contexts/AdminContext';
 
 export default function Navigation() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAdmin } = useAdmin();
 
   return (
     <nav className="bg-white shadow-sm">
@@ -40,6 +42,14 @@ export default function Navigation() {
             >
               Submitted Feedbacks
             </Link>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="border-transparent text-gray-500 hover:border-[#00A3B4] hover:text-[#00A3B4] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+              >
+                Admin
+              </Link>
+            )}
             {session ? (
               <button
                 onClick={() => signOut()}
@@ -95,6 +105,15 @@ export default function Navigation() {
           >
             Submitted Feedbacks
           </Link>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Admin
+            </Link>
+          )}
           {session ? (
             <button
               onClick={() => {

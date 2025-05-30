@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const { error, email } = await getAuthenticatedUser();
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    if (error) {
+      return error;
     }
-
-    const email = session.user.email;
 
     const { projectId } = await request.json();
 
@@ -22,7 +19,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data, error } = await supabase
+    const { data, error: dbError } = await supabase
       .from("team_member_feedback")
       .select("role, technologies")
       .eq("user_email", email)
@@ -31,7 +28,7 @@ export async function POST(request: Request) {
       .limit(1)
       .single();
 
-    if (error?.code === "PGRST116") {
+    if (dbError?.code === "PGRST116") {
       return NextResponse.json({ role: "", technologies: [] });
     }
 

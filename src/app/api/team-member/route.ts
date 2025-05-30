@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { formatDate } from "@/utils/date";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 
 // Cache duration in seconds (2 hours)
 const CACHE_DURATION = 2 * 60 * 60;
@@ -65,13 +64,11 @@ const cache = new Map<string, CacheData>();
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const { error, email } = await getAuthenticatedUser();
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    if (error) {
+      return error;
     }
-
-    const email = session.user.email;
 
     // Check cache first
     const cachedData = cache.get(email);
@@ -145,12 +142,6 @@ export async function GET() {
         .map((access) => access.toolName),
     };
 
-    // Store in cache
-    cache.set(email, {
-      data: teamMember,
-      timestamp: now,
-    });
-
     // Add cache control headers to the response
     const responseHeaders = new Headers();
     responseHeaders.set(
@@ -158,11 +149,17 @@ export async function GET() {
       `public, s-maxage=${CACHE_DURATION}, stale-while-revalidate`
     );
 
+    // Store in cache
+    cache.set(email, {
+      data: teamMember,
+      timestamp: now,
+    });
+
     return NextResponse.json(teamMember, {
       headers: responseHeaders,
     });
   } catch (error) {
-    console.error("Error in team member API:", error);
+    console.error(`Error in team member API:`, error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

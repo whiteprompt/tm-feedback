@@ -1,32 +1,26 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 
 export async function GET() {
-  try {
-    const session = await getServerSession(authOptions);
+  const { error, email } = await getAuthenticatedUser();
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+  if (error) {
+    return error;
+  }
 
-    const email = session.user.email;
+  const { data: feedbacks, error: dbError } = await supabase
+    .from("team_member_feedback")
+    .select("*")
+    .eq("user_email", email)
+    .order("created_at", { ascending: false });
 
-    const { data, error } = await supabase
-      .from("team_member_feedback")
-      .select("*")
-      .eq("user_email", email)
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error fetching feedbacks:", error);
+  if (dbError) {
     return NextResponse.json(
-      { error: "Failed to fetch feedbacks" },
+      { error: "Error fetching feedbacks" },
       { status: 500 }
     );
   }
+
+  return NextResponse.json(feedbacks);
 }

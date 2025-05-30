@@ -1,21 +1,12 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-
-const ALLOWED_ADMIN_EMAILS = ["mariano.selvaggi@whiteprompt.com"];
+import { getAuthenticatedAdmin } from "@/lib/auth-utils";
 
 export async function POST() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+  const { error } = await getAuthenticatedAdmin();
 
-  if (!ALLOWED_ADMIN_EMAILS.includes(session.user.email)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (error) {
+    return error;
   }
-
-  console.log("mariano");
-  console.log(`${process.env.NEXT_PUBLIC_APP_URL}/api/cron/sync-notion`);
 
   try {
     const response = await fetch(
