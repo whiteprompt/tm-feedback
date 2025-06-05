@@ -12,7 +12,7 @@ export async function GET() {
 
     // Make the request to the staffing service
     const response = await fetch(
-      `${STAFFING_API_URL}/notion-webhooks/bench-allocation?email=bernardo.schveitzer@whiteprompt.com`,
+      `${STAFFING_API_URL}/notion-webhooks/bench-allocation?email=${email}`,
       {
         headers: {
           Accept: "application/json",
