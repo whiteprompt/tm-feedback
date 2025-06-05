@@ -46,7 +46,10 @@ export async function GET(request: Request) {
         const data = await response.json();
 
         if (!response.ok) {
-          console.error(`Error processing feedback ${feedback.id}:`, feedback);
+          console.error(`Error processing feedback ${feedback.id}:`, {
+            feedback,
+            data,
+          });
           continue;
         }
 
