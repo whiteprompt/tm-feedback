@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { STAFFING_API_URL } from "@/lib/constants";
 
 export const runtime = "edge"; // This is important for Vercel cron jobs
 
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
         const context = `Role:${feedback.role}\nResponsibilities:${feedback.responsibilities}\nTechnologies:${feedback.technologies}\nOverall Satisfaction:${feedback.overall_satisfaction}\n${feedback.comments ? `Comments:${feedback.comments}` : ""}`;
 
         const response = await fetch(
-          "https://staffing.whiteprompt.com/notion-webhooks/project-context",
+          `${STAFFING_API_URL}/notion-webhooks/project-context`,
           {
             method: "POST",
             body: JSON.stringify({

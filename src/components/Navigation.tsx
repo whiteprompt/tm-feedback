@@ -3,13 +3,32 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 
 export default function Navigation() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAdmin } = useAdmin();
+  const [showPresentations, setShowPresentations] = useState(false);
+
+  useEffect(() => {
+    const fetchFeatureStatus = async () => {
+      try {
+        const response = await fetch('/api/settings?key=show_presentations');
+        if (response.ok) {
+          const data = await response.json();
+          setShowPresentations(data.value.enabled);
+        }
+      } catch (error) {
+        console.error('Error fetching feature status:', error);
+      }
+    };
+
+    if (session?.user?.email) {
+      fetchFeatureStatus();
+    }
+  }, [session?.user?.email]);
 
   return (
     <nav className="bg-white shadow-sm">
@@ -42,6 +61,14 @@ export default function Navigation() {
             >
               Submitted Feedbacks
             </Link>
+            {showPresentations && (
+              <Link
+                href="/presentations"
+                className="border-transparent text-gray-500 hover:border-[#00A3B4] hover:text-[#00A3B4] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+              >
+                Presentations
+              </Link>
+            )}
             {isAdmin && (
               <Link
                 href="/admin"
@@ -105,6 +132,15 @@ export default function Navigation() {
           >
             Submitted Feedbacks
           </Link>
+          {showPresentations && (
+            <Link
+              href="/presentations"
+              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Presentations
+            </Link>
+          )}
           {isAdmin && (
             <Link
               href="/admin"
