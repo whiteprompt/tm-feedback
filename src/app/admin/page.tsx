@@ -8,6 +8,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 
 export default function AdminPage() {
   const [showContracts, setShowContracts] = useState(false);
+  const [showPresentations, setShowPresentations] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [cronStatus, setCronStatus] = useState('');
   const router = useRouter();
@@ -30,10 +31,19 @@ export default function AdminPage() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/settings');
-      if (response.ok) {
-        const data = await response.json();
+      const [contractsResponse, presentationsResponse] = await Promise.all([
+        fetch('/api/settings?key=show_contracts'),
+        fetch('/api/settings?key=show_presentations')
+      ]);
+
+      if (contractsResponse.ok) {
+        const data = await contractsResponse.json();
         setShowContracts(data.value.enabled);
+      }
+
+      if (presentationsResponse.ok) {
+        const data = await presentationsResponse.json();
+        setShowPresentations(data.value.enabled);
       }
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -48,11 +58,36 @@ export default function AdminPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ enabled: newValue }),
+        body: JSON.stringify({ 
+          key: 'show_contracts',
+          enabled: newValue 
+        }),
       });
 
       if (response.ok) {
         setShowContracts(newValue);
+      }
+    } catch (error) {
+      console.error('Error updating settings:', error);
+    }
+  };
+
+  const togglePresentations = async () => {
+    const newValue = !showPresentations;
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          key: 'show_presentations',
+          enabled: newValue 
+        }),
+      });
+
+      if (response.ok) {
+        setShowPresentations(newValue);
       }
     } catch (error) {
       console.error('Error updating settings:', error);
@@ -106,23 +141,44 @@ export default function AdminPage() {
               {/* Feature Toggle Section */}
               <div className="border-b pb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Feature Toggles</h2>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700">{`Show "My Contracts" Section`}</h3>
-                    <p className="text-sm text-gray-500">Enable or disable the contracts section for all users</p>
-                  </div>
-                  <button
-                    onClick={toggleContracts}
-                    className={`${
-                      showContracts ? 'bg-teal-600' : 'bg-gray-200'
-                    } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                  >
-                    <span
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-700">{`Show "My Contracts" Section`}</h3>
+                      <p className="text-sm text-gray-500">Enable or disable the contracts section for all users</p>
+                    </div>
+                    <button
+                      onClick={toggleContracts}
                       className={`${
-                        showContracts ? 'translate-x-5' : 'translate-x-0'
-                      } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
-                    />
-                  </button>
+                        showContracts ? 'bg-teal-600' : 'bg-gray-200'
+                      } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+                    >
+                      <span
+                        className={`${
+                          showContracts ? 'translate-x-5' : 'translate-x-0'
+                        } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-700">{`Show "Presentations" Section`}</h3>
+                      <p className="text-sm text-gray-500">Enable or disable the presentations section for all users</p>
+                    </div>
+                    <button
+                      onClick={togglePresentations}
+                      className={`${
+                        showPresentations ? 'bg-teal-600' : 'bg-gray-200'
+                      } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+                    >
+                      <span
+                        className={`${
+                          showPresentations ? 'translate-x-5' : 'translate-x-0'
+                        } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
 

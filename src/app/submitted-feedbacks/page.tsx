@@ -77,7 +77,7 @@ export default function Home() {
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-              Your Submitted Feedbacks
+              My submitted feedbacks
             </h2>
             <Link
               href="/feedback"

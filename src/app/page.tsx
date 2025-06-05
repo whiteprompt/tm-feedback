@@ -55,7 +55,7 @@ export default function TeamMemberPage() {
     const fetchSettings = async () => {
       if (!session?.user?.email) return;
       try {
-        const response = await fetch("/api/settings");
+        const response = await fetch("/api/settings?key=show_contracts");
         if (response.ok) {
           const data = await response.json();
           setShowContracts(data.value.enabled);
@@ -74,7 +74,7 @@ export default function TeamMemberPage() {
       const response = await fetch("/api/team-member");
 
       if (!response.ok) {
-        setError("Failed to fetch team member info");
+        setError("The Team Member was not found.");
       } else {
         const data = await response.json();
         setTeamMember(data);
@@ -106,7 +106,7 @@ export default function TeamMemberPage() {
         <div className="px-4 py-6 sm:px-0">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-              Main information
+              My main information
             </h2>
           </div>
 

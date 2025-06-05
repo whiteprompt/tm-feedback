@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { formatDate } from "@/utils/date";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { STAFFING_API_URL } from "@/lib/constants";
 
 // Cache duration in seconds (2 hours)
 const CACHE_DURATION = 2 * 60 * 60;
@@ -80,7 +81,7 @@ export async function GET() {
     }
 
     const notionUrl = new URL(
-      `https://staffing.whiteprompt.com/notion-webhooks/team-member?q=${email}&includeAllocations=true&includeContracts=true`
+      `${STAFFING_API_URL}/notion-webhooks/team-member?q=${email}&includeAllocations=true&includeContracts=true`
     );
 
     const response = await fetch(notionUrl.toString(), {
