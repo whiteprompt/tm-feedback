@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function getAuthenticatedUser(request?: Request) {
+export async function getAuthenticatedUser() {
   // Get the session for this specific request
   const session = await getServerSession(authOptions);
 
@@ -19,8 +19,8 @@ export async function getAuthenticatedUser(request?: Request) {
   };
 }
 
-export async function getAuthenticatedAdmin(request?: Request) {
-  const { error, email } = await getAuthenticatedUser(request);
+export async function getAuthenticatedAdmin() {
+  const { error, email } = await getAuthenticatedUser();
 
   if (error) {
     return { error, isAdmin: false };
