@@ -6,6 +6,7 @@ import { cookies, headers } from "next/headers";
 export async function getAuthenticatedUser() {
   // Force dynamic rendering and ensure proper request context
   // These calls are necessary to ensure each request gets proper isolation
+  // Test in prod
   void (await cookies());
   void (await headers());
 
