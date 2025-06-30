@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedAdmin } from "@/lib/auth-utils";
 
+// Force dynamic rendering to prevent caching issues with authentication
+export const dynamic = "force-dynamic";
+
 export async function POST() {
   const { error } = await getAuthenticatedAdmin();
 

@@ -1,9 +1,15 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { cookies, headers } from "next/headers";
 
 export async function getAuthenticatedUser() {
-  // Get the session for this specific request
+  // Force dynamic rendering and ensure proper request context
+  // These calls are necessary to ensure each request gets proper isolation
+  void (await cookies());
+  void (await headers());
+
+  // Get the session with proper request context
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {

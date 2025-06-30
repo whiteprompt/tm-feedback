@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getAuthenticatedAdmin } from "@/lib/auth-utils";
 
+// Force dynamic rendering to prevent caching issues with authentication
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const { error } = await getAuthenticatedAdmin();
 

@@ -3,6 +3,9 @@ import { formatDate } from "@/utils/date";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { STAFFING_API_URL } from "@/lib/constants";
 
+// Force dynamic rendering to prevent caching issues with authentication
+export const dynamic = "force-dynamic";
+
 // Cache duration in seconds (2 hours)
 const CACHE_DURATION = 2 * 60 * 60;
 

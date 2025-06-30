@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 
+// Force dynamic rendering to prevent caching issues with authentication
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const { error, email } = await getAuthenticatedUser();
@@ -32,8 +35,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ role: "", technologies: [] });
     }
 
-    if (error) {
-      console.error("Error fetching last feedback:", error);
+    if (dbError) {
+      console.error("Error fetching last feedback:", dbError);
       return NextResponse.json(
         { error: "Failed to fetch last feedback" },
         { status: 500 }

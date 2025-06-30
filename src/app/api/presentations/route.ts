@@ -1,6 +1,9 @@
-import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { NextResponse } from "next/server";
 import { STAFFING_API_URL } from "@/lib/constants";
+
+// Force dynamic rendering to prevent caching issues with authentication
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
