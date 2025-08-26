@@ -63,7 +63,7 @@ interface TeamMember {
   accesses?: string[];
 }
 
-// In-memory cache
+// In-memory cache - cleared for session isolation fix
 const cache = new Map<string, CacheData>();
 
 export async function GET() {
