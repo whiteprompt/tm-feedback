@@ -5,7 +5,7 @@ A Next.js application for collecting and managing team member feedback with Supa
 
 ## Development Commands
 ```bash
-# Start development server
+# Start the development server
 npm run dev
 
 # Build for production
