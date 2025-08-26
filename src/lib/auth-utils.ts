@@ -13,6 +13,9 @@ export async function getAuthenticatedUser() {
   // Get the session with proper request context
   const session = await getServerSession(authOptions);
 
+  // Debug logging for session isolation
+  console.log(`[DEBUG] Session user email: ${session?.user?.email || 'null'}`);
+
   if (!session?.user?.email) {
     return {
       error: NextResponse.json({ error: "Not authenticated" }, { status: 401 }),

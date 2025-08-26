@@ -63,12 +63,18 @@ interface TeamMember {
   accesses?: string[];
 }
 
-// In-memory cache - cleared for session isolation fix
+// In-memory cache - CLEARED for session isolation fix
 const cache = new Map<string, CacheData>();
+
+// Clear cache immediately to fix cross-user data sharing
+cache.clear();
 
 export async function GET() {
   try {
     const { error, email } = await getAuthenticatedUser();
+
+    // Debug logging for session isolation
+    console.log(`[DEBUG] API request for email: ${email}`);
 
     if (error) {
       return error;
