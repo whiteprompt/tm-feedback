@@ -6,14 +6,6 @@ import { STAFFING_API_URL } from "@/lib/constants";
 // Force dynamic rendering to prevent caching issues with authentication
 export const dynamic = "force-dynamic";
 
-// Cache duration in seconds (2 hours)
-const CACHE_DURATION = 2 * 60 * 60;
-
-interface CacheData {
-  data: TeamMember;
-  timestamp: number;
-}
-
 interface Allocation {
   project: string;
   start: string;
@@ -63,12 +55,6 @@ interface TeamMember {
   accesses?: string[];
 }
 
-// In-memory cache - CLEARED for session isolation fix
-const cache = new Map<string, CacheData>();
-
-// Clear cache immediately to fix cross-user data sharing
-cache.clear();
-
 export async function GET() {
   try {
     const { error, email } = await getAuthenticatedUser();
@@ -80,15 +66,6 @@ export async function GET() {
       return error;
     }
 
-    // Check cache first
-    const cachedData = cache.get(email);
-    const now = Date.now();
-
-    if (cachedData && now - cachedData.timestamp < CACHE_DURATION * 1000) {
-      console.log("Serving from cache for:", email);
-      return NextResponse.json(cachedData.data);
-    }
-
     const notionUrl = new URL(
       `${STAFFING_API_URL}/notion-webhooks/team-member?q=${email}&includeAllocations=true&includeContracts=true`
     );
@@ -97,11 +74,6 @@ export async function GET() {
       method: "GET",
       headers: {
         "x-api-key": process.env.STAFFING_TOOL_API_KEY || "",
-      },
-      // Add cache control headers
-      cache: "force-cache",
-      next: {
-        revalidate: CACHE_DURATION,
       },
     });
 
@@ -152,22 +124,7 @@ export async function GET() {
         .map((access) => access.toolName),
     };
 
-    // Add cache control headers to the response
-    const responseHeaders = new Headers();
-    responseHeaders.set(
-      "Cache-Control",
-      `public, s-maxage=${CACHE_DURATION}, stale-while-revalidate`
-    );
-
-    // Store in cache
-    cache.set(email, {
-      data: teamMember,
-      timestamp: now,
-    });
-
-    return NextResponse.json(teamMember, {
-      headers: responseHeaders,
-    });
+    return NextResponse.json(teamMember);
   } catch (error) {
     console.error(`Error in team member API:`, error);
     return NextResponse.json(
