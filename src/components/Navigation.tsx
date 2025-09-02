@@ -3,14 +3,42 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
+import { usePathname } from 'next/navigation';
 
 export default function Navigation() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAdmin } = useAdmin();
   const [showPresentations, setShowPresentations] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
+
+  // Helper function to determine if a route is active
+  const isActive = useCallback((route: string) => {
+    if (route === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(route);
+  }, [pathname]);
+
+  // Helper function to get navigation link classes - memoized to prevent flicker
+  const getNavLinkClass = useCallback((route: string, isMobile = false) => {
+    const baseClasses = isMobile
+      ? "block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+      : "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium";
+    
+    const activeClasses = isMobile
+      ? "border-[#00A3B4] text-[#00A3B4] bg-teal-50"
+      : "border-[#00A3B4] text-[#00A3B4]";
+    
+    const inactiveClasses = isMobile
+      ? "border-transparent text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
+      : "border-transparent text-gray-500 hover:border-[#00A3B4] hover:text-[#00A3B4]";
+
+    return `${baseClasses} ${isActive(route) ? activeClasses : inactiveClasses}`;
+  }, [isActive]);
 
   useEffect(() => {
     const fetchFeatureStatus = async () => {
@@ -22,13 +50,29 @@ export default function Navigation() {
         }
       } catch (error) {
         console.error('Error fetching feature status:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (session?.user?.email) {
       fetchFeatureStatus();
+    } else {
+      setIsLoading(false);
     }
   }, [session?.user?.email]);
+
+  // Pre-calculate navigation classes to prevent flickering
+  const navClasses = useMemo(() => ({
+    home: getNavLinkClass('/'),
+    submittedFeedbacks: getNavLinkClass('/submitted-feedbacks'),
+    presentations: getNavLinkClass('/presentations'),
+    admin: getNavLinkClass('/admin'),
+    homeMobile: getNavLinkClass('/', true),
+    submittedFeedbacksMobile: getNavLinkClass('/submitted-feedbacks', true),
+    presentationsMobile: getNavLinkClass('/presentations', true),
+    adminMobile: getNavLinkClass('/admin', true),
+  }), [getNavLinkClass]);
 
   return (
     <nav className="bg-white shadow-sm">
@@ -51,28 +95,28 @@ export default function Navigation() {
           <div className="hidden sm:flex sm:items-center sm:space-x-8">
             <Link
               href="/"
-              className="border-transparent text-gray-500 hover:border-[#00A3B4] hover:text-[#00A3B4] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+              className={navClasses.home}
             >
               Home
             </Link>
             <Link
               href="/submitted-feedbacks"
-              className="border-transparent text-gray-500 hover:border-[#00A3B4] hover:text-[#00A3B4] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+              className={navClasses.submittedFeedbacks}
             >
               Submitted Feedbacks
             </Link>
-            {showPresentations && (
+            {!isLoading && showPresentations && (
               <Link
                 href="/presentations"
-                className="border-transparent text-gray-500 hover:border-[#00A3B4] hover:text-[#00A3B4] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                className={navClasses.presentations}
               >
                 Presentations
               </Link>
             )}
-            {isAdmin && (
+            {!isLoading && isAdmin && (
               <Link
                 href="/admin"
-                className="border-transparent text-gray-500 hover:border-[#00A3B4] hover:text-[#00A3B4] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                className={navClasses.admin}
               >
                 Admin
               </Link>
@@ -120,31 +164,31 @@ export default function Navigation() {
         <div className="pt-2 pb-3 space-y-1">
           <Link
             href="/"
-            className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
+            className={navClasses.homeMobile}
             onClick={() => setIsMenuOpen(false)}
           >
             Home
           </Link>
           <Link
             href="/submitted-feedbacks"
-            className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
+            className={navClasses.submittedFeedbacksMobile}
             onClick={() => setIsMenuOpen(false)}
           >
             Submitted Feedbacks
           </Link>
-          {showPresentations && (
+          {!isLoading && showPresentations && (
             <Link
               href="/presentations"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
+              className={navClasses.presentationsMobile}
               onClick={() => setIsMenuOpen(false)}
             >
               Presentations
             </Link>
           )}
-          {isAdmin && (
+          {!isLoading && isAdmin && (
             <Link
               href="/admin"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
+              className={navClasses.adminMobile}
               onClick={() => setIsMenuOpen(false)}
             >
               Admin

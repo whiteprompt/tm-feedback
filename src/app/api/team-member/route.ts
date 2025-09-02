@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { formatDate } from "@/utils/date";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { STAFFING_API_URL } from "@/lib/constants";
+import { teamMemberCache } from "@/lib/cache";
 
 // Force dynamic rendering to prevent caching issues with authentication
 export const dynamic = "force-dynamic";
@@ -66,6 +67,16 @@ export async function GET() {
       return error;
     }
 
+    // Check cache first
+    const cachedData = await teamMemberCache.get<TeamMember>(email!);
+    if (cachedData) {
+      console.log(`[Cache] Returning cached data for user: ${email}`);
+      return NextResponse.json(cachedData);
+    }
+
+    // Cache miss - fetch from external API
+    console.log(`[Cache] Cache miss for user: ${email}, fetching from external API`);
+
     const notionUrl = new URL(
       `${STAFFING_API_URL}/notion-webhooks/team-member?q=${email}&includeAllocations=true&includeContracts=true`
     );
@@ -123,6 +134,9 @@ export async function GET() {
         )
         .map((access) => access.toolName),
     };
+
+    // Cache the result for this user
+    await teamMemberCache.set(email!, teamMember);
 
     return NextResponse.json(teamMember);
   } catch (error) {
