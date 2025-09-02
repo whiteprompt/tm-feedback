@@ -6,12 +6,6 @@ import { getAuthenticatedAdmin } from "@/lib/auth-utils";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const { error } = await getAuthenticatedAdmin();
-
-  if (error) {
-    return error;
-  }
-
   const { searchParams } = new URL(request.url);
   const key = searchParams.get("key");
 
