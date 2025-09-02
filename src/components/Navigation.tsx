@@ -23,19 +23,19 @@ export default function Navigation() {
     return pathname.startsWith(route);
   }, [pathname]);
 
-  // Helper function to get navigation link classes - memoized to prevent flicker
+  // Helper function to get navigation link classes with White Prompt styling
   const getNavLinkClass = useCallback((route: string, isMobile = false) => {
     const baseClasses = isMobile
-      ? "block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-      : "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium";
+      ? "block px-4 py-3 text-base font-medium transition-all duration-300 rounded-lg mx-2 my-1"
+      : "relative px-6 py-2 mx-2 text-sm font-medium transition-all duration-300 rounded-lg";
     
     const activeClasses = isMobile
-      ? "border-[#00A3B4] text-[#00A3B4] bg-teal-50"
-      : "border-[#00A3B4] text-[#00A3B4]";
+      ? "bg-gradient-to-r from-wp-primary to-wp-accent text-white shadow-lg"
+      : "bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border border-wp-primary/30 shadow-glow";
     
     const inactiveClasses = isMobile
-      ? "border-transparent text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
-      : "border-transparent text-gray-500 hover:border-[#00A3B4] hover:text-[#00A3B4]";
+      ? "text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10"
+      : "text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10";
 
     return `${baseClasses} ${isActive(route) ? activeClasses : inactiveClasses}`;
   }, [isActive]);
@@ -75,93 +75,92 @@ export default function Navigation() {
   }), [getNavLinkClass]);
 
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+    <nav className="backdrop-filter backdrop-blur-lg bg-gradient-to-r from-wp-dark/95 to-wp-dark-lighter/90 border-b border-wp-border/30 sticky top-0 z-50">
+      <div className="wp-container">
+        <div className="flex justify-between items-center h-20">
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center group">
               <Image
                 src="/logo.svg"
                 alt="White Prompt Logo"
                 width={140}
                 height={35}
                 priority
-                className="h-8 w-auto"
+                className="h-8 w-auto filter brightness-0 invert transition-all duration-300 group-hover:brightness-110 group-hover:scale-105"
               />
             </Link>
           </div>
           
           {/* Desktop menu */}
-          <div className="hidden sm:flex sm:items-center sm:space-x-8">
-            <Link
-              href="/"
-              className={navClasses.home}
-            >
+          <div className="hidden lg:flex lg:items-center lg:space-x-4">
+            <Link href="/" className={`${navClasses.home} w-24 flex items-center justify-center`}>
               Home
             </Link>
-            <Link
-              href="/submitted-feedbacks"
-              className={navClasses.submittedFeedbacks}
-            >
-              Submitted Feedbacks
+            <Link href="/submitted-feedbacks" className={`${navClasses.submittedFeedbacks} w-28 flex items-center justify-center`}>
+              <span className="text-center leading-tight">
+                Submitted<br />Feedbacks
+              </span>
             </Link>
             {!isLoading && showPresentations && (
-              <Link
-                href="/presentations"
-                className={navClasses.presentations}
-              >
+              <Link href="/presentations" className={`${navClasses.presentations} w-28 flex items-center justify-center`}>
                 Presentations
               </Link>
             )}
             {!isLoading && isAdmin && (
-              <Link
-                href="/admin"
-                className={navClasses.admin}
-              >
+              <Link href="/admin" className={`${navClasses.admin} w-20 flex items-center justify-center`}>
                 Admin
               </Link>
             )}
-            {session ? (
-              <button
-                onClick={() => signOut()}
-                className="bg-[#00A3B4] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#008C9A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3B4]"
-              >
-                Sign out
-              </button>
-            ) : (
-              <Link
-                href="/auth/signin"
-                className="bg-[#00A3B4] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#008C9A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3B4]"
-              >
-                Sign in
-              </Link>
-            )}
+            <div className="flex items-center space-x-3 ml-8 pl-8 border-l border-wp-border/50">
+              {session ? (
+                <button
+                  onClick={() => signOut()}
+                  className="wp-button-primary"
+                >
+                  Sign out
+                </button>
+              ) : (
+                <Link href="/auth/signin" className="wp-button-primary">
+                  Sign in
+                </Link>
+              )}
+            </div>
           </div>
 
-          {/* Mobile menu hanburguer button */}
-          <div className="flex items-center sm:hidden">
+          {/* Mobile menu button */}
+          <div className="flex items-center lg:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#00A3B4]"
+              className="p-3 rounded-lg text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
             >
               <span className="sr-only">Open main menu</span>
-              {!isMenuOpen ? (
-                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              ) : (
-                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
+              <div className="relative w-6 h-6">
+                <span
+                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
+                    isMenuOpen ? 'rotate-45 translate-y-2' : 'translate-y-0'
+                  }`}
+                />
+                <span
+                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out translate-y-2 ${
+                    isMenuOpen ? 'opacity-0' : 'opacity-100'
+                  }`}
+                />
+                <span
+                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
+                    isMenuOpen ? '-rotate-45 translate-y-2' : 'translate-y-4'
+                  }`}
+                />
+              </div>
             </button>
           </div>
         </div>
       </div>
 
       {/* Mobile menu */}
-      <div className={`${isMenuOpen ? 'block' : 'hidden'} sm:hidden`}>
-        <div className="pt-2 pb-3 space-y-1">
+      <div className={`lg:hidden transition-all duration-300 ease-in-out ${
+        isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+      }`}>
+        <div className="px-4 pt-2 pb-6 space-y-2 bg-wp-dark-lighter/95 backdrop-blur-lg border-t border-wp-border/30">
           <Link
             href="/"
             className={navClasses.homeMobile}
@@ -194,27 +193,29 @@ export default function Navigation() {
               Admin
             </Link>
           )}
-          {session ? (
-            <button
-              onClick={() => {
-                setIsMenuOpen(false);
-                signOut();
-              }}
-              className="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
-            >
-              Sign out
-            </button>
-          ) : (
-            <Link
-              href="/auth/signin"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00A3B4] hover:text-[#00A3B4]"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Sign in
-            </Link>
-          )}
+          <div className="pt-4 mt-4 border-t border-wp-border/30">
+            {session ? (
+              <button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  signOut();
+                }}
+                className="w-full wp-button-primary"
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link
+                href="/auth/signin"
+                className="block w-full wp-button-primary text-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sign in
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </nav>
   );
-} 
+}
