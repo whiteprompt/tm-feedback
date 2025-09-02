@@ -171,10 +171,17 @@ export default function AdminPage() {
 
   if (isLoading || status === 'loading') {
     return (
-      <>
+      <div className="min-h-screen">
         <Navigation />
-        <div className="flex justify-center items-center min-h-screen">Loading...</div>
-      </>
+        <div className="flex items-center justify-center min-h-screen wp-fade-in">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
+            </div>
+            <p className="wp-body text-wp-text-secondary">Loading admin panel...</p>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -183,122 +190,172 @@ export default function AdminPage() {
   }
 
   return (
-    <>
+    <div className="min-h-screen">
       <Navigation />
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
-            
-            <div className="space-y-6">
-              {/* Feature Toggle Section */}
-              <div className="border-b pb-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Feature Toggles</h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-700">{`Show "My Contracts" Section`}</h3>
-                      <p className="text-sm text-gray-500">Enable or disable the contracts section for all users</p>
-                    </div>
-                    <button
-                      onClick={toggleContracts}
-                      className={`${
-                        showContracts ? 'bg-teal-600' : 'bg-gray-200'
-                      } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                    >
-                      <span
-                        className={`${
-                          showContracts ? 'translate-x-5' : 'translate-x-0'
-                        } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
-                      />
-                    </button>
-                  </div>
+      <main className="wp-section-sm">
+        <div className="wp-container">
+          {/* Header Section */}
+          <div className="text-center mb-16 wp-fade-in">
+            <h1 className="wp-heading-1 mb-4">Admin Dashboard</h1>
+            <p className="wp-body-large max-w-2xl mx-auto">
+              Manage system settings, feature toggles, and maintenance operations.
+            </p>
+            <br />
+          </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-700">{`Show "Presentations" Section`}</h3>
-                      <p className="text-sm text-gray-500">Enable or disable the presentations section for all users</p>
-                    </div>
-                    <button
-                      onClick={togglePresentations}
-                      className={`${
-                        showPresentations ? 'bg-teal-600' : 'bg-gray-200'
-                      } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                    >
-                      <span
-                        className={`${
-                          showPresentations ? 'translate-x-5' : 'translate-x-0'
-                        } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
-                      />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-700">Enable Hourly Cache Cleanup</h3>
-                      <p className="text-sm text-gray-500">Enable or disable automatic cache cleanup every hour</p>
-                    </div>
-                    <button
-                      onClick={toggleCacheCleanup}
-                      className={`${
-                        enableCacheCleanup ? 'bg-teal-600' : 'bg-gray-200'
-                      } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
-                    >
-                      <span
-                        className={`${
-                          enableCacheCleanup ? 'translate-x-5' : 'translate-x-0'
-                        } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
-                      />
-                    </button>
-                  </div>
+          <div className="space-y-8 wp-slide-up">
+            {/* Feature Toggles Card */}
+            <div className="wp-card p-8">
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-wp-primary to-wp-accent rounded-full flex items-center justify-center mr-4">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                  </svg>
                 </div>
+                <h2 className="wp-heading-3">Feature Toggles</h2>
               </div>
 
-              {/* Cron Trigger Section */}
-              <div>
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Cron Jobs</h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-700">Sync Notion Data</h3>
-                      <p className="text-sm text-gray-500">Manually trigger the Notion sync cron job</p>
-                    </div>
-                    <button
-                      onClick={triggerCron}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                    >
-                      Trigger Sync
-                    </button>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
+                  <div className="flex-1">
+                    <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Show &ldquo;My Contracts&rdquo; Section</h3>
+                    <p className="wp-body-small text-wp-text-secondary">Enable or disable the contracts section for all users</p>
                   </div>
-                  {cronStatus && (
-                    <p className={`text-sm ${cronStatus.includes('successfully') ? 'text-green-600' : 'text-red-600'}`}>
-                      {cronStatus}
-                    </p>
-                  )}
+                  <button
+                    onClick={toggleContracts}
+                    className={`relative inline-flex h-6 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50 ${
+                      showContracts ? 'bg-gradient-to-r from-wp-primary to-wp-accent' : 'bg-wp-border'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                        showContracts ? 'translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-700">Clean Cache</h3>
-                      <p className="text-sm text-gray-500">Manually trigger cache cleanup (removes expired entries)</p>
-                    </div>
-                    <button
-                      onClick={triggerCacheCleanup}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                    >
-                      Clean Cache
-                    </button>
+                <div className="flex items-center justify-between p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
+                  <div className="flex-1">
+                    <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Show &ldquo;Presentations&rdquo; Section</h3>
+                    <p className="wp-body-small text-wp-text-secondary">Enable or disable the presentations section for all users</p>
                   </div>
-                  {cacheCleanupStatus && (
-                    <p className={`text-sm ${cacheCleanupStatus.includes('successfully') || cacheCleanupStatus.includes('completed') ? 'text-green-600' : 'text-red-600'}`}>
+                  <button
+                    onClick={togglePresentations}
+                    className={`relative inline-flex h-6 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50 ${
+                      showPresentations ? 'bg-gradient-to-r from-wp-primary to-wp-accent' : 'bg-wp-border'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                        showPresentations ? 'translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
+                  <div className="flex-1">
+                    <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Enable Hourly Cache Cleanup</h3>
+                    <p className="wp-body-small text-wp-text-secondary">Enable or disable automatic cache cleanup every hour</p>
+                  </div>
+                  <button
+                    onClick={toggleCacheCleanup}
+                    className={`relative inline-flex h-6 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50 ${
+                      enableCacheCleanup ? 'bg-gradient-to-r from-wp-primary to-wp-accent' : 'bg-wp-border'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                        enableCacheCleanup ? 'translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <br />
+            {/* System Operations Card */}
+            <div className="wp-card p-8">
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-wp-purple to-wp-purple-dark rounded-full flex items-center justify-center mr-4">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <h2 className="wp-heading-3">System Operations</h2>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Sync Notion Data</h3>
+                      <p className="wp-body-small text-wp-text-secondary">Manually trigger the Notion sync process</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={triggerCron}
+                    disabled={cronStatus.includes('Running')}
+                    className="w-full wp-button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {cronStatus.includes('Running') ? (
+                      <div className="flex items-center justify-center">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                        Running...
+                      </div>
+                    ) : (
+                      'Trigger Sync'
+                    )}
+                  </button>
+                  {cronStatus && !cronStatus.includes('Running') && (
+                    <div className={`mt-3 p-3 rounded-lg text-sm ${
+                      cronStatus.includes('successfully') 
+                        ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                        : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                    }`}>
+                      {cronStatus}
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Clean Cache</h3>
+                      <p className="wp-body-small text-wp-text-secondary">Manually remove expired cache entries</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={triggerCacheCleanup}
+                    disabled={cacheCleanupStatus.includes('Running')}
+                    className="w-full wp-button-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {cacheCleanupStatus.includes('Running') ? (
+                      <div className="flex items-center justify-center">
+                        <div className="w-4 h-4 border-2 border-wp-text-primary/30 border-t-wp-text-primary rounded-full animate-spin mr-2"></div>
+                        Running...
+                      </div>
+                    ) : (
+                      'Clean Cache'
+                    )}
+                  </button>
+                  {cacheCleanupStatus && !cacheCleanupStatus.includes('Running') && (
+                    <div className={`mt-3 p-3 rounded-lg text-sm ${
+                      cacheCleanupStatus.includes('successfully') || cacheCleanupStatus.includes('completed')
+                        ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                        : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                    }`}>
                       {cacheCleanupStatus}
-                    </p>
+                    </div>
                   )}
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </main>
+    </div>
   );
-} 
+}

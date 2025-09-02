@@ -94,172 +94,235 @@ export default function TeamMemberPage() {
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+        <div className="wp-fade-in">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
+            </div>
+            <p className="wp-body text-wp-text-secondary">Loading your information...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Navigation />
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">
-              My main information
-            </h2>
+      <main className="wp-section-sm">
+        <div className="wp-container">
+          {/* Hero Section */}
+          <div className="text-center mb-16 wp-fade-in">
+            <h1 className="wp-heading-1 mb-4">
+              Welcome back, {teamMember?.firstName || 'Team Member'}!
+            </h1>
+            <p className="wp-body-large max-w-2xl mx-auto">
+              Here&rsquo;s your complete team member information and current project details.
+            </p>
+            <br />
           </div>
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            {error ? (
-              <div className="px-4 py-5 sm:px-6 text-red-600">{error}</div>
-            ) : !teamMember ? (
-              <div className="px-4 py-5 sm:px-6 text-gray-500">
-                No information available.
+          {error ? (
+            <div className="wp-card p-8 text-center wp-fade-in">
+              <div className="text-red-400 mb-4">
+                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.314 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
               </div>
-            ) : (
-              <>
-                <div className="px-4 py-5 sm:px-6">
-                  <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                    <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">Full Name</dt>
-                      <dd className="mt-1 text-sm text-gray-900">
-                        {teamMember.firstName} {teamMember.lastName}
-                      </dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">Work Email</dt>
-                      <dd className="mt-1 text-sm text-gray-900">{teamMember.email}</dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">Start Date</dt>
-                      <dd className="mt-1 text-sm text-gray-900">
-                        {formatDate(teamMember.startDate)}
-                      </dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">Personal Email</dt>
-                      <dd className="mt-1 text-sm text-gray-900">{teamMember.personalEmail}</dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">Mobile</dt>
-                      <dd className="mt-1 text-sm text-gray-900">{teamMember.mobile}</dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">Identification Type</dt>
-                      <dd className="mt-1 text-sm text-gray-900">{teamMember.identificationType}</dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">Identification Number</dt>
-                      <dd className="mt-1 text-sm text-gray-900">{teamMember.identificationNumber}</dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">Access list</dt>
-                      <dd className="mt-1 text-sm text-gray-900">{(teamMember?.accesses || []).join(", ")}</dd>
-                    </div>
-                  </dl>
+              <h3 className="wp-heading-3 text-red-400 mb-2">Error</h3>
+              <p className="wp-body text-red-300">{error}</p>
+            </div>
+          ) : !teamMember ? (
+            <div className="wp-card p-8 text-center wp-fade-in">
+              <div className="text-wp-text-muted mb-4">
+                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+              </div>
+              <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
+              <p className="wp-body text-wp-text-muted">No team member information available.</p>
+            </div>
+          ) : (
+            <div className="space-y-32 wp-slide-up">
+              {/* Personal Information Card */}
+              <div className="wp-card p-8">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-wp-primary to-wp-accent rounded-full flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <h2 className="wp-heading-3">Personal Information</h2>
                 </div>
-                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                    Your allocations
-                  </h3>
-                  {teamMember.allocations && teamMember.allocations.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Project
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Start Date
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              End Date
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {teamMember.allocations.map((allocation, index) => (
-                            <tr key={index} className={allocation.active ? 'bg-teal-50' : ''}>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {allocation.project}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {allocation.start}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {allocation.end}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="space-y-3">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Full Name</label>
+                    <p className="wp-body text-wp-text-primary font-medium">
+                      {teamMember.firstName} {teamMember.lastName}
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Work Email</label>
+                    <p className="wp-body text-wp-text-primary font-medium">{teamMember.email}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Start Date</label>
+                    <p className="wp-body text-wp-text-primary font-medium">{formatDate(teamMember.startDate)}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Personal Email</label>
+                    <p className="wp-body text-wp-text-primary font-medium">{teamMember.personalEmail}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Mobile</label>
+                    <p className="wp-body text-wp-text-primary font-medium">{teamMember.mobile}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">ID Type</label>
+                    <p className="wp-body text-wp-text-primary font-medium">{teamMember.identificationType}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">ID Number</label>
+                    <p className="wp-body text-wp-text-primary font-medium">{teamMember.identificationNumber}</p>
+                  </div>
+                  <div className="space-y-3 md:col-span-2">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Access Tools</label>
+                    <div className="flex flex-wrap gap-2">
+                      {(teamMember?.accesses || []).map((access, index) => (
+                        <span key={index} className="px-3 py-1 bg-wp-primary/20 text-wp-primary rounded-full text-sm font-medium">
+                          {access}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br />
+              <br />
+              {/* Project Allocations Card */}
+              <div className="wp-card p-8">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-wp-purple to-wp-purple-dark rounded-full flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                  <h2 className="wp-heading-3">Project Allocations</h2>
+                </div>
+                {teamMember.allocations && teamMember.allocations.length > 0 ? (
+                  <div className="grid gap-4">
+                    {teamMember.allocations.map((allocation, index) => (
+                      <div
+                        key={index}
+                        className={`p-6 rounded-lg border transition-all duration-300 ${
+                          allocation.active
+                            ? 'bg-gradient-to-r from-wp-primary/10 to-wp-accent/10 border-wp-primary/30'
+                            : 'bg-wp-dark-card/50 border-wp-border'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="wp-body font-semibold text-wp-text-primary mb-2">
+                              {allocation.project}
+                            </h3>
+                            <div className="flex items-center space-x-4 text-sm text-wp-text-secondary">
+                              <span>Start: {allocation.start}</span>
+                              <span>•</span>
+                              <span>End: {allocation.end || 'Ongoing'}</span>
+                            </div>
+                          </div>
+                          {allocation.active && (
+                            <span className="px-8 py-3 bg-gradient-to-r from-wp-primary to-wp-accent text-white text-base font-bold rounded-full min-w-[100px] text-center">
+                              Active
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-wp-text-muted mb-4">
+                      <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    </div>
+                    <p className="wp-body text-wp-text-muted">No project allocations found.</p>
+                  </div>
+                )}
+              </div>
+              <br />
+              <br />
+              {/* Contracts Card - Only show if enabled */}
+              {showContracts && (
+                <div className="wp-card p-8">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mr-4">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h2 className="wp-heading-3">Contracts</h2>
+                  </div>
+                  {teamMember?.contracts && teamMember.contracts.length > 0 ? (
+                    <div className="grid gap-4">
+                      {teamMember.contracts.map((contract, index) => (
+                        <div
+                          key={index}
+                          className={`p-6 rounded-lg border transition-all duration-300 ${
+                            contract.active
+                              ? 'bg-gradient-to-r from-green-500/10 to-green-600/10 border-green-500/30'
+                              : 'bg-wp-dark-card/50 border-wp-border'
+                          }`}
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                            <div>
+                              <label className="wp-body-small text-wp-text-muted">Type</label>
+                              <p className="wp-body text-wp-text-primary font-medium">{contract.amountType}</p>
+                            </div>
+                            <div>
+                              <label className="wp-body-small text-wp-text-muted">Amount</label>
+                              <p className="wp-body text-wp-text-primary font-medium">
+                                {contract.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="wp-body-small text-wp-text-muted">Daily Hours</label>
+                              <p className="wp-body text-wp-text-primary font-medium">{contract.dailyHours}h</p>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <label className="wp-body-small text-wp-text-muted">Period</label>
+                                <p className="wp-body-small text-wp-text-secondary">
+                                  {contract.start} - {contract.end || 'Ongoing'}
+                                </p>
+                              </div>
+                              {contract.active && (
+                                <span className="px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white text-base font-bold rounded-full min-w-[100px] text-center">
+                                  Active
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500">No project allocations found.</p>
+                    <div className="text-center py-8">
+                      <div className="text-wp-text-muted mb-4">
+                        <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <p className="wp-body text-wp-text-muted">No contracts found.</p>
+                    </div>
                   )}
                 </div>
-                {showContracts &&
-                  <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                      Your contracts
-                    </h3>
-                    {teamMember?.contracts && teamMember.contracts.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Type
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Amount
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Daily Hours
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Start Date
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                End Date
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {teamMember?.contracts?.map((contract, index) => (
-                              <tr key={index} className={contract.active ? 'bg-teal-50' : ''}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {contract.amountType}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {contract.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {contract.dailyHours}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {contract.start}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {contract.end}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500">No contracts found.</p>
-                    )}
-                  </div>
-                }
-              </>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </main>
     </div>
   );
-} 
+}
