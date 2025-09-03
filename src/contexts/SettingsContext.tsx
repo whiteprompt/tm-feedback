@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
 
 interface AppSettings {
@@ -33,7 +33,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSettings = async () => {
+  const fetchSettings = useCallback(async () => {
     if (!session?.user?.email) {
       setLoading(false);
       return;
@@ -69,7 +69,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session?.user?.email]);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -79,7 +79,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       setSettings(defaultSettings);
       setLoading(false);
     }
-  }, [session]);
+  }, [session, fetchSettings]);
 
   const refetch = async () => {
     await fetchSettings();

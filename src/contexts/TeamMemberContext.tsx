@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
 
 interface TeamMember {
@@ -48,7 +48,7 @@ export function TeamMemberProvider({ children }: TeamMemberProviderProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTeamMember = async () => {
+  const fetchTeamMember = useCallback(async () => {
     if (!session?.user?.email) {
       setLoading(false);
       return;
@@ -73,7 +73,7 @@ export function TeamMemberProvider({ children }: TeamMemberProviderProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session?.user?.email]);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -83,7 +83,7 @@ export function TeamMemberProvider({ children }: TeamMemberProviderProps) {
       setTeamMember(null);
       setLoading(false);
     }
-  }, [session]);
+  }, [session, fetchTeamMember]);
 
   const refetch = async () => {
     await fetchTeamMember();
