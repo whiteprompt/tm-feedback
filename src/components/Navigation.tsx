@@ -45,10 +45,12 @@ export default function Navigation() {
   const navClasses = useMemo(() => ({
     home: getNavLinkClass('/'),
     submittedFeedbacks: getNavLinkClass('/submitted-feedbacks'),
+    leaves: getNavLinkClass('/leaves'),
     presentations: getNavLinkClass('/presentations'),
     admin: getNavLinkClass('/admin'),
     homeMobile: getNavLinkClass('/', true),
     submittedFeedbacksMobile: getNavLinkClass('/submitted-feedbacks', true),
+    leavesMobile: getNavLinkClass('/leaves', true),
     presentationsMobile: getNavLinkClass('/presentations', true),
     adminMobile: getNavLinkClass('/admin', true),
   }), [getNavLinkClass]);
@@ -79,6 +81,9 @@ export default function Navigation() {
               <span className="text-center leading-tight">
                 Submitted<br />Feedbacks
               </span>
+            </Link>
+            <Link href="/leaves" className={navClasses.leaves}>
+              Leaves
             </Link>
             {!settingsLoading && settings.showPresentations && (
               <Link href="/presentations" className={navClasses.presentations}>
@@ -153,6 +158,13 @@ export default function Navigation() {
             onClick={() => setIsMenuOpen(false)}
           >
             Submitted Feedbacks
+          </Link>
+          <Link
+            href="/leaves"
+            className={navClasses.leavesMobile}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Leaves
           </Link>
           {!settingsLoading && settings.showPresentations && (
             <Link
