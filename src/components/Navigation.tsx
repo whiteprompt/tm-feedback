@@ -46,11 +46,13 @@ export default function Navigation() {
     home: getNavLinkClass('/'),
     submittedFeedbacks: getNavLinkClass('/submitted-feedbacks'),
     leaves: getNavLinkClass('/leaves'),
+    company: getNavLinkClass('/company'),
     presentations: getNavLinkClass('/presentations'),
     admin: getNavLinkClass('/admin'),
     homeMobile: getNavLinkClass('/', true),
     submittedFeedbacksMobile: getNavLinkClass('/submitted-feedbacks', true),
     leavesMobile: getNavLinkClass('/leaves', true),
+    companyMobile: getNavLinkClass('/company', true),
     presentationsMobile: getNavLinkClass('/presentations', true),
     adminMobile: getNavLinkClass('/admin', true),
   }), [getNavLinkClass]);
@@ -84,6 +86,9 @@ export default function Navigation() {
             </Link>
             <Link href="/leaves" className={navClasses.leaves}>
               Leaves
+            </Link>
+            <Link href="/company" className={navClasses.company}>
+              Company
             </Link>
             {!settingsLoading && settings.showPresentations && (
               <Link href="/presentations" className={navClasses.presentations}>
@@ -165,6 +170,13 @@ export default function Navigation() {
             onClick={() => setIsMenuOpen(false)}
           >
             Leaves
+          </Link>
+          <Link
+            href="/company"
+            className={navClasses.companyMobile}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Company
           </Link>
           {!settingsLoading && settings.showPresentations && (
             <Link
