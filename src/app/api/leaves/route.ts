@@ -31,6 +31,32 @@ interface RedmineLeave {
 
 let REDMINE_TOKEN = "";
 
+// Function to calculate days between two dates (inclusive)
+const calculateDaysBetween = (startDate: string, endDate: string): number => {
+  if (!startDate || !endDate) {
+    return 1; // Default fallback
+  }
+
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Check if dates are valid
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return 1; // Default fallback for invalid dates
+    }
+
+    // Calculate difference in milliseconds and convert to days
+    const diffTime = end.getTime() - start.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end days
+
+    return diffDays > 0 ? diffDays : 1; // Ensure positive result
+  } catch (error) {
+    console.error("Error calculating days between dates:", error);
+    return 1; // Default fallback
+  }
+};
+
 const getToken = async () => {
   try {
     const response = await fetch(
@@ -115,12 +141,19 @@ async function fetchLeaves(isRetry: boolean = false) {
       ? leavesData.results
           ?.filter((leave: RedmineLeave) => leave.email === email)
           ?.map((leave: RedmineLeave) => ({
-            id: leave.id || String(Math.random()),
-            start_date: leave.start_date || leave.startDate || "",
-            end_date: leave.end_date || leave.endDate || "",
+            id: leave.id,
+            start_date: leave.startDate || "",
+            end_date: leave.endDate || "",
             type: leave.categoryName || "Unknown",
             status: leave.status_id === 5 ? "Done" : "Pending",
-            days: leave.days || leave.duration || 1,
+            days:
+              calculateDaysBetween(
+                leave.startDate || "",
+                leave.endDate || ""
+              ) ||
+              leave.days ||
+              leave.duration ||
+              1,
             comments: leave.comments || leave.description || "",
           }))
       : [];

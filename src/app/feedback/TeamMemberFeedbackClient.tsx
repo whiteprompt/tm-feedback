@@ -6,6 +6,7 @@ import Select from 'react-select';
 import { supabase } from '@/lib/supabase';
 import Navigation from '@/components/Navigation';
 import { useRouter } from 'next/navigation';
+import { useTeamMember } from '@/contexts/TeamMemberContext';
 
 interface Project {
   id: string;
@@ -56,34 +57,18 @@ export default function TeamMemberFeedbackClient() {
     setIsClient(true);
   }, []);
 
-  const fetchTeamMemberInfo = useCallback(async () => {
-    if (!session?.user?.email) return;
+  const { teamMember } = useTeamMember();
 
-    try {
-      const response = await fetch("/api/team-member");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch team member info");
-      }
-
-      const teamMember = await response.json();
+  useEffect(() => {
+    if (teamMember?.allocations && isClient) {
       setProjects(teamMember.allocations.map((allocation: {
         project: string
       }) => ({
         id: allocation.project,
         name: allocation.project
       })));
-    } catch (error) {
-      console.error("Error fetching team member info:", error);
-      setProjects([]);
     }
-  }, [session?.user?.email]);
-
-  useEffect(() => {
-    if (session?.user?.email && isClient) {
-      fetchTeamMemberInfo();
-    }
-  }, [session, isClient, fetchTeamMemberInfo]);
+  }, [teamMember, isClient]);
 
   const handleProjectChange = async (selected: Project | null) => {
     setSelectedProject(selected);
@@ -274,19 +259,13 @@ export default function TeamMemberFeedbackClient() {
 
   if (status === 'loading' || !isClient) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-              <div className="space-y-6">
-                <div className="h-10 bg-gray-200 rounded"></div>
-                <div className="h-10 bg-gray-200 rounded"></div>
-                <div className="h-32 bg-gray-200 rounded"></div>
-                <div className="h-10 bg-gray-200 rounded"></div>
-              </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="wp-fade-in">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
             </div>
+            <p className="wp-body text-wp-text-secondary">Loading your information...</p>
           </div>
         </div>
       </div>
@@ -298,17 +277,22 @@ export default function TeamMemberFeedbackClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
       <Navigation />
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            Team Member Feedback
-          </h1>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project <span className="text-red-500">*</span>
+        <main className="wp-section-sm">
+          <div className="wp-container">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-16 wp-fade-in">
+            <h1 className="wp-heading-1 text-wp-text-primary mb-4">Team Member Feedback</h1>
+            <p className="wp-body text-wp-text-secondary">Share your project experience and feedback</p>
+          </div>
+
+          {/* Form Card */}
+          <div className="wp-card p-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-3">
+              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                Project <span className="text-red-400">*</span>
               </label>
               <Select
                 options={projects}
@@ -320,56 +304,78 @@ export default function TeamMemberFeedbackClient() {
                 className="basic-single"
                 classNamePrefix="select"
                 isClearable={false}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor: 'rgba(26, 26, 46, 0.6)',
+                    borderColor: 'rgba(64, 75, 104, 0.3)',
+                    color: '#E2E8F0',
+                    minHeight: '48px',
+                    '&:hover': { borderColor: '#00A3B4' }
+                  }),
+                  singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
+                  placeholder: (base) => ({ ...base, color: '#94A3B8' }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                    border: '1px solid rgba(64, 75, 104, 0.3)'
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
+                    color: '#E2E8F0',
+                    '&:hover': { backgroundColor: '#00A3B4' }
+                  })
+                }}
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Role
+            <div className="space-y-3">
+              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                Role <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
                 value={formData.role}
                 onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
                 placeholder="Enter your role"
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Responsibilities <span className="text-red-500">*</span>
+            <div className="space-y-3">
+              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                Responsibilities <span className="text-red-400">*</span>
               </label>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="wp-body-small text-wp-text-secondary mb-4">
                 Please describe your main tasks and areas of responsibility in the project. Include any significant milestones or achievements from the recent period.
               </p>
-              <br />
               <textarea
                 value={formData.responsibilities}
                 onChange={(e) => setFormData(prev => ({ ...prev, responsibilities: e.target.value }))}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                rows={5}
+                className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300 resize-none"
                 placeholder="Describe your responsibilities"
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Technologies <span className="text-red-500">*</span>
+            <div className="space-y-3">
+              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                Technologies <span className="text-red-400">*</span>
               </label>
-              <p className="mt-1 text-sm text-gray-500 mb-2">
+              <p className="wp-body-small text-wp-text-secondary mb-4">
                 {`Add technologies you're using in this project. Press Enter or type a comma (,) to add each technology.`}
               </p>
-              <div className="flex flex-wrap gap-2 mb-2">
+              <div className="flex flex-wrap gap-3 mb-4">
                 {formData.technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                    className="inline-flex items-center px-4 py-2 rounded-full wp-body-small font-medium bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border border-wp-primary/30"
                   >
                     {tech}
                     <button
                       type="button"
                       onClick={() => removeTechnology(tech)}
-                      className="ml-2 text-blue-600 hover:text-blue-800"
+                      className="ml-2 text-wp-primary hover:text-wp-accent transition-colors"
                     >
                       ×
                     </button>
@@ -381,73 +387,88 @@ export default function TeamMemberFeedbackClient() {
                 value={currentTech}
                 onChange={(e) => setCurrentTech(e.target.value)}
                 onKeyDown={handleTechKeyDown}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
                 placeholder="Type technology and press Enter or comma (,)"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Overall Satisfaction <span className="text-red-500">*</span>
+            <div className="space-y-3">
+              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                Overall Satisfaction <span className="text-red-400">*</span>
               </label>
-              <div className="flex gap-4">
-                <label className="flex items-center space-x-2">
+              <div className="flex gap-8 justify-center py-4">
+                <label className="flex flex-col items-center space-y-2 cursor-pointer group">
                   <input
                     type="radio"
                     name="satisfaction"
                     value="happy"
                     checked={formData.overallSatisfaction === 'happy'}
                     onChange={(e) => setFormData(prev => ({ ...prev, overallSatisfaction: e.target.value }))}
-                    className="h-4 w-4 text-blue-600"
+                    className="sr-only"
                     required
                   />
-                  <span className="text-2xl">{SATISFACTION_MAP.happy}</span>
+                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'happy' ? 'bg-gradient-to-r from-green-500 to-green-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-green-500/20'}`}>
+                    <span className="text-3xl">{SATISFACTION_MAP.happy}</span>
+                  </div>
+                  <span className="wp-body-small text-wp-text-secondary">Happy</span>
                 </label>
-                <label className="flex items-center space-x-2">
+                <label className="flex flex-col items-center space-y-2 cursor-pointer group">
                   <input
                     type="radio"
                     name="satisfaction"
                     value="neutral"
                     checked={formData.overallSatisfaction === 'neutral'}
                     onChange={(e) => setFormData(prev => ({ ...prev, overallSatisfaction: e.target.value }))}
-                    className="h-4 w-4 text-blue-600"
+                    className="sr-only"
                     required
                   />
-                  <span className="text-2xl">{SATISFACTION_MAP.neutral}</span>
+                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'neutral' ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-yellow-500/20'}`}>
+                    <span className="text-3xl">{SATISFACTION_MAP.neutral}</span>
+                  </div>
+                  <span className="wp-body-small text-wp-text-secondary">Neutral</span>
                 </label>
-                <label className="flex items-center space-x-2">
+                <label className="flex flex-col items-center space-y-2 cursor-pointer group">
                   <input
                     type="radio"
                     name="satisfaction"
                     value="sad"
                     checked={formData.overallSatisfaction === 'sad'}
                     onChange={(e) => setFormData(prev => ({ ...prev, overallSatisfaction: e.target.value }))}
-                    className="h-4 w-4 text-blue-600"
+                    className="sr-only"
                     required
                   />
-                  <span className="text-2xl">{SATISFACTION_MAP.sad}</span>
+                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'sad' ? 'bg-gradient-to-r from-red-500 to-red-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-red-500/20'}`}>
+                    <span className="text-3xl">{SATISFACTION_MAP.sad}</span>
+                  </div>
+                  <span className="wp-body-small text-wp-text-secondary">Sad</span>
                 </label>
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-3">
+              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
                 Comments
               </label>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="wp-body-small text-wp-text-secondary mb-4">
                 {`Please share any additional comments or feedback you'd like to provide. Please also consider issues or challenges you're facing in the project.`}
               </p>
-              <br />
               <textarea
                 value={formData.projectIssue}
                 onChange={(e) => setFormData(prev => ({ ...prev, projectIssue: e.target.value }))}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                rows={4}
+                className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300 resize-none"
                 placeholder="Describe any issues or challenges you're facing in the project"
               />
             </div>
             {error && (
-              <div className="text-red-600 text-sm">{error}</div>
+              <div className="wp-card p-4 bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-500/30">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  <span className="wp-body text-red-400">{error}</span>
+                </div>
+              </div>
             )}
-            <div className="flex gap-4">
+            <div className="flex gap-6 pt-4">
               <button
                 type="button"
                 onClick={() => {
@@ -457,21 +478,34 @@ export default function TeamMemberFeedbackClient() {
                   }
                   router.push('/submitted-feedbacks');
                 }}
-                className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="flex-1 py-4 px-6 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body font-medium text-wp-text-secondary hover:text-wp-text-primary hover:bg-wp-dark-card/80 focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#00A3B4] hover:bg-[#008C9A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3B4] disabled:opacity-50"
+                className="flex-1 wp-button-primary py-4 px-6 wp-body disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
               >
-                {loading ? 'Submitting...' : 'Submit Feedback'}
+                {loading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span>Submit Feedback</span>
+                  </>
+                )}
               </button>
             </div>
           </form>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 } 
