@@ -9,7 +9,7 @@ import { useTeamMember } from '@/contexts/TeamMemberContext';
 import { useSettings } from '@/contexts/SettingsContext';
 
 export default function TeamMemberPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { teamMember, loading: teamMemberLoading, error: teamMemberError } = useTeamMember();
   const { settings, loading: settingsLoading } = useSettings();
