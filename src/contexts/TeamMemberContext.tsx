@@ -1,0 +1,105 @@
+'use client';
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useSession } from 'next-auth/react';
+
+interface TeamMember {
+  firstName: string;
+  lastName: string;
+  email: string;
+  personalEmail: string;
+  mobile: string;
+  identificationType: string;
+  identificationNumber: string;
+  startDate: string;
+  accessTools: string[];
+  allocations: Array<{
+    project: string;
+    start: string;
+    end?: string;
+    active: boolean;
+  }>;
+  contracts: Array<{
+    type: string;
+    amount: string;
+    dailyHours: string;
+    start: string;
+    end?: string;
+    active: boolean;
+  }>;
+}
+
+interface TeamMemberContextType {
+  teamMember: TeamMember | null;
+  loading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
+const TeamMemberContext = createContext<TeamMemberContextType | undefined>(undefined);
+
+interface TeamMemberProviderProps {
+  children: ReactNode;
+}
+
+export function TeamMemberProvider({ children }: TeamMemberProviderProps) {
+  const { data: session } = useSession();
+  const [teamMember, setTeamMember] = useState<TeamMember | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTeamMember = async () => {
+    if (!session?.user?.email) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/team-member');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTeamMember(data);
+      } else {
+        setTeamMember(null);
+      }
+    } catch (err) {
+      console.error('Error fetching team member:', err);
+      setError('Failed to fetch team member information');
+      setTeamMember(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetchTeamMember();
+    } else if (session === null) {
+      // Session is confirmed to be null (not loading)
+      setTeamMember(null);
+      setLoading(false);
+    }
+  }, [session]);
+
+  const refetch = async () => {
+    await fetchTeamMember();
+  };
+
+  return (
+    <TeamMemberContext.Provider value={{ teamMember, loading, error, refetch }}>
+      {children}
+    </TeamMemberContext.Provider>
+  );
+}
+
+export function useTeamMember() {
+  const context = useContext(TeamMemberContext);
+  if (context === undefined) {
+    throw new Error('useTeamMember must be used within a TeamMemberProvider');
+  }
+  return context;
+}

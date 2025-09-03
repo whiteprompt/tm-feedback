@@ -2,48 +2,18 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import Navigation from '@/components/Navigation';
 import { formatDate } from '@/utils/date';
-
-interface Allocation {
-  project: string;
-  start: string;
-  end: string;
-  active: boolean;
-}
-
-interface Contracts {
-  amountType: string;
-  amount: number;
-  start: string;
-  end?: string;
-  active: boolean;
-  dailyHours: number;
-}
-
-interface TeamMember {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  startDate: string;
-  personalEmail: string;
-  mobile: string;
-  identificationType: string;
-  identificationNumber: string;
-  allocations?: Allocation[];
-  contracts?: Contracts[];
-  accesses?: string[];
-}
+import { useTeamMember } from '@/contexts/TeamMemberContext';
+import { useSettings } from '@/contexts/SettingsContext';
 
 export default function TeamMemberPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [teamMember, setTeamMember] = useState<TeamMember | null>(null);
-  const [showContracts, setShowContracts] = useState(false);
+  const { teamMember, loading: teamMemberLoading, error: teamMemberError } = useTeamMember();
+  const { settings, loading: settingsLoading } = useSettings();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -51,47 +21,13 @@ export default function TeamMemberPage() {
     }
   }, [status, router]);
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      if (!session?.user?.email) return;
-      try {
-        const response = await fetch("/api/settings?key=show_contracts");
-        if (response.ok) {
-          const data = await response.json();
-          setShowContracts(data.value.enabled);
-        }
-      } catch (error) {
-        console.error('Error fetching settings:', error);
-      }
-    };
-    fetchSettings();
-  }, [session?.user?.email]);
 
-  const fetchTeamMemberInfo = useCallback(async () => {
-    if (!session?.user?.email) return;
-
-    try {
-      const response = await fetch("/api/team-member");
-
-      if (!response.ok) {
-        setError("The Team Member was not found.");
-      } else {
-        const data = await response.json();
-        setTeamMember(data);
-      }
-    } catch (error) {
-      setError("Failed to fetch team member info");
-      console.error("Error fetching team member info:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [session?.user?.email]);
 
   useEffect(() => {
-    fetchTeamMemberInfo();
-  }, [fetchTeamMemberInfo]);
+    setLoading(false);
+  }, []);
 
-  if (status === 'loading' || loading) {
+  if (status === 'loading' || loading || teamMemberLoading || settingsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="wp-fade-in">
@@ -122,7 +58,7 @@ export default function TeamMemberPage() {
             <br />
           </div>
 
-          {error ? (
+          {teamMemberError ? (
             <div className="wp-card p-8 text-center wp-fade-in">
               <div className="text-red-400 mb-4">
                 <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,17 +66,19 @@ export default function TeamMemberPage() {
                 </svg>
               </div>
               <h3 className="wp-heading-3 text-red-400 mb-2">Error</h3>
-              <p className="wp-body text-red-300">{error}</p>
+              <p className="wp-body text-red-300">{teamMemberError}</p>
             </div>
           ) : !teamMember ? (
-            <div className="wp-card p-8 text-center wp-fade-in">
-              <div className="text-wp-text-muted mb-4">
-                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
+            <div className="flex justify-center items-center min-h-[60vh]">
+              <div className="wp-card p-12 text-center wp-fade-in max-w-md w-full">
+                <div className="text-wp-text-muted mb-4">
+                  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                  </svg>
+                </div>
+                <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
+                <p className="wp-body text-wp-text-muted">No team member information available.</p>
               </div>
-              <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
-              <p className="wp-body text-wp-text-muted">No team member information available.</p>
             </div>
           ) : (
             <div className="space-y-32 wp-slide-up">
@@ -188,7 +126,7 @@ export default function TeamMemberPage() {
                   <div className="space-y-3 md:col-span-2">
                     <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Access Tools</label>
                     <div className="flex flex-wrap gap-2">
-                      {(teamMember?.accesses || []).map((access, index) => (
+                      {(teamMember?.accessTools || []).map((access: string, index: number) => (
                         <span key={index} className="px-3 py-1 bg-wp-primary/20 text-wp-primary rounded-full text-sm font-medium">
                           {access}
                         </span>
@@ -209,7 +147,17 @@ export default function TeamMemberPage() {
                   </div>
                   <h2 className="wp-heading-3">Project Allocations</h2>
                 </div>
-                {teamMember.allocations && teamMember.allocations.length > 0 ? (
+                {!teamMember ? (
+                  <div className="text-center py-8">
+                    <div className="text-wp-text-muted mb-4">
+                      <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                      </svg>
+                    </div>
+                    <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
+                    <p className="wp-body text-wp-text-muted">No team member information available.</p>
+                  </div>
+                ) : teamMember.allocations && teamMember.allocations.length > 0 ? (
                   <div className="grid gap-4">
                     {teamMember.allocations.map((allocation, index) => (
                       <div
@@ -254,7 +202,7 @@ export default function TeamMemberPage() {
               <br />
               <br />
               {/* Contracts Card - Only show if enabled */}
-              {showContracts && (
+              {settings.showContracts && (
                 <div className="wp-card p-8">
                   <div className="flex items-center mb-6">
                     <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mr-4">
@@ -264,7 +212,17 @@ export default function TeamMemberPage() {
                     </div>
                     <h2 className="wp-heading-3">Contracts</h2>
                   </div>
-                  {teamMember?.contracts && teamMember.contracts.length > 0 ? (
+                  {!teamMember ? (
+                    <div className="text-center py-8">
+                      <div className="text-wp-text-muted mb-4">
+                        <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                      </div>
+                      <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
+                      <p className="wp-body text-wp-text-muted">No team member information available.</p>
+                    </div>
+                  ) : teamMember?.contracts && teamMember.contracts.length > 0 ? (
                     <div className="grid gap-4">
                       {teamMember.contracts.map((contract, index) => (
                         <div
@@ -278,12 +236,12 @@ export default function TeamMemberPage() {
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                             <div>
                               <label className="wp-body-small text-wp-text-muted">Type</label>
-                              <p className="wp-body text-wp-text-primary font-medium">{contract.amountType}</p>
+                              <p className="wp-body text-wp-text-primary font-medium">{contract.type}</p>
                             </div>
                             <div>
                               <label className="wp-body-small text-wp-text-muted">Amount</label>
                               <p className="wp-body text-wp-text-primary font-medium">
-                                {contract.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                                ${parseFloat(contract.amount || '0').toLocaleString()}
                               </p>
                             </div>
                             <div>

@@ -3,16 +3,16 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { usePathname } from 'next/navigation';
 
 export default function Navigation() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAdmin } = useAdmin();
-  const [showPresentations, setShowPresentations] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { settings, loading: settingsLoading } = useSettings();
   const pathname = usePathname();
 
   // Helper function to determine if a route is active
@@ -26,8 +26,8 @@ export default function Navigation() {
   // Helper function to get navigation link classes with White Prompt styling
   const getNavLinkClass = useCallback((route: string, isMobile = false) => {
     const baseClasses = isMobile
-      ? "block px-4 py-3 text-base font-medium transition-all duration-300 rounded-lg mx-2 my-1"
-      : "relative px-6 py-2 mx-2 text-sm font-medium transition-all duration-300 rounded-lg";
+      ? "block px-6 py-3 text-base font-medium transition-all duration-300 rounded-lg mx-2 my-1 min-h-[48px] flex items-center justify-center"
+      : "relative px-8 py-3 text-sm font-medium transition-all duration-300 rounded-lg min-h-[40px] min-w-[120px] flex items-center justify-center";
     
     const activeClasses = isMobile
       ? "bg-gradient-to-r from-wp-primary to-wp-accent text-white shadow-lg"
@@ -40,27 +40,6 @@ export default function Navigation() {
     return `${baseClasses} ${isActive(route) ? activeClasses : inactiveClasses}`;
   }, [isActive]);
 
-  useEffect(() => {
-    const fetchFeatureStatus = async () => {
-      try {
-        const response = await fetch('/api/settings?key=show_presentations');
-        if (response.ok) {
-          const data = await response.json();
-          setShowPresentations(data.value.enabled);
-        }
-      } catch (error) {
-        console.error('Error fetching feature status:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (session?.user?.email) {
-      fetchFeatureStatus();
-    } else {
-      setIsLoading(false);
-    }
-  }, [session?.user?.email]);
 
   // Pre-calculate navigation classes to prevent flickering
   const navClasses = useMemo(() => ({
@@ -87,27 +66,27 @@ export default function Navigation() {
                 height={35}
                 priority
                 className="h-8 w-auto filter brightness-0 invert transition-all duration-300 group-hover:brightness-110 group-hover:scale-105"
-              />
+              />             
             </Link>
           </div>
           
           {/* Desktop menu */}
-          <div className="hidden lg:flex lg:items-center lg:space-x-4">
-            <Link href="/" className={`${navClasses.home} w-24 flex items-center justify-center`}>
+          <div className="hidden lg:flex lg:items-center gap-8">
+            <Link href="/" className={navClasses.home}>
               Home
             </Link>
-            <Link href="/submitted-feedbacks" className={`${navClasses.submittedFeedbacks} w-28 flex items-center justify-center`}>
+            <Link href="/submitted-feedbacks" className={navClasses.submittedFeedbacks}>
               <span className="text-center leading-tight">
                 Submitted<br />Feedbacks
               </span>
             </Link>
-            {!isLoading && showPresentations && (
-              <Link href="/presentations" className={`${navClasses.presentations} w-28 flex items-center justify-center`}>
+            {!settingsLoading && settings.showPresentations && (
+              <Link href="/presentations" className={navClasses.presentations}>
                 Presentations
               </Link>
             )}
-            {!isLoading && isAdmin && (
-              <Link href="/admin" className={`${navClasses.admin} w-20 flex items-center justify-center`}>
+            {!settingsLoading && isAdmin && (
+              <Link href="/admin" className={navClasses.admin}>
                 Admin
               </Link>
             )}
@@ -175,7 +154,7 @@ export default function Navigation() {
           >
             Submitted Feedbacks
           </Link>
-          {!isLoading && showPresentations && (
+          {!settingsLoading && settings.showPresentations && (
             <Link
               href="/presentations"
               className={navClasses.presentationsMobile}
@@ -184,7 +163,7 @@ export default function Navigation() {
               Presentations
             </Link>
           )}
-          {!isLoading && isAdmin && (
+          {!settingsLoading && isAdmin && (
             <Link
               href="/admin"
               className={navClasses.adminMobile}
