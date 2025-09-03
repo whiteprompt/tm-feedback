@@ -11,6 +11,24 @@ interface Leave {
   comments?: string;
 }
 
+interface RedmineLeave {
+  id: string;
+  email: string;
+  start_date?: string;
+  startDate?: string;
+  end_date?: string;
+  endDate?: string;
+  categoryName?: string;
+  type?: string;
+  leave_type?: string;
+  status_id?: number;
+  status?: string;
+  days?: number;
+  duration?: number;
+  comments?: string;
+  description?: string;
+}
+
 let REDMINE_TOKEN = "";
 
 const getToken = async () => {
@@ -95,11 +113,11 @@ async function fetchLeaves(isRetry: boolean = false) {
     // Transform the data if needed to match our interface
     const transformedLeaves: Leave[] = Array.isArray(leavesData.results)
       ? leavesData.results
-          ?.filter((leave: any) => leave.email === email)
-          ?.map((leave: any) => ({
+          ?.filter((leave: RedmineLeave) => leave.email === email)
+          ?.map((leave: RedmineLeave) => ({
             id: leave.id || String(Math.random()),
-            start_date: leave.start_date || leave.startDate,
-            end_date: leave.end_date || leave.endDate,
+            start_date: leave.start_date || leave.startDate || "",
+            end_date: leave.end_date || leave.endDate || "",
             type: leave.categoryName || "Unknown",
             status: leave.status_id === 5 ? "Done" : "Pending",
             days: leave.days || leave.duration || 1,
