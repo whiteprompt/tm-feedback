@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import Navigation from '@/components/Navigation';
 import Link from 'next/link';
+import { useTeamMember } from '@/contexts/TeamMemberContext';
 
 interface Feedback {
   id: string;
@@ -26,6 +27,7 @@ const SATISFACTION_MAP = {
 export default function SubmittedFeedbacksPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { teamMember, loading: teamMemberLoading } = useTeamMember();
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -62,18 +64,38 @@ export default function SubmittedFeedbacksPage() {
     }
   }, [session, fetchFeedbacks]);
 
-  if (status === 'loading' || loading) {
+  if (loading || teamMemberLoading) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <div className="flex items-center justify-center min-h-screen wp-fade-in">
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="wp-fade-in">
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
               <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
             </div>
-            <p className="wp-body text-wp-text-secondary">Loading your feedback history...</p>
+            <p className="wp-body text-wp-text-secondary">Loading your information...</p>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!teamMember) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+        <Navigation />
+        <main className="wp-section-sm">
+          <div className="wp-container">
+            <div className="wp-card p-8">
+              <div className="text-wp-text-muted mb-4">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+              </div>
+              <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
+              <p className="wp-body text-wp-text-muted">No team member information available.</p>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
