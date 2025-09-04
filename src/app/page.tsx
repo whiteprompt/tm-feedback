@@ -126,7 +126,7 @@ export default function TeamMemberPage() {
                   <div className="space-y-3 md:col-span-2">
                     <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Access Tools</label>
                     <div className="flex flex-wrap gap-2">
-                      {(teamMember?.accessTools || []).map((access: string, index: number) => (
+                      {(teamMember?.accesses || []).map((access: string, index: number) => (
                         <span key={index} className="px-3 py-1 bg-wp-primary/20 text-wp-primary rounded-full text-sm font-medium">
                           {access}
                         </span>

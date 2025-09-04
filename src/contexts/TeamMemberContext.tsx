@@ -12,7 +12,7 @@ interface TeamMember {
   identificationType: string;
   identificationNumber: string;
   startDate: string;
-  accessTools: string[];
+  accesses: string[];
   allocations: Array<{
     project: string;
     start: string;
