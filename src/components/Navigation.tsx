@@ -75,7 +75,7 @@ export default function Navigation() {
           </div>
           
           {/* Desktop menu */}
-          <div className="hidden lg:flex lg:items-center gap-8">
+          <div className="hidden lg:flex lg:items-center gap-1">
             <Link href="/" className={navClasses.home}>
               Home
             </Link>
