@@ -10,55 +10,55 @@ const companyLinks = [
     title: 'Request a leave',
     description: 'Submit your leave request for approval',
     icon: '🏖️',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://sites.google.com/whiteprompt.com/intranet/administration/leaves/notify-your-leave'
   },
   {
     title: 'Request a training',
     description: 'Apply for professional development opportunities',
     icon: '🎓',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://sites.google.com/whiteprompt.com/intranet/staffing/training-request'
   },
   {
     title: 'Refer a friend',
     description: 'Recommend talented professionals to join our team',
     icon: '👥',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://sites.google.com/whiteprompt.com/intranet/recruiting/refer-a-friend'
   },
   {
     title: 'Get your Cursor/Copilot license',
     description: 'Access your development tools and licenses',
     icon: '💻',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://docs.google.com/forms/d/e/1FAIpQLSfPAY9ZKwcwtrteqds1udIUs6ZfhXmH6qIRIQowwE5X6RKiCQ/viewform'
   },
   {
     title: 'Submit your hours',
     description: 'Log your working hours for timesheet tracking',
     icon: '⏰',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://sites.google.com/whiteprompt.com/intranet/administration/time-tracking'
   },
   {
     title: 'Change your payment method',
     description: 'Update your banking and payment information',
     icon: '💳',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://sites.google.com/whiteprompt.com/intranet/administration/get-your-compensation'
   },
   {
     title: 'Create your invoice',
     description: 'Generate invoices for your completed work',
     icon: '📄',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://sites.google.com/whiteprompt.com/intranet/administration/get-your-compensation/create-your-invoice-from-scratch'
   },
   {
     title: 'Request for a working certificate',
     description: 'Obtain official employment certification documents',
     icon: '📋',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://sites.google.com/whiteprompt.com/intranet/administration/working-certificates'
   },
   {
     title: 'Obtain your refund',
     description: 'Process reimbursements and expense claims',
     icon: '💰',
-    href: 'https://www.whiteprompt.com/'
+    href: 'https://sites.google.com/whiteprompt.com/intranet/administration/get-your-refund'
   }
 ];
 
