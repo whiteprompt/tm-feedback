@@ -106,6 +106,8 @@ export default function CompanyPage() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-16 wp-fade-in">
             <h1 className="wp-heading-1 text-wp-text-primary mb-4">Company Portal</h1>
+          </div>
+          <div>
             <p className="wp-body text-wp-text-secondary">Access company services and resources</p>
           </div>
 
