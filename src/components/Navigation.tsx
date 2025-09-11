@@ -3,7 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { usePathname } from 'next/navigation';
@@ -11,9 +11,11 @@ import { usePathname } from 'next/navigation';
 export default function Navigation() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isRequestsDropdownOpen, setIsRequestsDropdownOpen] = useState(false);
   const { isAdmin } = useAdmin();
   const { settings, loading: settingsLoading } = useSettings();
   const pathname = usePathname();
+  const requestsDropdownRef = useRef<HTMLDivElement>(null);
 
   // Helper function to determine if a route is active
   const isActive = useCallback((route: string) => {
@@ -22,6 +24,25 @@ export default function Navigation() {
     }
     return pathname.startsWith(route);
   }, [pathname]);
+
+  // Helper function to check if requests dropdown should be active
+  const isRequestsActive = useCallback(() => {
+    return pathname.startsWith('/leaves') || pathname.startsWith('/expense-refunds');
+  }, [pathname]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (requestsDropdownRef.current && !requestsDropdownRef.current.contains(event.target as Node)) {
+        setIsRequestsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Helper function to get navigation link classes with White Prompt styling
   const getNavLinkClass = useCallback((route: string, isMobile = false) => {
@@ -40,22 +61,43 @@ export default function Navigation() {
     return `${baseClasses} ${isActive(route) ? activeClasses : inactiveClasses}`;
   }, [isActive]);
 
+  // Helper function to get dropdown button classes
+  const getDropdownButtonClass = useCallback((isMobile = false) => {
+    const baseClasses = isMobile
+      ? "block px-6 py-3 text-base font-medium transition-all duration-300 rounded-lg mx-2 my-1 min-h-[48px] flex items-center justify-center w-full"
+      : "relative px-8 py-3 text-sm font-medium transition-all duration-300 rounded-lg min-h-[40px] min-w-[120px] flex items-center justify-center";
+    
+    const activeClasses = isMobile
+      ? "bg-gradient-to-r from-wp-primary to-wp-accent text-white shadow-lg"
+      : "bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border border-wp-primary/30 shadow-glow";
+    
+    const inactiveClasses = isMobile
+      ? "text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10"
+      : "text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10";
+
+    return `${baseClasses} ${isRequestsActive() ? activeClasses : inactiveClasses}`;
+  }, [isRequestsActive]);
+
 
   // Pre-calculate navigation classes to prevent flickering
   const navClasses = useMemo(() => ({
     home: getNavLinkClass('/'),
-    submittedFeedbacks: getNavLinkClass('/submitted-feedbacks'),
+    submittedFeedbacks: getNavLinkClass('/feedbacks'),
     leaves: getNavLinkClass('/leaves'),
-    company: getNavLinkClass('/company'),
+    expenseRefunds: getNavLinkClass('/expense-refunds'),
     presentations: getNavLinkClass('/presentations'),
+    company: getNavLinkClass('/company'),
     admin: getNavLinkClass('/admin'),
+    requestsDropdown: getDropdownButtonClass(),
+    requestsDropdownMobile: getDropdownButtonClass(true),
     homeMobile: getNavLinkClass('/', true),
-    submittedFeedbacksMobile: getNavLinkClass('/submitted-feedbacks', true),
+    submittedFeedbacksMobile: getNavLinkClass('/feedbacks', true),
     leavesMobile: getNavLinkClass('/leaves', true),
-    companyMobile: getNavLinkClass('/company', true),
+    expenseRefundsMobile: getNavLinkClass('/expense-refunds', true),
     presentationsMobile: getNavLinkClass('/presentations', true),
+    companyMobile: getNavLinkClass('/company', true),
     adminMobile: getNavLinkClass('/admin', true),
-  }), [getNavLinkClass]);
+  }), [getNavLinkClass, getDropdownButtonClass]);
 
   return (
     <nav className="backdrop-filter backdrop-blur-lg bg-gradient-to-r from-wp-dark/95 to-wp-dark-lighter/90 border-b border-wp-border/30 sticky top-0 z-50">
@@ -79,22 +121,69 @@ export default function Navigation() {
             <Link href="/" className={navClasses.home}>
               Home
             </Link>
-            <Link href="/submitted-feedbacks" className={navClasses.submittedFeedbacks}>
+            <Link href="/feedbacks" className={navClasses.submittedFeedbacks}>
               <span className="text-center leading-tight">
-                Submitted<br />Feedbacks
+                Feedbacks
               </span>
             </Link>
-            <Link href="/leaves" className={navClasses.leaves}>
-              Leaves
-            </Link>
-            <Link href="/company" className={navClasses.company}>
-              Company
-            </Link>
+            
+            {/* Requests dropdown */}
+            <div className="relative" ref={requestsDropdownRef}>
+              <button
+                onClick={() => setIsRequestsDropdownOpen(!isRequestsDropdownOpen)}
+                className={navClasses.requestsDropdown}
+              >
+                <span className="text-center leading-tight">
+                  Requests
+                </span>
+                <svg
+                  className={`ml-2 h-4 w-4 transition-transform duration-200 ${
+                    isRequestsDropdownOpen ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {isRequestsDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1 w-56 bg-wp-dark border border-wp-border/30 rounded-lg shadow-lg z-50">
+                  <Link
+                    href="/leaves"
+                    className={`block px-6 py-4 text-base transition-all duration-300 rounded-t-lg ${
+                      isActive('/leaves') 
+                        ? 'bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border-l-2 border-wp-primary' 
+                        : 'text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10'
+                    }`}
+                    onClick={() => setIsRequestsDropdownOpen(false)}
+                  >
+                    Leaves
+                  </Link>
+                  <Link
+                    href="/expense-refunds"
+                    className={`block px-6 py-4 text-base transition-all duration-300 rounded-b-lg ${
+                      isActive('/expense-refunds') 
+                        ? 'bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border-l-2 border-wp-primary' 
+                        : 'text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10'
+                    }`}
+                    onClick={() => setIsRequestsDropdownOpen(false)}
+                  >
+                    Expense Refunds
+                  </Link>
+                </div>
+              )}
+            </div>
+
             {!settingsLoading && settings.showPresentations && (
               <Link href="/presentations" className={navClasses.presentations}>
                 Presentations
               </Link>
             )}
+            <Link href="/company" className={navClasses.company}>
+              Company
+            </Link>
             {!settingsLoading && isAdmin && (
               <Link href="/admin" className={navClasses.admin}>
                 Admin
@@ -158,12 +247,13 @@ export default function Navigation() {
             Home
           </Link>
           <Link
-            href="/submitted-feedbacks"
+            href="/feedbacks"
             className={navClasses.submittedFeedbacksMobile}
             onClick={() => setIsMenuOpen(false)}
           >
-            Submitted Feedbacks
+            Feedbacks
           </Link>
+          
           <Link
             href="/leaves"
             className={navClasses.leavesMobile}
@@ -172,12 +262,13 @@ export default function Navigation() {
             Leaves
           </Link>
           <Link
-            href="/company"
-            className={navClasses.companyMobile}
+            href="/expense-refunds"
+            className={navClasses.expenseRefundsMobile}
             onClick={() => setIsMenuOpen(false)}
           >
-            Company
+            Expense Refunds
           </Link>
+
           {!settingsLoading && settings.showPresentations && (
             <Link
               href="/presentations"
@@ -187,6 +278,13 @@ export default function Navigation() {
               Presentations
             </Link>
           )}
+          <Link
+            href="/company"
+            className={navClasses.companyMobile}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Company
+          </Link>
           {!settingsLoading && isAdmin && (
             <Link
               href="/admin"
