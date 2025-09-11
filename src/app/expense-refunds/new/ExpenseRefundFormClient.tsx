@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import Select from 'react-select';
 import Navigation from '@/components/Navigation';
 import { useRouter } from 'next/navigation';
-import { useTeamMember } from '@/contexts/TeamMemberContext';
 
 interface ExpenseRefundForm {
   title: string;
@@ -69,8 +68,6 @@ export default function ExpenseRefundFormClient() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const { teamMember } = useTeamMember();
 
   // Track form changes
   useEffect(() => {
