@@ -49,7 +49,7 @@ export default function TeamMemberFeedbackClient() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push(`/auth/signin?callbackUrl=${encodeURIComponent('/feedback')}`);
+      router.push(`/auth/signin?callbackUrl=${encodeURIComponent('/feedbacks/new')}`);
     }
   }, [status, router]);
 
@@ -76,7 +76,7 @@ export default function TeamMemberFeedbackClient() {
 
     if (selected && session?.user?.email) {
       try {
-        const response = await fetch("/api/last-feedback", {
+        const response = await fetch("/api/feedbacks/last", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -248,7 +248,7 @@ export default function TeamMemberFeedbackClient() {
       setHasUnsavedChanges(false);
       
       // Redirect to home page
-      router.push('/submitted-feedbacks');
+      router.push('/feedbacks');
     } catch (error) {
       setError('Failed to submit feedback');
       console.error('Error submitting feedback:', error);
@@ -476,7 +476,7 @@ export default function TeamMemberFeedbackClient() {
                     const shouldLeave = window.confirm("You have unsaved changes. Are you sure you want to leave?");
                     if (!shouldLeave) return;
                   }
-                  router.push('/submitted-feedbacks');
+                  router.push('/feedbacks');
                 }}
                 className="flex-1 py-4 px-6 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body font-medium text-wp-text-secondary hover:text-wp-text-primary hover:bg-wp-dark-card/80 focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
               >

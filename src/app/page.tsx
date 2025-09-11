@@ -3,10 +3,12 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Navigation from '@/components/Navigation';
 import { formatDate } from '@/utils/date';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
 import { useSettings } from '@/contexts/SettingsContext';
+import PageLayout from '@/components/PageLayout';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import ErrorDisplay from '@/components/ErrorDisplay';
 
 export default function TeamMemberPage() {
   const { status } = useSession();
@@ -28,25 +30,11 @@ export default function TeamMemberPage() {
   }, []);
 
   if (status === 'loading' || loading || teamMemberLoading || settingsLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="wp-fade-in">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
-            </div>
-            <p className="wp-body text-wp-text-secondary">Loading your information...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      <main className="wp-section-sm">
-        <div className="wp-container">
+    <PageLayout>
           {/* Hero Section */}
           <div className="text-center mb-16 wp-fade-in">
             <h1 className="wp-heading-1 mb-4">
@@ -58,32 +46,20 @@ export default function TeamMemberPage() {
             <br />
           </div>
 
-          {teamMemberError ? (
-            <div className="wp-card p-8 text-center wp-fade-in">
-              <div className="text-red-400 mb-4">
-                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.314 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              <h3 className="wp-heading-3 text-red-400 mb-2">Error</h3>
-              <p className="wp-body text-red-300">{teamMemberError}</p>
-            </div>
-          ) : !teamMember ? (
-            <div className="flex justify-center items-center min-h-[60vh]">
-              <div className="wp-card p-12 text-center wp-fade-in max-w-md w-full">
-                <div className="text-wp-text-muted mb-4">
-                  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                  </svg>
-                </div>
-                <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
-                <p className="wp-body text-wp-text-muted">No team member information available.</p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-32 wp-slide-up">
-              {/* Personal Information Card */}
-              <div className="wp-card p-8">
+      {teamMemberError ? (
+        <ErrorDisplay message={teamMemberError} />
+      ) : !teamMember ? (
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <ErrorDisplay 
+            title="No Information" 
+            message="No team member information available." 
+            icon="noData"
+          />
+        </div>
+      ) : (
+        <div className="space-y-32 wp-slide-up">
+          {/* Personal Information Card */}
+          <div className="wp-card p-8">
                 <div className="flex items-center mb-6">
                   <div className="w-12 h-12 bg-gradient-to-r from-wp-primary to-wp-accent rounded-full flex items-center justify-center mr-4">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,10 +253,8 @@ export default function TeamMemberPage() {
                   )}
                 </div>
               )}
-            </div>
-          )}
         </div>
-      </main>
-    </div>
+      )}
+    </PageLayout>
   );
 }

@@ -3,7 +3,9 @@
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Navigation from '@/components/Navigation';
+import PageLayout from '@/components/PageLayout';
+import PageHeader from '@/components/PageHeader';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const companyLinks = [
   {
@@ -73,25 +75,7 @@ export default function CompanyPage() {
   }, [status, router]);
 
   if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
-        <Navigation />
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="wp-slide-up">
-            <div className="wp-card p-8">
-              <div className="animate-pulse">
-                <div className="h-12 bg-wp-dark-card/50 rounded w-1/3 mb-8"></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[...Array(9)].map((_, i) => (
-                    <div key={i} className="h-32 bg-wp-dark-card/50 rounded"></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (status === 'unauthenticated') {
@@ -99,22 +83,16 @@ export default function CompanyPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      <main className="wp-section-sm">
-        <div className="wp-container">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-16 wp-fade-in">
-            <h1 className="wp-heading-1 text-wp-text-primary mb-4">Company Portal</h1>
-          </div>
-          <div>
-            <p className="wp-body text-wp-text-secondary">Access company services and resources</p>
-          </div>
+    <PageLayout>
+      <PageHeader 
+        title="Company Portal"
+        description="Access company services and resources"
+      />
 
-          {/* Links Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {companyLinks.map((link, index) => (
-              <a
+      {/* Links Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {companyLinks.map((link, index) => (
+          <a
                 key={index}
                 href={link.href}
                 target="_blank"
@@ -140,27 +118,25 @@ export default function CompanyPage() {
                   </div>
                 </div>
               </a>
-            ))}
+        ))}
+      </div>
+      <br />
+      {/* Info Card */}
+      <div className="wp-card p-6 bg-gradient-to-r from-wp-primary/10 to-wp-accent/10 border border-wp-primary/20">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-wp-primary/20 rounded-lg">
+            <svg className="w-6 h-6 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-          <br />
-          {/* Info Card */}
-          <div className="wp-card p-6 bg-gradient-to-r from-wp-primary/10 to-wp-accent/10 border border-wp-primary/20">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-wp-primary/20 rounded-lg">
-                <svg className="w-6 h-6 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="wp-body font-semibold text-wp-text-primary mb-1">Need Help?</h4>
-                <p className="wp-body-small text-wp-text-secondary">
-                  If you need assistance with any of these services, please contact the HR team or reach out through our internal communication channels.
-                </p>
-              </div>
-            </div>
+          <div>
+            <h4 className="wp-body font-semibold text-wp-text-primary mb-1">Need Help?</h4>
+            <p className="wp-body-small text-wp-text-secondary">
+              If you need assistance with any of these services, please contact the HR team or reach out through our internal communication channels.
+            </p>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </PageLayout>
   );
 }
