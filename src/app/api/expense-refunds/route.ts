@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
 
+    const exchangeRate = formData.get("exchangeRate") || "1";
+
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const amount = parseFloat(formData.get("amount") as string);
@@ -115,6 +117,7 @@ export async function POST(request: NextRequest) {
     expenseRefundFormData.append("amount", amount.toString());
     expenseRefundFormData.append("currency", currency);
     expenseRefundFormData.append("concept", concept);
+    expenseRefundFormData.append("exchangeRate", exchangeRate);
 
     // Add receipt file if provided
     if (receiptFile && receiptFile.size > 0) {
@@ -123,7 +126,7 @@ export async function POST(request: NextRequest) {
 
     // Make the request to the staffing service
     const response = await fetch(
-      `http://localhost:3001/notion-webhooks/expense-refund`,
+      `${STAFFING_API_URL}/notion-webhooks/expense-refund`,
       {
         method: "POST",
         body: expenseRefundFormData,
