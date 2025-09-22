@@ -25,6 +25,7 @@ interface ExtractedData {
   tax?: string;
   currency?: string;
   exchangeRate?: string;
+  concept?: string;
 }
 
 const EXPENSE_CONCEPTS = [
@@ -43,6 +44,34 @@ const EXPENSE_CONCEPTS = [
   { value: 'expenses', label: 'Expenses' },
   { value: 'external-professional-services', label: 'External professional services' },
   { value: 'food-drinks', label: 'Food & Drinks' },
+  { value: 'hackaton-bonus', label: 'Hackaton Bonus' },
+  { value: 'health-insurance', label: 'Health Insurance' },
+  { value: 'hotel', label: 'Hotel' },
+  { value: 'incentfit', label: 'IncentFit' },
+  { value: 'learning-courses', label: 'Learning & Courses' },
+  { value: 'licenses', label: 'Licenses' },
+  { value: 'md-expenses', label: 'MD Expenses' },
+  { value: 'meals-entertainment', label: 'Meals & Entertainment' },
+  { value: 'employee-benefits', label: 'Employee Benefits' },
+  { value: 'office-equipment', label: 'Office Equipment' },
+  { value: 'office-equipment-repairs-maintenance', label: 'Office Equipment repairs & maintenance' },
+  { value: 'office-maintenance', label: 'Office Maintenance' },
+  { value: 'people-care', label: 'People Care' },
+  { value: 'personal-insurance', label: 'Personal Insurance' },
+  { value: 'pharmacy', label: 'Pharmacy' },
+  { value: 'postage', label: 'Postage' },
+  { value: 'professional-services', label: 'Professional Services' },
+  { value: 'recruiting', label: 'Recruiting' },
+  { value: 'rent-lease', label: 'Rent or Lease' },
+  { value: 'sales-commisions', label: 'Sales commisions' },
+  { value: 'security-vigilance', label: 'Security and vigilance' },
+  { value: 'shipping-couriers', label: 'Shipping & Couriers' },
+  { value: 'social-events', label: 'Social Events' },
+  { value: 'stationery', label: 'Stationery' },
+  { value: 'team-member-referral', label: 'Team Member Referral' },
+  { value: 'transportation', label: 'Transportation' },
+  { value: 'travel', label: 'Travel' },
+  { value: 'uncategorized-adjustments', label: 'Uncategorized Adjustments' },
 ];
 
 const CURRENCIES = [
@@ -169,7 +198,6 @@ export default function ExpenseRefundFormV2Client() {
       }
 
       const extractedInfo = await response.json();
-      console.log('Raw API response:', extractedInfo);
       
       // Map the API response to our expected format
       const mappedData: ExtractedData = {
@@ -178,12 +206,14 @@ export default function ExpenseRefundFormV2Client() {
         description: extractedInfo.output?.store || '',
         tax: extractedInfo.output?.tax || '',
         currency: extractedInfo.output?.currency || '',
+        concept: extractedInfo.output?.concept || '',
         exchangeRate: extractedInfo.output?.exchangeRate || '',
         // We don't have date in the response, so we'll leave it empty
         date: ''
       };
       
       console.log('Mapped data:', mappedData);
+      console.log('Mapped concept:', mappedData.concept);
       setExtractedData(mappedData);
       setCurrentStep('review');
     } catch (error) {
@@ -216,12 +246,17 @@ export default function ExpenseRefundFormV2Client() {
         }
       }
 
+      // Verify the concept exists in our options
+      const conceptExists = EXPENSE_CONCEPTS.find(c => c.label === extractedData.concept);
+      console.log('Concept exists in options:', conceptExists);
+
       setFormData(prev => ({
         ...prev,
         amount: extractedData.amount || prev.amount,
         description: extractedData.vendor || prev.description,
         title: extractedData.vendor || prev.title,
         submittedDate: extractedData.date || prev.submittedDate,
+        concept: extractedData.concept || prev.concept,
         currency: currency,
         exchangeRate: extractedData.exchangeRate || prev.exchangeRate,
       }));
@@ -503,6 +538,17 @@ export default function ExpenseRefundFormV2Client() {
 
                       <div className="p-4 bg-wp-dark-card/60 border border-wp-border rounded-lg">
                         <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold block mb-2">
+                          Concept
+                        </label>
+                        <p className="wp-body text-wp-text-primary">
+                          {extractedData.concept ? 
+                            EXPENSE_CONCEPTS.find(c => c.value === extractedData.concept)?.label || extractedData.concept 
+                            : 'Not detected'}
+                        </p>
+                      </div>
+
+                      <div className="p-4 bg-wp-dark-card/60 border border-wp-border rounded-lg">
+                        <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold block mb-2">
                           Date
                         </label>
                         <p className="wp-body text-wp-text-primary">
@@ -547,6 +593,11 @@ export default function ExpenseRefundFormV2Client() {
                   <p className="wp-body text-wp-text-secondary mb-8">
                     Review and complete the form with your expense details.
                   </p>
+                  {/* Debug info */}
+                  <div className="text-left text-xs text-gray-500 mb-4">
+                    <p>Debug - Current concept value: "{formData.concept}"</p>
+                    <p>Debug - Found concept option: {EXPENSE_CONCEPTS.find(concept => concept.value === formData.concept)?.label || 'Not found'}</p>
+                  </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
@@ -642,8 +693,10 @@ export default function ExpenseRefundFormV2Client() {
                       </label>
                       <Select
                         options={EXPENSE_CONCEPTS}
-                        value={EXPENSE_CONCEPTS.find(concept => concept.value === formData.concept)}
-                        onChange={(selected) => setFormData(prev => ({ ...prev, concept: selected?.value || '' }))}
+                        value={EXPENSE_CONCEPTS.find(concept => concept.label === formData.concept)}
+                        onChange={(selected) => {
+                          setFormData(prev => ({ ...prev, concept: selected?.label || '' }));
+                        }}
                         placeholder="Select concept"
                         className="basic-single"
                         classNamePrefix="select"
