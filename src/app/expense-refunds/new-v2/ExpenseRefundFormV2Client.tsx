@@ -412,7 +412,7 @@ export default function ExpenseRefundFormV2Client() {
                 <div className="text-center">
                   <h2 className="wp-heading-2 text-wp-text-primary mb-4">Upload Receipt</h2>
                   <p className="wp-body text-wp-text-secondary mb-8">
-                    Upload a PDF of your receipt and we'll automatically extract the information for you.
+                    {`Upload a PDF of your receipt and we'll automatically extract the information for you.`}
                   </p>
                 </div>
 
@@ -595,8 +595,8 @@ export default function ExpenseRefundFormV2Client() {
                   </p>
                   {/* Debug info */}
                   <div className="text-left text-xs text-gray-500 mb-4">
-                    <p>Debug - Current concept value: "{formData.concept}"</p>
-                    <p>Debug - Found concept option: {EXPENSE_CONCEPTS.find(concept => concept.value === formData.concept)?.label || 'Not found'}</p>
+                    <p>Debug - Current concept value: {`"${formData.concept}"`}</p>
+                    <p>Debug - Found concept option: {EXPENSE_CONCEPTS.find(concept => concept.value === formData.concept)?.label || "Not found"}</p>
                   </div>
                 </div>
 
