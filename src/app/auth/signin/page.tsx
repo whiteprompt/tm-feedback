@@ -1,14 +1,53 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { signIn, useSession } from 'next-auth/react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
 function SignInContent() {
+  const { status } = useSession();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push(callbackUrl);
+    }
+  }, [status, router, callbackUrl]);
+
+  // Show loading state while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+        <div className="wp-card p-16 max-w-xl w-full space-y-12">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-16 bg-wp-dark-card/50 rounded w-3/4 mx-auto mb-12"></div>
+              <div className="h-8 bg-wp-dark-card/50 rounded w-1/2 mx-auto mb-4"></div>
+              <div className="h-6 bg-wp-dark-card/50 rounded w-3/4 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If authenticated, show redirecting message (brief moment before redirect)
+  if (status === 'authenticated') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+        <div className="wp-card p-16 max-w-xl w-full space-y-12">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin mx-auto mb-8"></div>
+            <p className="wp-body text-wp-text-secondary">Redirecting you...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">

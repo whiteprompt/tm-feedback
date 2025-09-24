@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
 
           if (responseExchangeRate.ok) {
             const dataExchangeRate = await responseExchangeRate.json();
-            console.log("RESPONSE EXCHANGE RATE", dataExchangeRate);
             exchangeRate =
               dataExchangeRate.rates[data.output.currency.toUpperCase()];
           }

@@ -45,7 +45,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     // Get the authenticated user
-    const { error, email } = await getAuthenticatedUser();
+    const { error, email: authEmail } = await getAuthenticatedUser();
     if (error) {
       return error;
     }
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
 
     const exchangeRate = formData.get("exchangeRate") || "1";
-
+    const email = (formData.get("userEmail") as string) || authEmail;
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const amount = parseFloat(formData.get("amount") as string);
