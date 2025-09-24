@@ -135,16 +135,31 @@ export default function ExpenseRefundsPage() {
       <PageHeader 
         title="My Expense Refunds"
         description="Track and manage all your submitted expense refund requests."
-        actionButton={{
-          label: "Submit New Expense Refund",
-          href: "/expense-refunds/new-v2",
-          icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-          )
-        }}
       />
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-16 wp-fade-in">
+        <button
+          onClick={() => router.push('/expense-refunds/new-v2')}
+          className="flex-1 wp-button-primary py-4 px-6 wp-body font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          <span>Submit Single Expense</span>
+        </button>
+        
+        <button
+          onClick={() => router.push('/expense-refunds/bulk')}
+          className="flex-1 bg-gradient-to-r from-wp-purple to-wp-accent text-white py-4 px-6 wp-body font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 border border-wp-purple/30"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 12l2 2 4-4" />
+          </svg>
+          <span>Bulk Submit</span>
+          <span className="bg-white/20 text-xs px-2 py-1 rounded-full font-semibold">NEW</span>
+        </button>
+      </div>
 
           {/* Filter Section */}
           <div className="wp-card p-6 mb-16 wp-fade-in">

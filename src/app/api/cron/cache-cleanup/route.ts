@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { teamMemberCache } from "@/lib/cache";
+// import { teamMemberCache } from "@/lib/cache"; // Not needed with TTL-based cleanup
 import { supabase } from "@/lib/supabase";
 
 export const runtime = "edge"; // This is important for Vercel cron jobs
@@ -36,9 +36,10 @@ export async function GET(request: Request) {
 
     console.log('[Cache Cleanup] Starting cache cleanup process...');
     
-    await teamMemberCache.clearExpired();
+    // Cache cleanup is now handled automatically by Redis TTL
+    // await teamMemberCache.clearExpired(); // Method removed in updated cache implementation
     
-    console.log('[Cache Cleanup] Cache cleanup completed successfully');
+    console.log('[Cache Cleanup] Cache cleanup completed successfully (TTL-based)');
     
     return NextResponse.json({
       success: true,
@@ -64,7 +65,8 @@ export async function POST() {
   try {
     console.log('[Cache Cleanup] Manual cache cleanup initiated...');
     
-    await teamMemberCache.clearExpired();
+    // Manual cleanup not needed - Redis TTL handles expiration automatically
+    console.log('[Cache Cleanup] Manual cleanup completed (TTL-based)');
     
     console.log('[Cache Cleanup] Manual cache cleanup completed');
     
