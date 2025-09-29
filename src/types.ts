@@ -2,6 +2,7 @@ export interface Allocation {
   project: string;
   start: string;
   end?: string;
+  active?: boolean;
 }
 
 export interface Contract {
@@ -12,6 +13,8 @@ export interface Contract {
   start: string;
   end?: string;
   active?: boolean;
+  isActive?: boolean;
+  type?: string;
 }
 
 export interface AccessTool {

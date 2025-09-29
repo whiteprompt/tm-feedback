@@ -13,7 +13,7 @@ export interface Holiday {
 export async function GET(request: NextRequest) {
   try {
     // Get the authenticated user
-    const { error, email } = await getAuthenticatedUser();
+    const { error } = await getAuthenticatedUser();
     if (error) {
       return error;
     }
