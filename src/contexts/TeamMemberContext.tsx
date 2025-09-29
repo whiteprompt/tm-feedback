@@ -2,32 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
-
-interface TeamMember {
-  firstName: string;
-  lastName: string;
-  email: string;
-  personalEmail: string;
-  mobile: string;
-  identificationType: string;
-  identificationNumber: string;
-  startDate: string;
-  accesses: string[];
-  allocations: Array<{
-    project: string;
-    start: string;
-    end?: string;
-    active: boolean;
-  }>;
-  contracts: Array<{
-    type: string;
-    amount: string;
-    dailyHours: string;
-    start: string;
-    end?: string;
-    active: boolean;
-  }>;
-}
+import { TeamMember } from '@/types';
 
 interface TeamMemberContextType {
   teamMember: TeamMember | null;

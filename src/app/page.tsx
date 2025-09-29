@@ -99,6 +99,10 @@ export default function TeamMemberPage() {
                     <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">ID Number</label>
                     <p className="wp-body text-wp-text-primary font-medium">{teamMember.identificationNumber}</p>
                   </div>
+                  <div className="space-y-3">
+                    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Country</label>
+                    <p className="wp-body text-wp-text-primary font-medium">{teamMember.country || 'Not specified'}</p>
+                  </div>
                   <div className="space-y-3 md:col-span-2">
                     <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">Access Tools</label>
                     <div className="flex flex-wrap gap-2">

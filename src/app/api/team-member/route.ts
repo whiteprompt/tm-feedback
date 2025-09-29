@@ -3,58 +3,10 @@ import { formatDate } from "@/utils/date";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { STAFFING_API_URL } from "@/lib/constants";
 import { teamMemberCache } from "@/lib/cache";
+import { TeamMember } from "@/types";
 
 // Force dynamic rendering to prevent caching issues with authentication
 export const dynamic = "force-dynamic";
-
-interface Allocation {
-  project: string;
-  start: string;
-  end?: string;
-}
-
-interface Contract {
-  concept: string;
-  dailyHours: number;
-  amountType: string;
-  amount: number;
-  start: string;
-  end?: string;
-  active?: boolean;
-}
-
-interface AccessTool {
-  toolName: string;
-}
-
-interface NotionResponse {
-  id: string;
-  firstName: string;
-  lastName: string;
-  startDate: string;
-  personalEmail: string;
-  mobile: string;
-  identificationType: string;
-  identificationNumber: string;
-  allocations?: Allocation[];
-  contracts?: Contract[];
-  accessTools?: AccessTool[];
-}
-
-interface TeamMember {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  startDate: string;
-  personalEmail: string;
-  mobile: string;
-  identificationType: string;
-  identificationNumber: string;
-  contracts?: Contract[];
-  allocations?: Allocation[];
-  accesses?: string[];
-}
 
 export async function GET() {
   try {
@@ -75,7 +27,9 @@ export async function GET() {
     }
 
     // Cache miss - fetch from external API
-    console.log(`[Cache] Cache miss for user: ${email}, fetching from external API`);
+    console.log(
+      `[Cache] Cache miss for user: ${email}, fetching from external API`
+    );
 
     const notionUrl = new URL(
       `${STAFFING_API_URL}/notion-webhooks/team-member?q=${email}&includeAllocations=true&includeContracts=true`
@@ -92,7 +46,7 @@ export async function GET() {
       throw new Error(`Notion API responded with status: ${response.status}`);
     }
 
-    const data: NotionResponse = await response.json();
+    const data: TeamMember = await response.json();
 
     const teamMember: TeamMember = {
       id: data.id,
@@ -104,6 +58,8 @@ export async function GET() {
       mobile: data.mobile,
       identificationType: data.identificationType,
       identificationNumber: data.identificationNumber,
+      country: data.country,
+      countryAcronym: data.countryAcronym,
       allocations: data.allocations
         ?.sort(
           (a, b) => new Date(b.start).getTime() - new Date(a.start).getTime()
