@@ -221,7 +221,7 @@ export default function TeamMemberPage() {
                             <div>
                               <label className="wp-body-small text-wp-text-muted">Amount</label>
                               <p className="wp-body text-wp-text-primary font-medium">
-                                ${parseFloat(contract.amount || '0').toLocaleString()}
+                                ${parseFloat(contract.amount?.toString() || '0').toLocaleString()}
                               </p>
                             </div>
                             <div>

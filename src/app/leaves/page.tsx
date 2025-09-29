@@ -226,7 +226,6 @@ export default function LeavesPage() {
             {holidays.map((holiday, index) => {
               const holidayDate = new Date(holiday.date);
               const isUpcoming = holidayDate > new Date();
-              const isPast = holidayDate < new Date();
               const isToday = holidayDate.toDateString() === new Date().toDateString();
               
               return (
