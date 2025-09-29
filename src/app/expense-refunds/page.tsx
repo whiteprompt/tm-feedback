@@ -140,78 +140,91 @@ export default function ExpenseRefundsPage() {
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 mb-16 wp-fade-in">
         <button
-          onClick={() => router.push('/expense-refunds/new-v2')}
-          className="flex-1 wp-button-primary py-4 px-6 wp-body font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
+          onClick={() => router.push('/expense-refunds/new')}
+          className="flex-1 text-white py-4 px-6 wp-body font-medium rounded-lg flex items-center justify-center space-x-3 border hover:border-wp-primary/50 cursor-pointer"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          <span>Submit Single Expense</span>
+          <span>Submit Manual Expense</span>
+        </button>
+
+        <button
+          onClick={() => router.push('/expense-refunds/new-v2')}
+          className="flex-1 text-white py-4 px-6 wp-body font-medium rounded-lg flex items-center justify-center space-x-3 border hover:border-wp-primary/50 cursor-pointer"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          <span>Submit Smart Expense</span>
         </button>
         
         <button
           onClick={() => router.push('/expense-refunds/bulk')}
-          className="flex-1 bg-gradient-to-r from-wp-purple to-wp-accent text-white py-4 px-6 wp-body font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 border border-wp-purple/30"
+          className="flex-1 text-white py-4 px-6 wp-body font-medium rounded-lg flex items-center justify-center space-x-3 border hover:border-wp-primary/50 cursor-pointer"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 12l2 2 4-4" />
           </svg>
           <span>Bulk Submit</span>
-          <span className="bg-white/20 text-xs px-2 py-1 rounded-full font-semibold">NEW</span>
         </button>
       </div>
 
-          {/* Filter Section */}
-          <div className="wp-card p-6 mb-16 wp-fade-in">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <svg className="w-5 h-5 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
-                  </svg>
-                  <label htmlFor="status-filter" className="wp-body text-wp-text-primary font-medium">
-                    Filter by Status
-                  </label>
-                </div>
-                <div className="relative">
-                  <select
-                    id="status-filter"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="appearance-none bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg pl-4 pr-10 py-3 min-w-[180px] transition-all duration-200 hover:border-wp-primary/50 cursor-pointer"
-                  >
-                    <option value="All">All Status</option>
-                    <option value="Approved">✅ Approved</option>
-                    <option value="Rejected">❌ Rejected</option>
-                    <option value="Under review">🔄 Under Review</option>
-                    <option value="Requested">📋 Requested</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg className="w-5 h-5 text-wp-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                {statusFilter !== 'All' && (
-                  <button
-                    onClick={() => setStatusFilter('All')}
-                    className="inline-flex items-center space-x-2 px-4 py-2 bg-wp-primary/10 hover:bg-wp-primary/20 text-wp-primary rounded-lg transition-all duration-200 border border-wp-primary/30 hover:border-wp-primary/50"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    <span className="text-sm font-medium">Clear Filter</span>
-                  </button>
-                )}
-                <div className="text-sm text-wp-text-muted bg-wp-dark-card px-3 py-2 rounded-lg border border-wp-border">
-                  {statusFilter === 'All' ? 'Showing all' : `Filtered by: ${statusFilter}`}
-                </div>
+      <br/>
+
+      {/* Filter Section */}
+      <div className="wp-card p-6 mb-16 wp-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <svg className="w-5 h-5 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+              </svg>
+              <label htmlFor="status-filter" className="wp-body text-wp-text-primary font-medium">
+                Filter by Status
+              </label>
+            </div>
+            <div className="relative">
+              <select
+                id="status-filter"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="appearance-none bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg pl-4 pr-10 py-3 min-w-[180px] transition-all duration-200 hover:border-wp-primary/50 cursor-pointer"
+              >
+                <option value="All">All Status</option>
+                <option value="Approved">✅ Approved</option>
+                <option value="Rejected">❌ Rejected</option>
+                <option value="Under review">🔄 Under Review</option>
+                <option value="Requested">📋 Requested</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="w-5 h-5 text-wp-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
             </div>
           </div>
+          
+          <div className="flex items-center space-x-3">
+            {statusFilter !== 'All' && (
+              <button
+                onClick={() => setStatusFilter('All')}
+                className="inline-flex items-center space-x-2 px-4 py-2 bg-wp-primary/10 hover:bg-wp-primary/20 text-wp-primary rounded-lg transition-all duration-200 border border-wp-primary/30 hover:border-wp-primary/50"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span className="text-sm font-medium">Clear Filter</span>
+              </button>
+            )}
+            <div className="text-sm text-wp-text-muted bg-wp-dark-card px-3 py-2 rounded-lg border border-wp-border">
+              {statusFilter === 'All' ? 'Showing all' : `Filtered by: ${statusFilter}`}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br/>
 
       {error ? (
         <ErrorDisplay message={error} />

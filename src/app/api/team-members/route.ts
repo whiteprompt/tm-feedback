@@ -31,7 +31,7 @@ export async function GET() {
     }
 
     const staffingUrl = new URL(
-      `${STAFFING_API_URL}/notion-webhooks/team-members-main-info?status=active`
+      `${STAFFING_API_URL}/shared-data/team-members-main-info?status=active`
     );
 
     const response = await fetch(staffingUrl, {
