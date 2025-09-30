@@ -24,35 +24,16 @@ interface ExpenseRefund {
   adminApproval: string;
   amApproval: string;
   receipt: string;
+  finalStatus: string;
+  rejectAdminReason: string;
+  rejectAMReason: string;
 }
 
 const STATUS_MAP = {
-  'Requested': { label: 'Requested', color: 'text-yellow-400', bgColor: 'bg-yellow-400/10', borderColor: 'border-yellow-400/30' },
+  'In Progress': { label: 'In Progress', color: 'text-yellow-400', bgColor: 'bg-yellow-400/10', borderColor: 'border-yellow-400/30' },
   'Approved': { label: 'Approved', color: 'text-green-400', bgColor: 'bg-green-400/10', borderColor: 'border-green-400/30' },
-  'Rejected': { label: 'Rejected', color: 'text-red-400', bgColor: 'bg-red-400/10', borderColor: 'border-red-400/30' },
-  'Under review': { label: 'Under review', color: 'text-blue-400', bgColor: 'bg-blue-400/10', borderColor: 'border-blue-400/30' }
+  'Not Approved': { label: 'Rejected', color: 'text-red-400', bgColor: 'bg-red-400/10', borderColor: 'border-red-400/30' },
 } as const;
-
-// Function to determine overall status based on admin and AM approvals
-const getOverallStatus = (adminApproval: string, amApproval: string): keyof typeof STATUS_MAP => {
-  // If both admin and AM are approved, then approved
-  if (adminApproval === 'Approved' && amApproval === 'Approved') {
-    return 'Approved';
-  }
-  
-  // If any is rejected, then rejected
-  if (adminApproval === 'Rejected' || amApproval === 'Rejected') {
-    return 'Rejected';
-  }
-  
-  // If both are requested or empty, then requested
-  if ((adminApproval === 'Requested' || !adminApproval) && (amApproval === 'Requested' || !amApproval)) {
-    return 'Requested';
-  }
-  
-  // Any other combination, under approval
-  return 'Under review';
-};
 
 export default function ExpenseRefundsPage() {
   const { data: session, status } = useSession();
@@ -95,7 +76,7 @@ export default function ExpenseRefundsPage() {
       setFilteredExpenseRefunds(expenseRefunds);
     } else {
       const filtered = expenseRefunds.filter(refund => {
-        const overallStatusKey = getOverallStatus(refund.adminApproval, refund.amApproval);
+        const overallStatusKey = refund.finalStatus;
         return overallStatusKey === statusFilter;
       });
       setFilteredExpenseRefunds(filtered);
@@ -193,9 +174,8 @@ export default function ExpenseRefundsPage() {
               >
                 <option value="All">All Status</option>
                 <option value="Approved">✅ Approved</option>
-                <option value="Rejected">❌ Rejected</option>
-                <option value="Under review">🔄 Under Review</option>
-                <option value="Requested">📋 Requested</option>
+                <option value="In Progress">🔄 In Progress</option>
+                <option value="Not Approved">❌ Rejected</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <svg className="w-5 h-5 text-wp-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,9 +243,7 @@ export default function ExpenseRefundsPage() {
           
           <div className="grid gap-6">
             {filteredExpenseRefunds.map((refund) => {
-              const overallStatusKey = getOverallStatus(refund.adminApproval, refund.amApproval);
-              const overallStatus = STATUS_MAP[overallStatusKey];
-              const isRecent = new Date(refund.date) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+              const overallStatus = STATUS_MAP[refund.finalStatus as keyof typeof STATUS_MAP];
               
               return (
                 <div key={refund.id} className="wp-card p-10 hover:shadow-xl transition-all duration-300">
@@ -273,11 +251,6 @@ export default function ExpenseRefundsPage() {
                         <div className="flex-1">
                           <div className="flex items-center space-x-3 mb-2">
                             <h3 className="wp-heading-3 text-wp-primary">{refund.concept}</h3>
-                            {isRecent && (
-                              <span className="px-2 py-1 bg-wp-primary/20 text-wp-primary text-xs font-semibold rounded-full">
-                                Recent
-                              </span>
-                            )}
                           </div>
                           <p className="wp-body-small text-wp-text-muted">
                             Date: {new Date(refund.date).toLocaleDateString('en-US', {
@@ -291,6 +264,14 @@ export default function ExpenseRefundsPage() {
                           <span className={`px-3 py-1 rounded-full text-sm font-medium ${overallStatus.bgColor} ${overallStatus.color} ${overallStatus.borderColor} border`}>
                             {overallStatus.label}
                           </span>
+                          {overallStatus.label === 'Rejected' && (refund.rejectAdminReason || refund.rejectAMReason) && (
+                            <div className="mt-2 max-w-xs">
+                              <p className="text-xs text-wp-text-muted mb-1">Reason:</p>
+                              <p className="text-sm text-red-400 bg-red-400/10 px-2 py-1 rounded border border-red-400/30">
+                                {refund.rejectAdminReason || refund.rejectAMReason}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -305,7 +286,7 @@ export default function ExpenseRefundsPage() {
                               <p className="wp-heading-3 text-wp-primary">{refund.amount.toFixed(2)} {refund.currency}</p>
                               {refund.currency !== 'USD' && (
                                 <p className="wp-body-small text-wp-text-muted">
-                                  ≈ ${(refund.amount * (refund.usdExchange || 0)).toFixed(2)} USD
+                                  ≈ ${(refund.amount / (refund.usdExchange || 0)).toFixed(2)} USD
                                 </p>
                               )}
                             </div>
