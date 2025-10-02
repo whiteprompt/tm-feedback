@@ -9,6 +9,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 import PageLayout from '@/components/PageLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorDisplay from '@/components/ErrorDisplay';
+import { Allocation, Contract } from '@/lib/constants';
 
 export default function TeamMemberPage() {
   const { status } = useSession();
@@ -139,7 +140,7 @@ export default function TeamMemberPage() {
                   </div>
                 ) : teamMember.allocations && teamMember.allocations.length > 0 ? (
                   <div className="grid gap-4">
-                    {teamMember.allocations.map((allocation, index) => (
+                    {teamMember.allocations.map((allocation: Allocation, index: number) => (
                       <div
                         key={index}
                         className={`p-6 rounded-lg border transition-all duration-300 ${
@@ -204,7 +205,7 @@ export default function TeamMemberPage() {
                     </div>
                   ) : teamMember?.contracts && teamMember.contracts.length > 0 ? (
                     <div className="grid gap-4">
-                      {teamMember.contracts.map((contract, index) => (
+                      {teamMember.contracts.map((contract: Contract, index: number) => (
                         <div
                           key={index}
                           className={`p-6 rounded-lg border transition-all duration-300 ${

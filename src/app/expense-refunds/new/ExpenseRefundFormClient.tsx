@@ -2,46 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Select from 'react-select';
 import Navigation from '@/components/Navigation';
+import ConceptSelect from '@/components/ConceptSelect';
+import CurrencySelect from '@/components/CurrencySelect';
 import { useRouter } from 'next/navigation';
-
-interface ExpenseRefundForm {
-  title: string;
-  description: string;
-  amount: string;
-  currency: string;
-  concept: string;
-  submittedDate: string;
-  receiptFile?: File;
-}
-
-const EXPENSE_CONCEPTS = [
-  { value: 'administration-services', label: 'Administration Services' },
-  { value: 'advertising', label: 'Advertising' },
-  { value: 'air-ticket', label: 'Air Ticket' },
-  { value: 'bank-fees', label: 'Bank Fees' },
-  { value: 'bonus', label: 'Bonus' },
-  { value: 'business-insurance', label: 'Business Insurance' },
-  { value: 'cleaning', label: 'Cleaning' },
-  { value: 'communication', label: 'Communication' },
-  { value: 'company-representation', label: 'Company representation' },
-  { value: 'covid-test', label: 'Covid Test' },
-  { value: 'employee-benefits', label: 'Employee Benefits' },
-  { value: 'exchange-rate-expense', label: 'Exchange rate Expense' },
-  { value: 'expenses', label: 'Expenses' },
-  { value: 'external-professional-services', label: 'External professional services' },
-  { value: 'food-drinks', label: 'Food & Drinks' },
-];
-
-const CURRENCIES = [
-  { value: 'USD', label: 'USD - US Dollar' },
-  { value: 'EUR', label: 'EUR - Euro' },
-  { value: 'GBP', label: 'GBP - British Pound' },
-  { value: 'CAD', label: 'CAD - Canadian Dollar' },
-  { value: 'AUD', label: 'AUD - Australian Dollar' },
-  { value: 'ARS', label: 'ARS - Argentine Peso' },
-];
+import { ExpenseRefundForm } from '@/lib/constants';
 
 export default function ExpenseRefundFormClient() {
   const { data: session, status } = useSession();
@@ -53,11 +18,14 @@ export default function ExpenseRefundFormClient() {
     currency: 'USD',
     concept: '',
     submittedDate: new Date().toISOString().split('T')[0],
+    exchangeRate: '1',
+    teamMemberEmail: session?.user?.email || '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [fetchingExchangeRate, setFetchingExchangeRate] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -117,6 +85,47 @@ export default function ExpenseRefundFormClient() {
     return () => document.removeEventListener('click', handleClick);
   }, [hasUnsavedChanges, router]);
 
+  // Fetch exchange rate when currency changes
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      if (formData.currency === 'USD') {
+        setFormData(prev => ({ ...prev, exchangeRate: '1' }));
+        return;
+      }
+
+      setFetchingExchangeRate(true);
+      try {
+        const response = await fetch('/api/exchange-rates');
+        if (!response.ok) {
+          throw new Error('Failed to fetch exchange rates');
+        }
+        
+        const data = await response.json();
+        const rate = data.rates[formData.currency];
+        
+        if (rate) {
+          setFormData(prev => ({ ...prev, exchangeRate: rate.toString() }));
+        } else {
+          console.warn(`Exchange rate not found for currency: ${formData.currency}`);
+          setFormData(prev => ({ ...prev, exchangeRate: '1' }));
+        }
+      } catch (error) {
+        console.error('Error fetching exchange rate:', error);
+        // Keep the current exchange rate or default to 1 if there's an error
+        if (!formData.exchangeRate || formData.exchangeRate === '1') {
+          setFormData(prev => ({ ...prev, exchangeRate: '1' }));
+        }
+      } finally {
+        setFetchingExchangeRate(false);
+      }
+    };
+
+    // Only fetch if currency is set and client is ready
+    if (isClient && formData.currency) {
+      fetchExchangeRate();
+    }
+  }, [formData.currency, isClient, formData.exchangeRate]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -169,6 +178,7 @@ export default function ExpenseRefundFormClient() {
       formDataToSend.append('currency', formData.currency);
       formDataToSend.append('concept', formData.concept);
       formDataToSend.append('submittedDate', formData.submittedDate);
+      formDataToSend.append('exchangeRate', formData.exchangeRate);
       formDataToSend.append('userEmail', session?.user?.email || '');
       
       if (formData.receiptFile) {
@@ -192,6 +202,8 @@ export default function ExpenseRefundFormClient() {
         currency: 'USD',
         concept: '',
         submittedDate: new Date().toISOString().split('T')[0],
+        exchangeRate: '1',
+        teamMemberEmail: session?.user?.email || '',
       });
       setHasUnsavedChanges(false);
       
@@ -252,7 +264,7 @@ export default function ExpenseRefundFormClient() {
               />
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <div className="space-y-3">
                 <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
                   Amount <span className="text-red-400">*</span>
@@ -273,38 +285,41 @@ export default function ExpenseRefundFormClient() {
                 <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
                   Currency <span className="text-red-400">*</span>
                 </label>
-                <Select
-                  options={CURRENCIES}
-                  value={CURRENCIES.find(currency => currency.value === formData.currency)}
-                  onChange={(selected) => setFormData(prev => ({ ...prev, currency: selected?.value || 'USD' }))}
+                <CurrencySelect
+                  value={formData.currency}
+                  onChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}
                   placeholder="Select currency"
-                  className="basic-single"
-                  classNamePrefix="select"
-                  isClearable={false}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                      borderColor: 'rgba(64, 75, 104, 0.3)',
-                      color: '#E2E8F0',
-                      minHeight: '48px',
-                      '&:hover': { borderColor: '#00A3B4' }
-                    }),
-                    singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                    placeholder: (base) => ({ ...base, color: '#94A3B8' }),
-                    menu: (base) => ({
-                      ...base,
-                      backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                      border: '1px solid rgba(64, 75, 104, 0.3)'
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                      color: '#E2E8F0',
-                      '&:hover': { backgroundColor: '#00A3B4' }
-                    })
-                  }}
+                  required={true}
                 />
+              </div>
+
+              <div className="space-y-3">
+                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                  Exchange Rate
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.0001"
+                    min="0"
+                    value={formData.exchangeRate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, exchangeRate: e.target.value }))}
+                    className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                    placeholder="1.0000"
+                    disabled={fetchingExchangeRate}
+                  />
+                  {fetchingExchangeRate && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="w-4 h-4 border-2 border-wp-primary border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                </div>
+                <p className="wp-body-small text-wp-text-muted">
+                  {formData.currency === 'USD' ? 
+                    'Base currency (USD = 1)' : 
+                    `1 USD = ${formData.exchangeRate} ${formData.currency}`
+                  }
+                </p>
               </div>
             </div>
 
@@ -313,37 +328,11 @@ export default function ExpenseRefundFormClient() {
                 <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
                   Concept <span className="text-red-400">*</span>
                 </label>
-                <Select
-                  options={EXPENSE_CONCEPTS}
-                  value={EXPENSE_CONCEPTS.find(concept => concept.value === formData.concept)}
-                  onChange={(selected) => setFormData(prev => ({ ...prev, concept: selected?.value || '' }))}
+                <ConceptSelect
+                  value={formData.concept}
+                  onChange={(value) => setFormData(prev => ({ ...prev, concept: value }))}
                   placeholder="Select concept"
-                  className="basic-single"
-                  classNamePrefix="select"
-                  isClearable={false}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                      borderColor: 'rgba(64, 75, 104, 0.3)',
-                      color: '#E2E8F0',
-                      minHeight: '48px',
-                      '&:hover': { borderColor: '#00A3B4' }
-                    }),
-                    singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                    placeholder: (base) => ({ ...base, color: '#94A3B8' }),
-                    menu: (base) => ({
-                      ...base,
-                      backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                      border: '1px solid rgba(64, 75, 104, 0.3)'
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                      color: '#E2E8F0',
-                      '&:hover': { backgroundColor: '#00A3B4' }
-                    })
-                  }}
+                  required={true}
                 />
               </div>
 

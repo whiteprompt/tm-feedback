@@ -3,7 +3,7 @@ import { formatDate } from "@/utils/date";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { STAFFING_API_URL } from "@/lib/constants";
 import { teamMemberCache } from "@/lib/cache";
-import { TeamMember } from "@/types";
+import { TeamMember } from "@/lib/constants";
 
 // Force dynamic rendering to prevent caching issues with authentication
 export const dynamic = "force-dynamic";

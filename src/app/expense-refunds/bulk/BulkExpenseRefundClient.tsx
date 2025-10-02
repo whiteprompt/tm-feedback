@@ -4,18 +4,10 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Select from 'react-select';
 import Navigation from '@/components/Navigation';
+import ConceptSelect from '@/components/ConceptSelect';
+import CurrencySelect from '@/components/CurrencySelect';
 import { useRouter } from 'next/navigation';
-
-interface ExtractedData {
-  amount?: string;
-  date?: string;
-  description?: string;
-  vendor?: string;
-  tax?: string;
-  currency?: string;
-  exchangeRate?: string;
-  concept?: string;
-}
+import { CURRENCIES, ExpenseRefundForm, ExtractedData } from '@/lib/constants';
 
 interface ExtractedDataWithFile extends ExtractedData {
   fileId: string;
@@ -35,71 +27,9 @@ interface TeamMember {
   status: string;
 }
 
-interface BulkExpenseRefundForm {
-  title: string;
-  description: string;
-  amount: string;
-  currency: string;
-  concept: string;
-  submittedDate: string;
-  exchangeRate: string;
+interface BulkExpenseRefundForm extends ExpenseRefundForm {
   selected: boolean;
-  teamMemberEmail: string;
 }
-
-const EXPENSE_CONCEPTS = [
-  { value: 'administration-services', label: 'Administration Services' },
-  { value: 'advertising', label: 'Advertising' },
-  { value: 'air-ticket', label: 'Air Ticket' },
-  { value: 'bank-fees', label: 'Bank Fees' },
-  { value: 'bonus', label: 'Bonus' },
-  { value: 'business-insurance', label: 'Business Insurance' },
-  { value: 'cleaning', label: 'Cleaning' },
-  { value: 'communication', label: 'Communication' },
-  { value: 'company-representation', label: 'Company representation' },
-  { value: 'covid-test', label: 'Covid Test' },
-  { value: 'employee-benefits', label: 'Employee Benefits' },
-  { value: 'exchange-rate-expense', label: 'Exchange rate Expense' },
-  { value: 'expenses', label: 'Expenses' },
-  { value: 'external-professional-services', label: 'External professional services' },
-  { value: 'food-drinks', label: 'Food & Drinks' },
-  { value: 'hackaton-bonus', label: 'Hackaton Bonus' },
-  { value: 'health-insurance', label: 'Health Insurance' },
-  { value: 'hotel', label: 'Hotel' },
-  { value: 'incentfit', label: 'IncentFit' },
-  { value: 'learning-courses', label: 'Learning & Courses' },
-  { value: 'licenses', label: 'Licenses' },
-  { value: 'md-expenses', label: 'MD Expenses' },
-  { value: 'meals-entertainment', label: 'Meals & Entertainment' },
-  { value: 'office-equipment', label: 'Office Equipment' },
-  { value: 'office-equipment-repairs-maintenance', label: 'Office Equipment repairs & maintenance' },
-  { value: 'office-maintenance', label: 'Office Maintenance' },
-  { value: 'people-care', label: 'People Care' },
-  { value: 'personal-insurance', label: 'Personal Insurance' },
-  { value: 'pharmacy', label: 'Pharmacy' },
-  { value: 'postage', label: 'Postage' },
-  { value: 'professional-services', label: 'Professional Services' },
-  { value: 'recruiting', label: 'Recruiting' },
-  { value: 'rent-lease', label: 'Rent or Lease' },
-  { value: 'sales-commisions', label: 'Sales commisions' },
-  { value: 'security-vigilance', label: 'Security and vigilance' },
-  { value: 'shipping-couriers', label: 'Shipping & Couriers' },
-  { value: 'social-events', label: 'Social Events' },
-  { value: 'stationery', label: 'Stationery' },
-  { value: 'team-member-referral', label: 'Team Member Referral' },
-  { value: 'transportation', label: 'Transportation' },
-  { value: 'travel', label: 'Travel' },
-  { value: 'uncategorized-adjustments', label: 'Uncategorized Adjustments' },
-];
-
-const CURRENCIES = [
-  { value: 'USD', label: 'USD - US Dollar' },
-  { value: 'EUR', label: 'EUR - Euro' },
-  { value: 'GBP', label: 'GBP - British Pound' },
-  { value: 'CAD', label: 'CAD - Canadian Dollar' },
-  { value: 'AUD', label: 'AUD - Australian Dollar' },
-  { value: 'ARS', label: 'ARS - Argentine Peso' },
-];
 
 type WizardStep = 'upload' | 'extraction' | 'review' | 'confirmation';
 
@@ -115,8 +45,6 @@ export default function BulkExpenseRefundClient() {
   const [isClient, setIsClient] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [extractionProgress, setExtractionProgress] = useState({ current: 0, total: 0 });
-  const [bulkEditMode, setBulkEditMode] = useState<'concept' | 'currency' | null>(null);
-  const [bulkEditValue, setBulkEditValue] = useState('');
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -348,7 +276,7 @@ export default function BulkExpenseRefundClient() {
           amount: extractedInfo.output?.totalPrice || '',
           vendor: extractedInfo.output?.store || '',
           description: extractedInfo.output?.store || '',
-          tax: extractedInfo.output?.tax || '',
+          tax: (extractedInfo.output?.tax && extractedInfo.output.tax !== 'null') ? extractedInfo.output.tax : '0',
           currency: extractedInfo.output?.currency || '',
           concept: extractedInfo.output?.concept || '',
           exchangeRate: extractedInfo.output?.exchangeRate || '1',
@@ -379,27 +307,125 @@ export default function BulkExpenseRefundClient() {
       }
     }
 
-    // Convert extracted data to form data
-    const newFormData: BulkExpenseRefundForm[] = newExtractedData.map((item) => ({
-      title: item.vendor || '',
-      description: item.vendor || '',
-      amount: item.amount || '',
-      currency: item.currency || 'USD',
-      concept: item.concept || '',
-      submittedDate: new Date().toISOString().split('T')[0],
-      exchangeRate: item.exchangeRate || '1',
-      selected: item.status === 'extracted',
-      teamMemberEmail: session?.user?.email || ''
-    }));
+    // Helper function to map extracted currency to valid currency codes
+    const mapCurrency = (extractedCurrency: string | undefined): string => {
+      if (!extractedCurrency) return 'USD';
+      
+      const currency = extractedCurrency.toUpperCase().trim();
+      
+      // Direct currency code matches
+      const validCurrencies = CURRENCIES.map(c => c.value);
+      if (validCurrencies.includes(currency)) {
+        return currency;
+      }
+      
+      // Currency symbol and name mappings
+      const currencyMappings: Record<string, string> = {
+        'R$': 'BRL',
+        'REAL': 'BRL',
+        'REAIS': 'BRL',
+        'BRAZILIAN REAL': 'BRL',
+        '$': 'USD',
+        'DOLLAR': 'USD',
+        'DOLLARS': 'USD',
+        'US DOLLAR': 'USD',
+        '€': 'EUR',
+        'EURO': 'EUR',
+        'EUROS': 'EUR',
+        '£': 'GBP',
+        'POUND': 'GBP',
+        'POUNDS': 'GBP',
+        'BRITISH POUND': 'GBP',
+        'PESO': 'ARS',
+        'PESOS': 'ARS',
+        'ARGENTINE PESO': 'ARS',
+        'CAD$': 'CAD',
+        'CANADIAN DOLLAR': 'CAD',
+        'AUD$': 'AUD',
+        'AUSTRALIAN DOLLAR': 'AUD'
+      };
+      
+      return currencyMappings[currency] || 'USD';
+    };
+
+    // Helper function to get exchange rate for currency
+    const getExchangeRateForCurrency = async (currency: string): Promise<string> => {
+      if (currency === 'USD') return '1';
+      
+      console.log(`[BulkForm] Fetching exchange rate for currency: ${currency}`);
+      
+      try {
+        const response = await fetch('/api/exchange-rates');
+        if (response.ok) {
+          const data = await response.json();
+          const rate = data.rates[currency];
+          console.log(`[BulkForm] Exchange rate for ${currency}:`, rate);
+          return rate ? rate.toString() : '1';
+        }
+      } catch (error) {
+        console.error('Error fetching exchange rate for', currency, ':', error);
+      }
+      return '1';
+    };
+
+    // Convert extracted data to form data with proper exchange rates
+    const newFormData: BulkExpenseRefundForm[] = await Promise.all(
+      newExtractedData.map(async (item) => {
+        const currency = mapCurrency(item.currency);
+        console.log(`[BulkForm] Processing item - Original currency: "${item.currency}", Mapped currency: "${currency}"`);
+        
+        // Always fetch the correct exchange rate for non-USD currencies
+        // Don't trust the extracted exchange rate as it might be incorrect
+        let exchangeRate = '1';
+        if (currency !== 'USD') {
+          exchangeRate = await getExchangeRateForCurrency(currency);
+          console.log(`[BulkForm] Final exchange rate for ${currency}: ${exchangeRate}`);
+        }
+        
+        return {
+          title: item.vendor || '',
+          description: item.vendor || '',
+          amount: item.amount || '',
+          currency: currency,
+          concept: item.concept || '',
+          submittedDate: new Date().toISOString().split('T')[0],
+          exchangeRate: exchangeRate,
+          selected: item.status === 'extracted',
+          teamMemberEmail: session?.user?.email || ''
+        };
+      })
+    );
 
     setFormData(newFormData);
     setCurrentStep('review');
   };
 
-  const updateFormItem = (index: number, field: keyof BulkExpenseRefundForm, value: string | boolean) => {
-    setFormData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+  const updateFormItem = async (index: number, field: keyof BulkExpenseRefundForm, value: string | boolean) => {
+    // If currency is being changed, also update the exchange rate
+    if (field === 'currency' && typeof value === 'string') {
+      let exchangeRate = '1';
+      
+      if (value !== 'USD') {
+        try {
+          const response = await fetch('/api/exchange-rates');
+          if (response.ok) {
+            const data = await response.json();
+            const rate = data.rates[value];
+            exchangeRate = rate ? rate.toString() : '1';
+          }
+        } catch (error) {
+          console.error('Error fetching exchange rate for', value, ':', error);
+        }
+      }
+      
+      setFormData(prev => prev.map((item, i) => 
+        i === index ? { ...item, [field]: value, exchangeRate: exchangeRate } : item
+      ));
+    } else {
+      setFormData(prev => prev.map((item, i) => 
+        i === index ? { ...item, [field]: value } : item
+      ));
+    }
   };
 
   const selectAllItems = () => {
@@ -420,16 +446,6 @@ export default function BulkExpenseRefundClient() {
     setFiles(prev => prev.filter((_, idx) => !selectedIndices.includes(idx)));
   };
 
-  const applyBulkEdit = () => {
-    if (!bulkEditMode || !bulkEditValue) return;
-
-    setFormData(prev => prev.map(item => 
-      item.selected ? { ...item, [bulkEditMode]: bulkEditValue } : item
-    ));
-
-    setBulkEditMode(null);
-    setBulkEditValue('');
-  };
 
   const handleBulkSubmission = async () => {
     setLoading(true);
@@ -773,126 +789,30 @@ export default function BulkExpenseRefundClient() {
                 {/* Bulk Actions Toolbar */}
                 <div className="bg-wp-dark-card/60 border border-wp-border rounded-lg p-4">
                   <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center gap-6">
                       <button
                         type="button"
                         onClick={selectAllItems}
-                        className="wp-body-small text-wp-primary hover:text-wp-primary/80 transition-colors duration-300"
+                        className="px-3 py-2 bg-wp-primary/20 text-wp-primary rounded-lg wp-body-small hover:bg-wp-primary/30 transition-all duration-300"
                       >
                         Select All
                       </button>
                       <button
                         type="button"
                         onClick={selectNoneItems}
-                        className="wp-body-small text-wp-text-muted hover:text-wp-text-secondary transition-colors duration-300"
+                        className="px-3 py-2 bg-wp-dark-card/60 border border-wp-border text-wp-text-secondary rounded-lg wp-body-small hover:bg-wp-dark-card/80 transition-all duration-300"
                       >
                         Select None
                       </button>
                       <button
                         type="button"
                         onClick={deleteSelectedItems}
-                        className="wp-body-small text-red-400 hover:text-red-300 transition-colors duration-300"
+                        className="px-3 py-2 bg-red-600/20 text-red-400 rounded-lg wp-body-small hover:bg-red-600/30 transition-all duration-300"
                       >
                         Delete Selected
                       </button>
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                      {bulkEditMode === null ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => setBulkEditMode('concept')}
-                            className="px-3 py-2 bg-wp-primary/20 text-wp-primary rounded-lg wp-body-small hover:bg-wp-primary/30 transition-all duration-300"
-                          >
-                            Bulk Edit Concept
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setBulkEditMode('currency')}
-                            className="px-3 py-2 bg-wp-primary/20 text-wp-primary rounded-lg wp-body-small hover:bg-wp-primary/30 transition-all duration-300"
-                          >
-                            Bulk Edit Currency
-                          </button>
-                        </>
-                      ) : (
-                        <div className="flex items-center space-x-2">
-                          {bulkEditMode === 'concept' ? (
-                            <Select
-                              options={EXPENSE_CONCEPTS}
-                              value={EXPENSE_CONCEPTS.find(c => c.label === bulkEditValue)}
-                              onChange={(selected) => setBulkEditValue(selected?.label || '')}
-                              placeholder="Select concept"
-                              className="basic-single w-48"
-                              classNamePrefix="select"
-                              styles={{
-                                control: (base) => ({
-                                  ...base,
-                                  backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                                  borderColor: 'rgba(64, 75, 104, 0.3)',
-                                  minHeight: '32px',
-                                  fontSize: '14px'
-                                }),
-                                singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                                menu: (base) => ({
-                                  ...base,
-                                  backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                                  zIndex: 9999
-                                }),
-                                option: (base, state) => ({
-                                  ...base,
-                                  backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                                  color: '#E2E8F0'
-                                })
-                              }}
-                            />
-                          ) : (
-                            <Select
-                              options={CURRENCIES}
-                              value={CURRENCIES.find(c => c.value === bulkEditValue)}
-                              onChange={(selected) => setBulkEditValue(selected?.value || '')}
-                              placeholder="Select currency"
-                              className="basic-single w-48"
-                              classNamePrefix="select"
-                              styles={{
-                                control: (base) => ({
-                                  ...base,
-                                  backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                                  borderColor: 'rgba(64, 75, 104, 0.3)',
-                                  minHeight: '32px',
-                                  fontSize: '14px'
-                                }),
-                                singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                                menu: (base) => ({
-                                  ...base,
-                                  backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                                  zIndex: 9999
-                                }),
-                                option: (base, state) => ({
-                                  ...base,
-                                  backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                                  color: '#E2E8F0'
-                                })
-                              }}
-                            />
-                          )}
-                          <button
-                            type="button"
-                            onClick={applyBulkEdit}
-                            className="px-3 py-2 bg-green-600 text-white rounded-lg wp-body-small hover:bg-green-700 transition-all duration-300"
-                          >
-                            Apply
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {setBulkEditMode(null); setBulkEditValue('');}}
-                            className="px-3 py-2 bg-red-600 text-white rounded-lg wp-body-small hover:bg-red-700 transition-all duration-300"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      )}
-                    </div>
                   </div>
                 </div>
 
@@ -967,71 +887,6 @@ export default function BulkExpenseRefundClient() {
                   </div>
                 </div>
 
-                {/* Team Member Selection */}
-                <div className="bg-wp-dark-card/60 border border-wp-border rounded-lg p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div className="flex items-center space-x-3">
-                      <svg className="w-5 h-5 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      <label className="wp-body text-wp-text-primary font-medium">
-                        Submit expenses for:
-                      </label>
-                    </div>
-                    
-                    <div className="flex-1 max-w-md">
-                      <Select
-                        value={teamMembers.length > 0 ? 
-                          teamMembers.find(member => member.email === bulkTeamMember) ? 
-                            { value: bulkTeamMember, label: teamMembers.find(member => member.email === bulkTeamMember)?.name || bulkTeamMember } : 
-                            { value: bulkTeamMember, label: bulkTeamMember === session?.user?.email ? 'Me' : bulkTeamMember } : 
-                          { value: bulkTeamMember, label: 'Me' }
-                        }
-                        onChange={(selected) => {
-                          if (selected) {
-                            setBulkTeamMember(selected.value);
-                          }
-                        }}
-                        options={(() => {
-                          const options = [
-                            { value: session?.user?.email || '', label: 'Me' },
-                            ...teamMembers.map(member => ({
-                              value: member.email,
-                              label: `${member.name || `${member.lastName} ${member.firstName}`} (${member.email})`
-                            }))
-                          ];
-                          console.log('Select options:', options);
-                          console.log('Team members for options:', teamMembers);
-                          return options;
-                        })()}
-                        placeholder={loadingTeamMembers ? "Loading team members..." : "Select team member"}
-                        isLoading={loadingTeamMembers}
-                        className="basic-single"
-                        classNamePrefix="select"
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                            borderColor: 'rgba(64, 75, 104, 0.3)',
-                            minHeight: '42px',
-                            fontSize: '14px'
-                          }),
-                          singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                          menu: (base) => ({
-                            ...base,
-                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                            zIndex: 9999
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                            color: '#E2E8F0'
-                          })
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
 
                 {/* Data Grid */}
                 <div className="overflow-x-auto">
@@ -1090,15 +945,17 @@ export default function BulkExpenseRefundClient() {
                             />
                           </td>
                           <td className="p-3">
-                            <select
-                              value={item.currency}
-                              onChange={(e) => updateFormItem(index, 'currency', e.target.value)}
-                              className="w-full px-2 py-1 bg-wp-dark-card border border-wp-border rounded wp-body-small text-wp-text-primary focus:outline-none focus:ring-1 focus:ring-wp-primary"
-                            >
-                              {CURRENCIES.map(currency => (
-                                <option key={currency.value} value={currency.value}>{currency.value}</option>
-                              ))}
-                            </select>
+                            <div className="min-w-32">
+                              <CurrencySelect
+                                value={item.currency}
+                                onChange={(value) => updateFormItem(index, 'currency', value)}
+                                placeholder="Currency"
+                                showQuickButtons={false}
+                                compact={true}
+                                usePortal={true}
+                                className="text-sm"
+                              />
+                            </div>
                           </td>
                           <td className="p-3">
                             <input
@@ -1111,16 +968,16 @@ export default function BulkExpenseRefundClient() {
                             />
                           </td>
                           <td className="p-3">
-                            <select
-                              value={item.concept}
-                              onChange={(e) => updateFormItem(index, 'concept', e.target.value)}
-                              className="w-full px-2 py-1 bg-wp-dark-card border border-wp-border rounded wp-body-small text-wp-text-primary focus:outline-none focus:ring-1 focus:ring-wp-primary"
-                            >
-                              <option value="">Select concept</option>
-                              {EXPENSE_CONCEPTS.map(concept => (
-                                <option key={concept.value} value={concept.label}>{concept.label}</option>
-                              ))}
-                            </select>
+                            <div className="min-w-48">
+                              <ConceptSelect
+                                value={item.concept}
+                                onChange={(value) => updateFormItem(index, 'concept', value)}
+                                placeholder="Select concept"
+                                showQuickButtons={false}
+                                usePortal={true}
+                                className="text-sm"
+                              />
+                            </div>
                           </td>
                           <td className="p-3">
                             <div className="min-w-48">

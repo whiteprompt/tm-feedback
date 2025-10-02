@@ -2,86 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Select from 'react-select';
 import Navigation from '@/components/Navigation';
+import ConceptSelect from '@/components/ConceptSelect';
+import CurrencySelect from '@/components/CurrencySelect';
 import { useRouter } from 'next/navigation';
-
-interface ExpenseRefundForm {
-  title: string;
-  description: string;
-  amount: string;
-  currency: string;
-  concept: string;
-  submittedDate: string;
-  exchangeRate: string;
-  receiptFile?: File;
-}
-
-interface ExtractedData {
-  amount?: string;
-  date?: string;
-  description?: string;
-  vendor?: string;
-  tax?: string;
-  currency?: string;
-  exchangeRate?: string;
-  concept?: string;
-}
-
-const EXPENSE_CONCEPTS = [
-  { value: 'administration-services', label: 'Administration Services' },
-  { value: 'advertising', label: 'Advertising' },
-  { value: 'air-ticket', label: 'Air Ticket' },
-  { value: 'bank-fees', label: 'Bank Fees' },
-  { value: 'bonus', label: 'Bonus' },
-  { value: 'business-insurance', label: 'Business Insurance' },
-  { value: 'cleaning', label: 'Cleaning' },
-  { value: 'communication', label: 'Communication' },
-  { value: 'company-representation', label: 'Company representation' },
-  { value: 'covid-test', label: 'Covid Test' },
-  { value: 'employee-benefits', label: 'Employee Benefits' },
-  { value: 'exchange-rate-expense', label: 'Exchange rate Expense' },
-  { value: 'expenses', label: 'Expenses' },
-  { value: 'external-professional-services', label: 'External professional services' },
-  { value: 'food-drinks', label: 'Food & Drinks' },
-  { value: 'hackaton-bonus', label: 'Hackaton Bonus' },
-  { value: 'health-insurance', label: 'Health Insurance' },
-  { value: 'hotel', label: 'Hotel' },
-  { value: 'incentfit', label: 'IncentFit' },
-  { value: 'learning-courses', label: 'Learning & Courses' },
-  { value: 'licenses', label: 'Licenses' },
-  { value: 'md-expenses', label: 'MD Expenses' },
-  { value: 'meals-entertainment', label: 'Meals & Entertainment' },
-  { value: 'employee-benefits', label: 'Employee Benefits' },
-  { value: 'office-equipment', label: 'Office Equipment' },
-  { value: 'office-equipment-repairs-maintenance', label: 'Office Equipment repairs & maintenance' },
-  { value: 'office-maintenance', label: 'Office Maintenance' },
-  { value: 'people-care', label: 'People Care' },
-  { value: 'personal-insurance', label: 'Personal Insurance' },
-  { value: 'pharmacy', label: 'Pharmacy' },
-  { value: 'postage', label: 'Postage' },
-  { value: 'professional-services', label: 'Professional Services' },
-  { value: 'recruiting', label: 'Recruiting' },
-  { value: 'rent-lease', label: 'Rent or Lease' },
-  { value: 'sales-commisions', label: 'Sales commisions' },
-  { value: 'security-vigilance', label: 'Security and vigilance' },
-  { value: 'shipping-couriers', label: 'Shipping & Couriers' },
-  { value: 'social-events', label: 'Social Events' },
-  { value: 'stationery', label: 'Stationery' },
-  { value: 'team-member-referral', label: 'Team Member Referral' },
-  { value: 'transportation', label: 'Transportation' },
-  { value: 'travel', label: 'Travel' },
-  { value: 'uncategorized-adjustments', label: 'Uncategorized Adjustments' },
-];
-
-const CURRENCIES = [
-  { value: 'USD', label: 'USD - US Dollar' },
-  { value: 'EUR', label: 'EUR - Euro' },
-  { value: 'GBP', label: 'GBP - British Pound' },
-  { value: 'CAD', label: 'CAD - Canadian Dollar' },
-  { value: 'AUD', label: 'AUD - Australian Dollar' },
-  { value: 'ARS', label: 'ARS - Argentine Peso' },
-];
+import { CURRENCIES, EXPENSE_CONCEPTS, ExpenseRefundForm, ExtractedData } from '@/lib/constants';
 
 type WizardStep = 'upload' | 'review' | 'form';
 
@@ -97,6 +22,7 @@ export default function ExpenseRefundFormV2Client() {
     concept: '',
     submittedDate: new Date().toISOString().split('T')[0],
     exchangeRate: '1',
+    teamMemberEmail: session?.user?.email || '',
   });
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -105,6 +31,7 @@ export default function ExpenseRefundFormV2Client() {
   const [isClient, setIsClient] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [fetchingExchangeRate, setFetchingExchangeRate] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -153,6 +80,47 @@ export default function ExpenseRefundFormV2Client() {
       }
     };
   }, [uploadedImage]);
+
+  // Fetch exchange rate when currency changes
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      if (formData.currency === 'USD') {
+        setFormData(prev => ({ ...prev, exchangeRate: '1' }));
+        return;
+      }
+
+      setFetchingExchangeRate(true);
+      try {
+        const response = await fetch('/api/exchange-rates');
+        if (!response.ok) {
+          throw new Error('Failed to fetch exchange rates');
+        }
+        
+        const data = await response.json();
+        const rate = data.rates[formData.currency];
+        
+        if (rate) {
+          setFormData(prev => ({ ...prev, exchangeRate: rate.toString() }));
+        } else {
+          console.warn(`Exchange rate not found for currency: ${formData.currency}`);
+          setFormData(prev => ({ ...prev, exchangeRate: '1' }));
+        }
+      } catch (error) {
+        console.error('Error fetching exchange rate:', error);
+        // Keep the current exchange rate or default to 1 if there's an error
+        if (!formData.exchangeRate || formData.exchangeRate === '1') {
+          setFormData(prev => ({ ...prev, exchangeRate: '1' }));
+        }
+      } finally {
+        setFetchingExchangeRate(false);
+      }
+    };
+
+    // Only fetch if currency is set and client is ready
+    if (isClient && formData.currency) {
+      fetchExchangeRate();
+    }
+  }, [formData.currency, isClient, formData.exchangeRate]);
 
   const handleFileUpload = async (file: File) => {
     setExtracting(true);
@@ -204,7 +172,7 @@ export default function ExpenseRefundFormV2Client() {
         amount: extractedInfo.output?.totalPrice || '',
         vendor: extractedInfo.output?.store || '',
         description: extractedInfo.output?.store || '',
-        tax: extractedInfo.output?.tax || '',
+        tax: (extractedInfo.output?.tax && extractedInfo.output.tax !== 'null') ? extractedInfo.output.tax : '0',
         currency: extractedInfo.output?.currency || '',
         concept: extractedInfo.output?.concept || '',
         exchangeRate: extractedInfo.output?.exchangeRate || '',
@@ -231,20 +199,51 @@ export default function ExpenseRefundFormV2Client() {
     }
   };
 
+  // Helper function to map extracted currency to valid currency codes
+  const mapCurrency = (extractedCurrency: string | undefined): string => {
+    if (!extractedCurrency) return 'USD';
+    
+    const currency = extractedCurrency.toUpperCase().trim();
+    
+    // Direct currency code matches
+    const validCurrencies = CURRENCIES.map(c => c.value);
+    if (validCurrencies.includes(currency)) {
+      return currency;
+    }
+    
+    // Currency symbol and name mappings
+    const currencyMappings: Record<string, string> = {
+      'R$': 'BRL',
+      'REAL': 'BRL',
+      'REAIS': 'BRL',
+      'BRAZILIAN REAL': 'BRL',
+      '$': 'USD',
+      'DOLLAR': 'USD',
+      'DOLLARS': 'USD',
+      'US DOLLAR': 'USD',
+      '€': 'EUR',
+      'EURO': 'EUR',
+      'EUROS': 'EUR',
+      '£': 'GBP',
+      'POUND': 'GBP',
+      'POUNDS': 'GBP',
+      'BRITISH POUND': 'GBP',
+      'PESO': 'ARS',
+      'PESOS': 'ARS',
+      'ARGENTINE PESO': 'ARS',
+      'CAD$': 'CAD',
+      'CANADIAN DOLLAR': 'CAD',
+      'AUD$': 'AUD',
+      'AUSTRALIAN DOLLAR': 'AUD'
+    };
+    
+    return currencyMappings[currency] || 'USD';
+  };
+
   const applyExtractedData = () => {
     if (extractedData) {
       // Map currency if detected, otherwise keep current selection
-      let currency = formData.currency;
-      if (extractedData.currency) {
-        // Try to find matching currency in our options
-        const foundCurrency = CURRENCIES.find(c => 
-          c.value === extractedData.currency || 
-          c.label.toLowerCase().includes(extractedData.currency?.toLowerCase() || '')
-        );
-        if (foundCurrency) {
-          currency = foundCurrency.value;
-        }
-      }
+      const currency = mapCurrency(extractedData.currency) || formData.currency;
 
       // Verify the concept exists in our options
       const conceptExists = EXPENSE_CONCEPTS.find(c => c.label === extractedData.concept);
@@ -324,6 +323,7 @@ export default function ExpenseRefundFormV2Client() {
         concept: '',
         submittedDate: new Date().toISOString().split('T')[0],
         exchangeRate: '1',
+        teamMemberEmail: session?.user?.email || '',
       });
       setHasUnsavedChanges(false);
       
@@ -372,7 +372,7 @@ export default function ExpenseRefundFormV2Client() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-16 wp-fade-in">
             <div>
-              <h1 className="wp-heading-1 text-wp-text-primary mb-4">Submit Expense Refund v2</h1>
+              <h1 className="wp-heading-1 text-wp-text-primary mb-4">Submit Expense Refund</h1>
               <p className="wp-body text-wp-text-secondary">Upload your receipt and let AI extract the information</p>
             </div>
             
@@ -514,7 +514,7 @@ export default function ExpenseRefundFormV2Client() {
                           Tax Amount
                         </label>
                         <p className="wp-body text-wp-text-primary">
-                          {extractedData.tax || 'Not detected'}
+                          {extractedData.tax && extractedData.tax !== 'null' ? extractedData.tax : '0'}
                         </p>
                       </div>
 
@@ -523,7 +523,7 @@ export default function ExpenseRefundFormV2Client() {
                           Currency
                         </label>
                         <p className="wp-body text-wp-text-primary">
-                          {extractedData.currency || 'Not detected'}
+                          {extractedData.currency ? mapCurrency(extractedData.currency) : 'Not detected'}
                         </p>
                       </div>
 
@@ -593,11 +593,6 @@ export default function ExpenseRefundFormV2Client() {
                   <p className="wp-body text-wp-text-secondary mb-8">
                     Review and complete the form with your expense details.
                   </p>
-                  {/* Debug info */}
-                  <div className="text-left text-xs text-gray-500 mb-4">
-                    <p>Debug - Current concept value: {`"${formData.concept}"`}</p>
-                    <p>Debug - Found concept option: {EXPENSE_CONCEPTS.find(concept => concept.value === formData.concept)?.label || "Not found"}</p>
-                  </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
@@ -636,37 +631,11 @@ export default function ExpenseRefundFormV2Client() {
                       <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
                         Currency <span className="text-red-400">*</span>
                       </label>
-                      <Select
-                        options={CURRENCIES}
-                        value={CURRENCIES.find(currency => currency.value === formData.currency)}
-                        onChange={(selected) => setFormData(prev => ({ ...prev, currency: selected?.value || 'USD' }))}
+                      <CurrencySelect
+                        value={formData.currency}
+                        onChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}
                         placeholder="Select currency"
-                        className="basic-single"
-                        classNamePrefix="select"
-                        isClearable={false}
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                            borderColor: 'rgba(64, 75, 104, 0.3)',
-                            color: '#E2E8F0',
-                            minHeight: '48px',
-                            '&:hover': { borderColor: '#00A3B4' }
-                          }),
-                          singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                          placeholder: (base) => ({ ...base, color: '#94A3B8' }),
-                          menu: (base) => ({
-                            ...base,
-                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                            border: '1px solid rgba(64, 75, 104, 0.3)'
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                            color: '#E2E8F0',
-                            '&:hover': { backgroundColor: '#00A3B4' }
-                          })
-                        }}
+                        required={true}
                       />
                     </div>
 
@@ -674,15 +643,29 @@ export default function ExpenseRefundFormV2Client() {
                       <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
                         Exchange Rate
                       </label>
-                      <input
-                        type="number"
-                        step="0.0001"
-                        min="0"
-                        value={formData.exchangeRate}
-                        onChange={(e) => setFormData(prev => ({ ...prev, exchangeRate: e.target.value }))}
-                        className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
-                        placeholder="1.0000"
-                      />
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.0001"
+                          min="0"
+                          value={formData.exchangeRate}
+                          onChange={(e) => setFormData(prev => ({ ...prev, exchangeRate: e.target.value }))}
+                          className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                          placeholder="1.0000"
+                          disabled={fetchingExchangeRate}
+                        />
+                        {fetchingExchangeRate && (
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <div className="w-4 h-4 border-2 border-wp-primary border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                        )}
+                      </div>
+                      <p className="wp-body-small text-wp-text-muted">
+                        {formData.currency === 'USD' ? 
+                          'Base currency (USD = 1)' : 
+                          `1 USD = ${formData.exchangeRate} ${formData.currency}`
+                        }
+                      </p>
                     </div>
                   </div>
 
@@ -691,39 +674,11 @@ export default function ExpenseRefundFormV2Client() {
                       <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
                         Concept <span className="text-red-400">*</span>
                       </label>
-                      <Select
-                        options={EXPENSE_CONCEPTS}
-                        value={EXPENSE_CONCEPTS.find(concept => concept.label === formData.concept)}
-                        onChange={(selected) => {
-                          setFormData(prev => ({ ...prev, concept: selected?.label || '' }));
-                        }}
+                      <ConceptSelect
+                        value={formData.concept}
+                        onChange={(value) => setFormData(prev => ({ ...prev, concept: value }))}
                         placeholder="Select concept"
-                        className="basic-single"
-                        classNamePrefix="select"
-                        isClearable={false}
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                            borderColor: 'rgba(64, 75, 104, 0.3)',
-                            color: '#E2E8F0',
-                            minHeight: '48px',
-                            '&:hover': { borderColor: '#00A3B4' }
-                          }),
-                          singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                          placeholder: (base) => ({ ...base, color: '#94A3B8' }),
-                          menu: (base) => ({
-                            ...base,
-                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                            border: '1px solid rgba(64, 75, 104, 0.3)'
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                            color: '#E2E8F0',
-                            '&:hover': { backgroundColor: '#00A3B4' }
-                          })
-                        }}
+                        required={true}
                       />
                     </div>
 

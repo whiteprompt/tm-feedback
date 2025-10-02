@@ -39,24 +39,29 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
-    let exchangeRate = 0;
+    let exchangeRate = 1; // Default to 1
     const currency = data?.output?.currency;
     if (currency) {
-      if (currency === "$") {
+      if (currency === "$" || currency.toUpperCase() === "USD") {
         exchangeRate = 1;
       } else {
         try {
+          // Use our cached exchange rate API instead of external API
           const responseExchangeRate = await fetch(
-            "https://api.exchangerate-api.com/v4/latest/USD"
+            `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/exchange-rates`
           );
 
           if (responseExchangeRate.ok) {
             const dataExchangeRate = await responseExchangeRate.json();
-            exchangeRate =
-              dataExchangeRate.rates[data.output.currency.toUpperCase()];
+            const currencyCode = currency.toUpperCase();
+            exchangeRate = dataExchangeRate.rates[currencyCode] || 1;
+            console.log(
+              `[ExtractReceipt] Exchange rate for ${currencyCode}: ${exchangeRate}`
+            );
           }
         } catch (error) {
-          console.error("Error extracting exchange rate:", error);
+          console.error("Error fetching exchange rate:", error);
+          exchangeRate = 1; // Fallback to 1
         }
       }
     }

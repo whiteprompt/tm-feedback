@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
-import { TeamMember } from '@/types';
+import { TeamMember } from '@/lib/constants';
 
 interface TeamMemberContextType {
   teamMember: TeamMember | null;
