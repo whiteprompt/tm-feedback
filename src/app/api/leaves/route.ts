@@ -1,168 +1,156 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { STAFFING_API_URL } from "@/lib/constants";
+import { LeaveType } from "@/lib/types";
 
-interface Leave {
-  id: string;
-  start_date: string;
-  end_date: string;
-  type: string;
-  status: string;
-  days: number;
-  comments?: string;
-}
-
-interface RedmineLeave {
-  id: string;
-  email: string;
-  start_date?: string;
-  startDate?: string;
-  end_date?: string;
-  endDate?: string;
-  categoryName?: string;
-  type?: string;
-  leave_type?: string;
-  status_id?: number;
-  status?: string;
-  days?: number;
-  duration?: number;
-  comments?: string;
-  description?: string;
-}
-
-let REDMINE_TOKEN = "";
-
-// Function to calculate days between two dates (inclusive)
-const calculateDaysBetween = (startDate: string, endDate: string): number => {
-  if (!startDate || !endDate) {
-    return 1; // Default fallback
-  }
-
-  try {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    // Check if dates are valid
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return 1; // Default fallback for invalid dates
-    }
-
-    // Calculate difference in milliseconds and convert to days
-    const diffTime = end.getTime() - start.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end days
-
-    return diffDays > 0 ? diffDays : 1; // Ensure positive result
-  } catch (error) {
-    console.error("Error calculating days between dates:", error);
-    return 1; // Default fallback
-  }
-};
-
-const getToken = async () => {
-  try {
-    const response = await fetch(
-      `https://api-redmine.whiteprompt.com/auth/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: process.env.REDMINE_USERNAME,
-          password: process.env.REDMINE_PASSWORD,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      console.error("Error fetching token:", response.statusText);
-      return null;
-    }
-
-    const data = await response.json();
-    return data.results.token;
-  } catch (error) {
-    console.error("Error fetching token:", error);
-    return null;
-  }
-};
+// Force dynamic rendering to prevent caching issues with authentication
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-  return await fetchLeaves(false);
-}
-
-async function fetchLeaves(isRetry: boolean = false) {
   try {
+    // Get the authenticated user
     const { error, email } = await getAuthenticatedUser();
-
-    if (!REDMINE_TOKEN) {
-      REDMINE_TOKEN = await getToken();
-    }
-
     if (error) {
       return error;
     }
 
-    // Fixed date range as requested: 2025-01-01 to 2026-01-01
-    const startDate = "20250101";
-    const endDate = "20260101";
+    // Make the request to the staffing service
+    const response = await fetch(
+      `${STAFFING_API_URL}/notion-webhooks/leaves?email=${email}`,
+      {
+        headers: {
+          Accept: "application/json",
+          "x-api-key": process.env.STAFFING_TOOL_API_KEY || "",
+        },
+      }
+    );
 
-    const redmineApiUrl = `https://api-redmine.whiteprompt.com/leaves?start=${startDate}&end=${endDate}&email=${encodeURIComponent(email)}`;
+    if (!response.ok) {
+      throw new Error(
+        `Staffing service responded with status: ${response.status}`
+      );
+    }
 
-    const response = await fetch(redmineApiUrl, {
-      method: "GET",
+    const data = await response.json();
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error fetching leaves:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // Get the authenticated user
+    const { error, email: authEmail } = await getAuthenticatedUser();
+    if (error) {
+      return error;
+    }
+
+    const formData = await request.formData();
+
+    const email = (formData.get("userEmail") as string) || authEmail;
+    const fromDate = formData.get("fromDate") as string;
+    const toDate = formData.get("toDate") as string;
+    const type = formData.get("type") as string;
+    const comments = formData.get("comments") as string;
+    const certificateFile = formData.get("certificate") as File;
+
+    // Validation
+    if (!fromDate || !toDate || !type) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Validate dates
+    const fromDateObj = new Date(fromDate);
+    const toDateObj = new Date(toDate);
+
+    if (fromDateObj >= toDateObj) {
+      return NextResponse.json(
+        { error: "End date must be after start date" },
+        { status: 400 }
+      );
+    }
+
+    // Validate leave type
+    const validLeaveTypes = Object.values(LeaveType);
+    if (!validLeaveTypes.includes(type as LeaveType)) {
+      return NextResponse.json(
+        { error: "Invalid leave type" },
+        { status: 400 }
+      );
+    }
+
+    // Handle file upload if certificate is provided
+    if (certificateFile && certificateFile.size > 0) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "application/pdf",
+      ];
+      if (!allowedTypes.includes(certificateFile.type)) {
+        return NextResponse.json(
+          { error: "Invalid file type. Only JPG, PNG, and PDF are allowed." },
+          { status: 400 }
+        );
+      }
+
+      // Validate file size (max 5MB)
+      if (certificateFile.size > 5 * 1024 * 1024) {
+        return NextResponse.json(
+          { error: "File size must be less than 5MB" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Prepare form data for the staffing service
+    const leaveFormData = new FormData();
+    leaveFormData.append("teamMemberEmail", email);
+    leaveFormData.append("fromDate", fromDate);
+    leaveFormData.append("toDate", toDate);
+    leaveFormData.append("type", type);
+    leaveFormData.append("comments", comments || "Created by TM portal");
+
+    // Add certificate file if provided
+    if (certificateFile && certificateFile.size > 0) {
+      leaveFormData.append("cerfiticate_file", certificateFile);
+    }
+
+    console.log(leaveFormData);
+
+    // Make the request to the staffing service
+    const response = await fetch(`${STAFFING_API_URL}/notion-webhooks/leaves`, {
+      method: "POST",
+      body: leaveFormData,
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${REDMINE_TOKEN}`,
+        "x-api-key": process.env.STAFFING_TOOL_API_KEY || "",
       },
     });
 
     if (!response.ok) {
-      console.error(
-        "Redmine API response not ok:",
-        response.status,
-        response.statusText
-      );
-      if (response.status === 401 && !isRetry) {
-        console.log("Refreshing token and retrying...");
-        REDMINE_TOKEN = await getToken();
-        return await fetchLeaves(true);
-      }
-      return NextResponse.json(
-        { error: "Failed to fetch leaves from Redmine API" },
-        { status: response.status }
+      console.log(response);
+      throw new Error(
+        `Staffing service responded with status: ${response.status}`
       );
     }
 
-    const leavesData = await response.json();
+    const dataResponse = await response.json();
 
-    // Transform the data if needed to match our interface
-    const transformedLeaves: Leave[] = Array.isArray(leavesData.results)
-      ? leavesData.results
-          ?.filter((leave: RedmineLeave) => leave.email === email)
-          ?.map((leave: RedmineLeave) => ({
-            id: leave.id,
-            start_date: leave.startDate || "",
-            end_date: leave.endDate || "",
-            type: leave.categoryName || "Unknown",
-            status: leave.status_id === 5 ? "Done" : "Pending",
-            days:
-              calculateDaysBetween(
-                leave.startDate || "",
-                leave.endDate || ""
-              ) ||
-              leave.days ||
-              leave.duration ||
-              1,
-            comments: leave.comments || leave.description || "",
-          }))
-      : [];
-
-    return NextResponse.json(transformedLeaves);
+    return NextResponse.json(dataResponse, { status: 201 });
   } catch (error) {
-    console.error("Error fetching leaves:", error);
+    console.error("Error creating leave:", error);
     return NextResponse.json(
-      { error: "Internal server error while fetching leaves" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

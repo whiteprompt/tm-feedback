@@ -9,12 +9,12 @@ import PageHeader from '@/components/PageHeader';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { beginOfMonth } from '@/utils/date';
-import { addDays, endOfMonth, format } from 'date-fns';
+import { addDays, differenceInDays, endOfMonth, format } from 'date-fns';
 
 interface Leave {
   id: string;
-  start_date: string;
-  end_date: string;
+  fromDate: string;
+  toDate: string;
   type: string;
   status: string;
   days: number;
@@ -171,8 +171,7 @@ export default function LeavesPage() {
         description="Review all your previously submitted leaves."
         actionButton={{
           label: "Submit New Leave",
-          href: "https://redmine.whiteprompt.com/projects/licencias/issues/new",
-          external: true,
+          href: "/leaves/new",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -400,17 +399,17 @@ export default function LeavesPage() {
                             </span>
                           </td>
                           <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center">
-                            {new Date(leave.start_date).toLocaleDateString()}
+                            {new Date(leave.fromDate).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center">
-                            {new Date(leave.end_date).toLocaleDateString()}
+                            {new Date(leave.toDate).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-6 wp-body text-wp-text-primary font-medium text-center">
-                            {leave.days}
+                            {differenceInDays(new Date(leave.toDate), new Date(leave.fromDate)) + 1}
                           </td>
                           <td className="px-6 py-6 text-center">
                             <span className={`px-4 py-2 text-sm font-semibold rounded-full ${STATUS_COLORS[leave.status as keyof typeof STATUS_COLORS] || STATUS_COLORS.Pending}`}>
-                              {leave.status}
+                              {leave.status || 'Done'}
                             </span>
                           </td>
                           <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center max-w-xs truncate">

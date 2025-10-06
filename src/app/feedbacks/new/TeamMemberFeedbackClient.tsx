@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import Select from 'react-select';
 import { supabase } from '@/lib/supabase';
 import Navigation from '@/components/Navigation';
+import ErrorBanner from '@/components/ErrorBanner';
 import { useRouter } from 'next/navigation';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
 
@@ -458,16 +459,11 @@ export default function TeamMemberFeedbackClient() {
                 placeholder="Describe any issues or challenges you're facing in the project"
               />
             </div>
-            {error && (
-              <div className="wp-card p-4 bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-500/30">
-                <div className="flex items-center space-x-2">
-                  <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                  <span className="wp-body text-red-400">{error}</span>
-                </div>
-              </div>
-            )}
+            <ErrorBanner 
+              error={error} 
+              onDismiss={() => setError('')}
+              title="Error submitting feedback"
+            />
             <div className="flex gap-6 pt-4">
               <button
                 type="button"
