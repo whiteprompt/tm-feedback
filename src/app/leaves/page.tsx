@@ -31,9 +31,10 @@ interface Holiday {
 
 const STATUS_COLORS = {
   'Done': 'bg-gradient-to-r from-green-500 to-green-600 text-white',
-  'Pending': 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white',
   'Rejected': 'bg-gradient-to-r from-red-500 to-red-600 text-white',
-  'Cancelled': 'bg-gradient-to-r from-gray-500 to-gray-600 text-white',
+  'In progress': 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white',
+  'Requires approval': 'bg-gradient-to-r from-pink-500 to-pink-600 text-white',
+  'Not started': 'bg-gradient-to-r from-gray-500 to-gray-600 text-white',
 } as const;
 
 const LEAVE_TYPE_COLORS = {
@@ -140,6 +141,9 @@ export default function LeavesPage() {
       const statusMap: { [key: string]: string[] } = {
         'Done': ['Done'],
         'Rejected': ['Rejected'],
+        'In progress': ['In progress'],
+        'Requires approval': ['Requires approval'],
+        'Not started': ['Not started'],
       };
       
       const targetStatuses = statusMap[statusFilter] || [];
@@ -391,7 +395,7 @@ export default function LeavesPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredLeaves.map((leave, index) => (
+                      {filteredLeaves?.sort((a, b) => new Date(b.fromDate).getTime() - new Date(a.fromDate).getTime())?.map((leave, index) => (
                         <tr key={leave.id || index} className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
                           <td className="px-6 py-6 text-center">
                             <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS[leave.type as keyof typeof LEAVE_TYPE_COLORS] || LEAVE_TYPE_COLORS.Unknown}`}>
@@ -408,7 +412,7 @@ export default function LeavesPage() {
                             {differenceInDays(new Date(leave.toDate), new Date(leave.fromDate)) + 1}
                           </td>
                           <td className="px-6 py-6 text-center">
-                            <span className={`px-4 py-2 text-sm font-semibold rounded-full ${STATUS_COLORS[leave.status as keyof typeof STATUS_COLORS] || STATUS_COLORS.Pending}`}>
+                            <span className={`px-4 py-2 text-sm font-semibold rounded-full ${STATUS_COLORS[leave.status as keyof typeof STATUS_COLORS] || STATUS_COLORS['Requires approval']}`}>
                               {leave.status || 'Done'}
                             </span>
                           </td>

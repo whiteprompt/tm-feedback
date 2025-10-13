@@ -11,6 +11,7 @@ interface LeaveFormData {
   type: LeaveType;
   comments: string;
   certificate: File | null;
+  approvedByEmail: string;
 }
 
 const initialFormData: LeaveFormData = {
@@ -19,6 +20,7 @@ const initialFormData: LeaveFormData = {
   type: LeaveType.AnnualLeave,
   comments: '',
   certificate: null,
+  approvedByEmail: '',
 };
 
 export default function LeaveFormClient() {
@@ -64,6 +66,7 @@ export default function LeaveFormClient() {
       submitData.append('toDate', formData.toDate);
       submitData.append('type', formData.type);
       submitData.append('comments', formData.comments);
+      submitData.append('approvedByEmail', formData.approvedByEmail);
       
       if (formData.certificate) {
         submitData.append('certificate', formData.certificate);
@@ -188,6 +191,30 @@ export default function LeaveFormClient() {
           </select>
         </div>
 
+        {/* Approval By */}
+        <div>
+          <label htmlFor="approvedByEmail" className="block wp-body font-medium text-wp-text-primary mb-2">
+            Approval By *
+          </label>
+          <select
+            id="approvedByEmail"
+            name="approvedByEmail"
+            value={formData.approvedByEmail}
+            onChange={handleInputChange}
+            required
+            className="w-full px-4 py-3 bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg transition-all duration-200"
+          >
+            <option value="">Select approver...</option>
+            <option value="mariano.selvaggi@whiteprompt.com">mariano.selvaggi@whiteprompt.com</option>
+            <option value="federico.matavos@whiteprompt.com">federico.matavos@whiteprompt.com</option>
+            <option value="diego.gallardo@whiteprompt.com">diego.gallardo@whiteprompt.com</option>
+            <option value="jeremias.gibilbank@whiteprompt.com">jeremias.gibilbank@whiteprompt.com</option>
+            <option value="vanesa.fernandez@whiteprompt.com">vanesa.fernandez@whiteprompt.com</option>
+            <option value="leonardo.tenaglia@whiteprompt.com">leonardo.tenaglia@whiteprompt.com</option>
+            <option value="nacho@whiteprompt.com">nacho@whiteprompt.com</option>
+          </select>
+        </div>
+
         {/* Comments */}
         <div>
           <label htmlFor="comments" className="block wp-body font-medium text-wp-text-primary mb-2">
@@ -247,7 +274,7 @@ export default function LeaveFormClient() {
           </button>
           <button
             type="submit"
-            disabled={isSubmitting || !formData.fromDate || !formData.toDate}
+            disabled={isSubmitting || !formData.fromDate || !formData.toDate || !formData.approvedByEmail}
             className="px-6 py-3 bg-wp-primary hover:bg-wp-primary/90 disabled:bg-wp-text-muted disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium flex items-center space-x-2"
           >
             {isSubmitting ? (

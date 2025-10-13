@@ -59,9 +59,10 @@ export async function POST(request: NextRequest) {
     const type = formData.get("type") as string;
     const comments = formData.get("comments") as string;
     const certificateFile = formData.get("certificate") as File;
+    const approvedByEmail = formData.get("approvedByEmail") as string;
 
     // Validation
-    if (!fromDate || !toDate || !type) {
+    if (!fromDate || !toDate || !type || !approvedByEmail) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -120,13 +121,12 @@ export async function POST(request: NextRequest) {
     leaveFormData.append("toDate", toDate);
     leaveFormData.append("type", type);
     leaveFormData.append("comments", comments || "Created by TM portal");
+    leaveFormData.append("approvedByEmail", approvedByEmail);
 
     // Add certificate file if provided
     if (certificateFile && certificateFile.size > 0) {
       leaveFormData.append("cerfiticate_file", certificateFile);
     }
-
-    console.log(leaveFormData);
 
     // Make the request to the staffing service
     const response = await fetch(`${STAFFING_API_URL}/notion-webhooks/leaves`, {
