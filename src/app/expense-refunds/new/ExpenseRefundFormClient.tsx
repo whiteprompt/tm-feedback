@@ -6,6 +6,7 @@ import Navigation from '@/components/Navigation';
 import ConceptSelect from '@/components/ConceptSelect';
 import CurrencySelect from '@/components/CurrencySelect';
 import ErrorBanner from '@/components/ErrorBanner';
+import ConfirmationModal from '@/components/ConfirmationModal';
 import { useRouter } from 'next/navigation';
 import { ExpenseRefundForm } from '@/lib/constants';
 
@@ -27,6 +28,8 @@ export default function ExpenseRefundFormClient() {
   const [isClient, setIsClient] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [fetchingExchangeRate, setFetchingExchangeRate] = useState(false);
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -74,17 +77,27 @@ export default function ExpenseRefundFormClient() {
       
       if (link && hasUnsavedChanges) {
         e.preventDefault();
-        const shouldLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
-        if (!shouldLeave) {
-          return;
-        }
-        router.push(link.href);
+        setPendingNavigation(() => () => router.push(link.href));
+        setShowLeaveWarning(true);
       }
     };
 
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, [hasUnsavedChanges, router]);
+
+  const confirmNavigation = () => {
+    if (pendingNavigation) {
+      pendingNavigation();
+      setPendingNavigation(null);
+    }
+    setShowLeaveWarning(false);
+  };
+
+  const cancelNavigation = () => {
+    setPendingNavigation(null);
+    setShowLeaveWarning(false);
+  };
 
   // Fetch exchange rate when currency changes
   useEffect(() => {
@@ -401,10 +414,11 @@ export default function ExpenseRefundFormClient() {
                 type="button"
                 onClick={() => {
                   if (hasUnsavedChanges) {
-                    const shouldLeave = window.confirm("You have unsaved changes. Are you sure you want to leave?");
-                    if (!shouldLeave) return;
+                    setPendingNavigation(() => () => router.push('/expense-refunds'));
+                    setShowLeaveWarning(true);
+                  } else {
+                    router.push('/expense-refunds');
                   }
-                  router.push('/expense-refunds');
                 }}
                 className="flex-1 py-4 px-6 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body font-medium text-wp-text-secondary hover:text-wp-text-primary hover:bg-wp-dark-card/80 focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
               >
@@ -434,6 +448,18 @@ export default function ExpenseRefundFormClient() {
           </div>
         </div>
       </main>
+
+      {/* Navigation Warning Dialog */}
+      <ConfirmationModal
+        isOpen={showLeaveWarning}
+        onClose={cancelNavigation}
+        onConfirm={confirmNavigation}
+        title="You have unsaved changes"
+        message="Are you sure you want to leave? Your progress will be lost."
+        confirmLabel="Leave"
+        cancelLabel="Cancel"
+        variant="warning"
+      />
     </div>
   );
 } 

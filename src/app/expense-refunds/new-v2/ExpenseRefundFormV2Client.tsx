@@ -6,6 +6,7 @@ import Navigation from '@/components/Navigation';
 import ConceptSelect from '@/components/ConceptSelect';
 import CurrencySelect from '@/components/CurrencySelect';
 import ErrorBanner from '@/components/ErrorBanner';
+import ConfirmationModal from '@/components/ConfirmationModal';
 import { useRouter } from 'next/navigation';
 import { CURRENCIES, EXPENSE_CONCEPTS, ExpenseRefundForm, ExtractedData } from '@/lib/constants';
 
@@ -33,6 +34,8 @@ export default function ExpenseRefundFormV2Client() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [fetchingExchangeRate, setFetchingExchangeRate] = useState(false);
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -72,6 +75,36 @@ export default function ExpenseRefundFormV2Client() {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges]);
+
+  // Handle navigation
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && hasUnsavedChanges) {
+        e.preventDefault();
+        setPendingNavigation(() => () => router.push(link.href));
+        setShowLeaveWarning(true);
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [hasUnsavedChanges, router]);
+
+  const confirmNavigation = () => {
+    if (pendingNavigation) {
+      pendingNavigation();
+      setPendingNavigation(null);
+    }
+    setShowLeaveWarning(false);
+  };
+
+  const cancelNavigation = () => {
+    setPendingNavigation(null);
+    setShowLeaveWarning(false);
+  };
 
   // Cleanup object URL when component unmounts or PDF changes
   useEffect(() => {
@@ -154,14 +187,11 @@ export default function ExpenseRefundFormV2Client() {
       const formDataToSend = new FormData();
       formDataToSend.append('file', file);
 
-      console.log(formDataToSend)
-
       const response = await fetch('/api/expense-refunds/extract-receipt', {
         method: 'POST',
         body: formDataToSend,
       });
 
-      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to extract receipt data');
       }
@@ -181,8 +211,6 @@ export default function ExpenseRefundFormV2Client() {
         date: ''
       };
       
-      console.log('Mapped data:', mappedData);
-      console.log('Mapped concept:', mappedData.concept);
       setExtractedData(mappedData);
       setCurrentStep('review');
     } catch (error) {
@@ -339,10 +367,19 @@ export default function ExpenseRefundFormV2Client() {
   };
 
   const goBack = () => {
-    if (currentStep === 'review') {
-      setCurrentStep('upload');
-    } else if (currentStep === 'form') {
-      setCurrentStep('review');
+    const navigationFn = () => {
+      if (currentStep === 'review') {
+        setCurrentStep('upload');
+      } else if (currentStep === 'form') {
+        setCurrentStep('review');
+      }
+    };
+    
+    if (hasUnsavedChanges) {
+      setPendingNavigation(() => navigationFn);
+      setShowLeaveWarning(true);
+    } else {
+      navigationFn();
     }
   };
 
@@ -761,6 +798,18 @@ export default function ExpenseRefundFormV2Client() {
           </div>
         </div>
       </main>
+
+      {/* Navigation Warning Dialog */}
+      <ConfirmationModal
+        isOpen={showLeaveWarning}
+        onClose={cancelNavigation}
+        onConfirm={confirmNavigation}
+        title="You have unsaved changes"
+        message="Are you sure you want to leave? Your progress will be lost."
+        confirmLabel="Leave"
+        cancelLabel="Cancel"
+        variant="warning"
+      />
     </div>
   );
 } 
