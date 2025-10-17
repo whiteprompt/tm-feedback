@@ -171,7 +171,7 @@ export function NotificationsDropdown({ onClose }: NotificationsDropdownProps) {
               <button
                 key={notification.id}
                 onClick={() => handleNotificationClick(notification)}
-                className={`w-full px-4 py-3 text-left hover:bg-wp-primary/5 transition-colors duration-200 ${
+                className={`w-full px-4 py-3 text-left cursor-pointer hover:bg-wp-primary/10 hover:shadow-sm transition-all duration-200 ${
                   !notification.read_date ? 'bg-wp-primary/5 border-l-2 border-wp-primary' : ''
                 }`}
               >
