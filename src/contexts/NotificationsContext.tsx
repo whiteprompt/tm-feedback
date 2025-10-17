@@ -25,7 +25,6 @@ interface NotificationsProviderProps {
 
 export function NotificationsProvider({ children }: NotificationsProviderProps) {
   const { data: session } = useSession();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [allNotifications, setAllNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
