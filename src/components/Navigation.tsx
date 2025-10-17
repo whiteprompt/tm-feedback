@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { usePathname } from 'next/navigation';
+import { NotificationBell } from './NotificationBell';
 
 export default function Navigation() {
   const { data: session } = useSession();
@@ -190,6 +191,7 @@ export default function Navigation() {
               </Link>
             )}
             <div className="flex items-center space-x-3 ml-8 pl-8 border-l border-wp-border/50">
+              {session && <NotificationBell />}
               {session ? (
                 <button
                   onClick={() => signOut()}
@@ -295,6 +297,11 @@ export default function Navigation() {
             </Link>
           )}
           <div className="pt-4 mt-4 border-t border-wp-border/30">
+            {session && (
+              <div className="mb-4 flex justify-center">
+                <NotificationBell />
+              </div>
+            )}
             {session ? (
               <button
                 onClick={() => {
