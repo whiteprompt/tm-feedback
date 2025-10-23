@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Select from 'react-select';
-import { supabase } from '@/lib/supabase';
 import Navigation from '@/components/Navigation';
 import ErrorBanner from '@/components/ErrorBanner';
 import { useRouter } from 'next/navigation';
@@ -220,21 +219,25 @@ export default function TeamMemberFeedbackClient() {
     }
 
     try {
-      const { error: supabaseError } = await supabase
-        .from('team_member_feedback')
-        .insert([
-          {
-            user_email: session?.user?.email,
-            project_id: selectedProject?.name || '',
-            role: formData.role,
-            responsibilities: formData.responsibilities,
-            technologies: formData.technologies,
-            overall_satisfaction: formData.overallSatisfaction,
-            project_issue: formData.projectIssue,
-          }
-        ]);
+      const response = await fetch('/api/feedbacks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId: selectedProject?.name || '',
+          role: formData.role,
+          responsibilities: formData.responsibilities,
+          technologies: formData.technologies,
+          overallSatisfaction: formData.overallSatisfaction,
+          projectIssue: formData.projectIssue,
+        }),
+      });
 
-      if (supabaseError) throw supabaseError;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit feedback');
+      }
 
       // Reset form and unsaved changes flag
       setFormData({
