@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
-import { useSettings } from '@/contexts/SettingsContext';
 import { usePathname } from 'next/navigation';
 import { NotificationBell } from './NotificationBell';
 
@@ -14,7 +13,6 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRequestsDropdownOpen, setIsRequestsDropdownOpen] = useState(false);
   const { isAdmin } = useAdmin();
-  const { settings, loading: settingsLoading } = useSettings();
   const pathname = usePathname();
   const requestsDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -101,10 +99,10 @@ export default function Navigation() {
   }), [getNavLinkClass, getDropdownButtonClass]);
 
   return (
-    <nav className="backdrop-filter backdrop-blur-lg bg-gradient-to-r from-wp-dark/95 to-wp-dark-lighter/90 border-b border-wp-border/30 sticky top-0 z-50">
+    <nav className="backdrop-filter backdrop-blur-lg from-wp-dark/95 to-wp-dark-lighter/90 border-b border-wp-border/30 sticky top-0 z-50">
       <div className="wp-container">
         <div className="flex justify-between items-center h-20">
-          <div className="flex-shrink-0 flex items-center">
+          <div className="shrink-0 flex items-center">
             <Link href="/" className="flex items-center group">
               <Image
                 src="/logo.svg"
@@ -155,7 +153,7 @@ export default function Navigation() {
                     href="/leaves"
                     className={`block px-6 py-4 text-base transition-all duration-300 rounded-t-lg ${
                       isActive('/leaves') 
-                        ? 'bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border-l-2 border-wp-primary' 
+                        ? 'from-wp-primary/20 to-wp-accent/20 text-wp-primary border-l-2 border-wp-primary' 
                         : 'text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10'
                     }`}
                     onClick={() => setIsRequestsDropdownOpen(false)}
@@ -166,7 +164,7 @@ export default function Navigation() {
                     href="/expense-refunds"
                     className={`block px-6 py-4 text-base transition-all duration-300 rounded-b-lg ${
                       isActive('/expense-refunds') 
-                        ? 'bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border-l-2 border-wp-primary' 
+                        ? 'from-wp-primary/20 to-wp-accent/20 text-wp-primary border-l-2 border-wp-primary' 
                         : 'text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10'
                     }`}
                     onClick={() => setIsRequestsDropdownOpen(false)}
@@ -177,15 +175,13 @@ export default function Navigation() {
               )}
             </div>
 
-            {!settingsLoading && settings.showPresentations && (
-              <Link href="/presentations" className={navClasses.presentations}>
-                Presentations
-              </Link>
-            )}
+            <Link href="/presentations" className={navClasses.presentations}>
+              Presentations
+            </Link>
             <Link href="/company" className={navClasses.company}>
               Company
             </Link>
-            {!settingsLoading && isAdmin && (
+            {isAdmin && (
               <Link href="/admin" className={navClasses.admin}>
                 Admin
               </Link>
@@ -271,15 +267,13 @@ export default function Navigation() {
             Expense Refunds
           </Link>
 
-          {!settingsLoading && settings.showPresentations && (
-            <Link
-              href="/presentations"
-              className={navClasses.presentationsMobile}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Presentations
-            </Link>
-          )}
+          <Link
+            href="/presentations"
+            className={navClasses.presentationsMobile}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Presentations
+          </Link>
           <Link
             href="/company"
             className={navClasses.companyMobile}
@@ -287,15 +281,13 @@ export default function Navigation() {
           >
             Company
           </Link>
-          {!settingsLoading && isAdmin && (
-            <Link
-              href="/admin"
-              className={navClasses.adminMobile}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Admin
-            </Link>
-          )}
+          <Link
+            href="/admin"
+            className={navClasses.adminMobile}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Admin
+          </Link>
           <div className="pt-4 mt-4 border-t border-wp-border/30">
             {session && (
               <div className="mb-4 flex justify-center">

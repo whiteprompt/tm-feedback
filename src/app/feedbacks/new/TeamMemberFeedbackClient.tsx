@@ -7,6 +7,7 @@ import Navigation from '@/components/Navigation';
 import ErrorBanner from '@/components/ErrorBanner';
 import { useRouter } from 'next/navigation';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
+import { useFeedbacks } from '@/contexts/FeedbacksContext';
 
 interface Project {
   id: string;
@@ -19,7 +20,7 @@ interface FeedbackForm {
   responsibilities: string;
   technologies: string[];
   overallSatisfaction: string;
-  projectIssue: string;
+  comments: string;
 }
 
 const SATISFACTION_MAP = {
@@ -31,6 +32,7 @@ const SATISFACTION_MAP = {
 export default function TeamMemberFeedbackClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { getLastFeedbackForProject, refetch } = useFeedbacks();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState<FeedbackForm>({
@@ -39,7 +41,7 @@ export default function TeamMemberFeedbackClient() {
     responsibilities: '',
     technologies: [],
     overallSatisfaction: 'neutral',
-    projectIssue: '',
+    comments: '',
   });
   const [currentTech, setCurrentTech] = useState('');
   const [loading, setLoading] = useState(false);
@@ -66,39 +68,26 @@ export default function TeamMemberFeedbackClient() {
       }) => ({
         id: allocation.project,
         name: allocation.project
-      })));
+      }))?.filter((project: Project) => !project.name?.toLowerCase().includes('wp')));
     }
   }, [teamMember, isClient]);
 
-  const handleProjectChange = async (selected: Project | null) => {
+  const handleProjectChange = (selected: Project | null) => {
     setSelectedProject(selected);
     setFormData(prev => ({ ...prev, projectId: selected?.id || '' }));
 
-    if (selected && session?.user?.email) {
-      try {
-        const response = await fetch("/api/feedbacks/last", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            projectId: selected.id
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch last feedback");
-        }
-
-        const lastFeedback = await response.json();
+    if (selected) {
+      // Get the last feedback for this project from context
+      const lastFeedback = getLastFeedbackForProject(selected.id);
+      
+      if (lastFeedback) {
         setFormData(prev => ({
           ...prev,
           role: lastFeedback.role || '',
           technologies: lastFeedback.technologies || [],
         }));
-      } catch (error) {
-        console.error("Error fetching last feedback:", error);
-        // If there's an error, just keep the form fields empty
+      } else {
+        // Reset form fields if no previous feedback exists
         setFormData(prev => ({
           ...prev,
           role: '',
@@ -144,7 +133,7 @@ export default function TeamMemberFeedbackClient() {
       responsibilities: '',
       technologies: [],
       overallSatisfaction: 'neutral',
-      projectIssue: '',
+      comments: '',
     };
 
     const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
@@ -230,7 +219,7 @@ export default function TeamMemberFeedbackClient() {
           responsibilities: formData.responsibilities,
           technologies: formData.technologies,
           overallSatisfaction: formData.overallSatisfaction,
-          projectIssue: formData.projectIssue,
+          comments: formData.comments,
         }),
       });
 
@@ -246,12 +235,15 @@ export default function TeamMemberFeedbackClient() {
         responsibilities: '',
         technologies: [],
         overallSatisfaction: 'neutral',
-        projectIssue: '',
+        comments: '',
       });
       setSelectedProject(null);
       setHasUnsavedChanges(false);
       
-      // Redirect to home page
+      // Refetch feedbacks to update the list
+      await refetch();
+      
+      // Redirect to feedbacks page
       router.push('/feedbacks');
     } catch (error) {
       setError('Failed to submit feedback');
@@ -281,7 +273,7 @@ export default function TeamMemberFeedbackClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className="min-h-screen bg-linear-to-r from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
       <Navigation />
         <main className="wp-section-sm">
           <div className="wp-container">
@@ -373,7 +365,7 @@ export default function TeamMemberFeedbackClient() {
                 {formData.technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="inline-flex items-center px-4 py-2 rounded-full wp-body-small font-medium bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border border-wp-primary/30"
+                    className="inline-flex items-center px-4 py-2 rounded-full wp-body-small font-medium bg-linear-to-r rom-wp-primary/20 to-wp-accent/20 text-wp-primary border border-wp-primary/30"
                   >
                     {tech}
                     <button
@@ -410,7 +402,7 @@ export default function TeamMemberFeedbackClient() {
                     className="sr-only"
                     required
                   />
-                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'happy' ? 'bg-gradient-to-r from-green-500 to-green-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-green-500/20'}`}>
+                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'happy' ? 'bg-linear-to-r from-green-500 to-green-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-green-500/20'}`}>
                     <span className="text-3xl">{SATISFACTION_MAP.happy}</span>
                   </div>
                   <span className="wp-body-small text-wp-text-secondary">Happy</span>
@@ -425,7 +417,7 @@ export default function TeamMemberFeedbackClient() {
                     className="sr-only"
                     required
                   />
-                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'neutral' ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-yellow-500/20'}`}>
+                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'neutral' ? 'bg-linear-to-r from-yellow-500 to-yellow-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-yellow-500/20'}`}>
                     <span className="text-3xl">{SATISFACTION_MAP.neutral}</span>
                   </div>
                   <span className="wp-body-small text-wp-text-secondary">Neutral</span>
@@ -440,7 +432,7 @@ export default function TeamMemberFeedbackClient() {
                     className="sr-only"
                     required
                   />
-                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'sad' ? 'bg-gradient-to-r from-red-500 to-red-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-red-500/20'}`}>
+                  <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'sad' ? 'bg-linear-to-r from-red-500 to-red-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-red-500/20'}`}>
                     <span className="text-3xl">{SATISFACTION_MAP.sad}</span>
                   </div>
                   <span className="wp-body-small text-wp-text-secondary">Sad</span>
@@ -455,8 +447,8 @@ export default function TeamMemberFeedbackClient() {
                 {`Please share any additional comments or feedback you'd like to provide. Please also consider issues or challenges you're facing in the project.`}
               </p>
               <textarea
-                value={formData.projectIssue}
-                onChange={(e) => setFormData(prev => ({ ...prev, projectIssue: e.target.value }))}
+                value={formData.comments}
+                onChange={(e) => setFormData(prev => ({ ...prev, comments: e.target.value }))}
                 rows={4}
                 className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300 resize-none"
                 placeholder="Describe any issues or challenges you're facing in the project"
