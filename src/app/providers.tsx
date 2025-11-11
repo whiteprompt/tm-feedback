@@ -3,18 +3,18 @@
 import { SessionProvider } from 'next-auth/react';
 import { AdminProvider } from '@/contexts/AdminContext';
 import { TeamMemberProvider } from '@/contexts/TeamMemberContext';
-import { SettingsProvider } from '@/contexts/SettingsContext';
 import { NotificationsProvider } from '@/contexts/NotificationsContext';
+import { FeedbacksProvider } from '@/contexts/FeedbacksContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <AdminProvider>
-        <SettingsProvider>
           <NotificationsProvider>
-            <TeamMemberProvider>{children}</TeamMemberProvider>
+            <TeamMemberProvider>
+              <FeedbacksProvider>{children}</FeedbacksProvider>
+            </TeamMemberProvider>
           </NotificationsProvider>
-        </SettingsProvider>
       </AdminProvider>
     </SessionProvider>
   );

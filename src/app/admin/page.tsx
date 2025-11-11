@@ -7,8 +7,6 @@ import Navigation from '@/components/Navigation';
 import { useAdmin } from '@/contexts/AdminContext';
 
 export default function AdminPage() {
-  const [showContracts, setShowContracts] = useState(false);
-  const [showPresentations, setShowPresentations] = useState(false);
   const [enableCacheCleanup, setEnableCacheCleanup] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [cronStatus, setCronStatus] = useState('');
@@ -33,21 +31,9 @@ export default function AdminPage() {
 
   const fetchSettings = async () => {
     try {
-      const [contractsResponse, presentationsResponse, cacheCleanupResponse] = await Promise.all([
-        fetch('/api/settings?key=show_contracts'),
-        fetch('/api/settings?key=show_presentations'),
+      const [cacheCleanupResponse] = await Promise.all([
         fetch('/api/settings?key=enable_cache_cleanup')
       ]);
-
-      if (contractsResponse.ok) {
-        const data = await contractsResponse.json();
-        setShowContracts(data.value.enabled);
-      }
-
-      if (presentationsResponse.ok) {
-        const data = await presentationsResponse.json();
-        setShowPresentations(data.value.enabled);
-      }
 
       if (cacheCleanupResponse.ok) {
         const data = await cacheCleanupResponse.json();
@@ -58,49 +44,6 @@ export default function AdminPage() {
     }
   };
 
-  const toggleContracts = async () => {
-    const newValue = !showContracts;
-    try {
-      const response = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          key: 'show_contracts',
-          enabled: newValue 
-        }),
-      });
-
-      if (response.ok) {
-        setShowContracts(newValue);
-      }
-    } catch (error) {
-      console.error('Error updating settings:', error);
-    }
-  };
-
-  const togglePresentations = async () => {
-    const newValue = !showPresentations;
-    try {
-      const response = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          key: 'show_presentations',
-          enabled: newValue 
-        }),
-      });
-
-      if (response.ok) {
-        setShowPresentations(newValue);
-      }
-    } catch (error) {
-      console.error('Error updating settings:', error);
-    }
-  };
 
   const toggleCacheCleanup = async () => {
     const newValue = !enableCacheCleanup;
@@ -207,7 +150,7 @@ export default function AdminPage() {
             {/* Feature Toggles Card */}
             <div className="wp-card p-8">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-wp-primary to-wp-accent rounded-full flex items-center justify-center mr-4">
+                <div className="w-12 h-12 from-wp-primary to-wp-accent rounded-full flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
                   </svg>
@@ -216,43 +159,6 @@ export default function AdminPage() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
-                  <div className="flex-1">
-                    <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Show &ldquo;My Contracts&rdquo; Section</h3>
-                    <p className="wp-body-small text-wp-text-secondary">Enable or disable the contracts section for all users</p>
-                  </div>
-                  <button
-                    onClick={toggleContracts}
-                    className={`relative inline-flex h-6 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50 ${
-                      showContracts ? 'bg-gradient-to-r from-wp-primary to-wp-accent' : 'bg-wp-border'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
-                        showContracts ? 'translate-x-7' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
-                  <div className="flex-1">
-                    <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Show &ldquo;Presentations&rdquo; Section</h3>
-                    <p className="wp-body-small text-wp-text-secondary">Enable or disable the presentations section for all users</p>
-                  </div>
-                  <button
-                    onClick={togglePresentations}
-                    className={`relative inline-flex h-6 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50 ${
-                      showPresentations ? 'bg-gradient-to-r from-wp-primary to-wp-accent' : 'bg-wp-border'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
-                        showPresentations ? 'translate-x-7' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
 
                 <div className="flex items-center justify-between p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
                   <div className="flex-1">
@@ -262,7 +168,7 @@ export default function AdminPage() {
                   <button
                     onClick={toggleCacheCleanup}
                     className={`relative inline-flex h-6 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50 ${
-                      enableCacheCleanup ? 'bg-gradient-to-r from-wp-primary to-wp-accent' : 'bg-wp-border'
+                      enableCacheCleanup ? 'from-wp-primary to-wp-accent' : 'bg-wp-border'
                     }`}
                   >
                     <span
@@ -278,7 +184,7 @@ export default function AdminPage() {
             {/* System Operations Card */}
             <div className="wp-card p-8">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-wp-purple to-wp-purple-dark rounded-full flex items-center justify-center mr-4">
+                <div className="w-12 h-12 from-wp-purple to-wp-purple-dark rounded-full flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

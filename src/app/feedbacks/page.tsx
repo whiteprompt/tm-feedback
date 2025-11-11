@@ -2,24 +2,14 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
+import { useFeedbacks } from '@/contexts/FeedbacksContext';
 import PageLayout from '@/components/PageLayout';
 import PageHeader from '@/components/PageHeader';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import EmptyState from '@/components/EmptyState';
-
-interface Feedback {
-  id: string;
-  role: string;
-  responsibilities: string;
-  technologies: string[];
-  overall_satisfaction: string;
-  project_issue: string;
-  created_at: string;
-  project_id: string;
-}
 
 const SATISFACTION_MAP = {
   'happy': { emoji: '😊', label: 'Happy', color: 'text-green-400' },
@@ -28,44 +18,16 @@ const SATISFACTION_MAP = {
 } as const;
 
 export default function SubmittedFeedbacksPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { teamMember, loading: teamMemberLoading } = useTeamMember();
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const fetchFeedbacks = useCallback(async () => {
-    if (!session?.user?.email) return;
-
-    try {
-      const response = await fetch("/api/feedbacks");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch feedbacks");
-      }
-
-      const data = await response.json();
-      setFeedbacks(data);
-    } catch (error) {
-      setError("Failed to fetch feedbacks");
-      console.error("Error fetching feedbacks:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [session?.user?.email]);
+  const { feedbacks, loading, error } = useFeedbacks();
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/signin');
     }
   }, [status, router]);
-
-  useEffect(() => {
-    if (session?.user?.email) {
-      fetchFeedbacks();
-    }
-  }, [session, fetchFeedbacks]);
 
   if (loading || teamMemberLoading) {
     return <LoadingSpinner />;

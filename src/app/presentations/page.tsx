@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
-import { useSettings } from '@/contexts/SettingsContext';
 
 interface Presentation {
   projectPlainName: string;
@@ -29,7 +28,6 @@ export default function PresentationsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { teamMember, loading: teamMemberLoading } = useTeamMember();
-  const { settings, loading: settingsLoading } = useSettings();
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -66,7 +64,7 @@ export default function PresentationsPage() {
     }
   }, [session, status, router]);
 
-  if (loading || teamMemberLoading || settingsLoading) {
+  if (loading || teamMemberLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="wp-fade-in">
@@ -83,7 +81,7 @@ export default function PresentationsPage() {
 
   if (!teamMember) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+      <div className="min-h-screen from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
         <Navigation />
         <main className="wp-section-sm">
           <div className="wp-container">
@@ -95,27 +93,6 @@ export default function PresentationsPage() {
               </div>
               <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
               <p className="wp-body text-wp-text-muted">No team member information available.</p>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  if (!settings.showPresentations) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
-        <Navigation />
-        <main className="flex justify-center items-center min-h-[80vh] px-4 sm:px-6 lg:px-8">
-          <div className="wp-slide-up">
-            <div className="wp-card p-12 text-center max-w-md w-full">
-              <div className="text-wp-text-muted mb-4">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="wp-heading-3 text-wp-text-muted mb-2">Feature Disabled</h3>
-              <p className="wp-body text-wp-text-muted">This feature is currently disabled.</p>
             </div>
           </div>
         </main>
