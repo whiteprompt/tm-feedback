@@ -3,8 +3,13 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { useAdmin } from '@/contexts/AdminContext';
+import { 
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+} from 'react';
 import { usePathname } from 'next/navigation';
 import { NotificationBell } from './NotificationBell';
 
@@ -12,7 +17,6 @@ export default function Navigation() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRequestsDropdownOpen, setIsRequestsDropdownOpen] = useState(false);
-  const { isAdmin } = useAdmin();
   const pathname = usePathname();
   const requestsDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -81,20 +85,18 @@ export default function Navigation() {
   // Pre-calculate navigation classes to prevent flickering
   const navClasses = useMemo(() => ({
     home: getNavLinkClass('/'),
-    submittedFeedbacks: getNavLinkClass('/feedbacks'),
+    myProfile: getNavLinkClass('/my-profile'),
+    myProjects: getNavLinkClass('/my-projects'),
     leaves: getNavLinkClass('/leaves'),
     expenseRefunds: getNavLinkClass('/expense-refunds'),
-    presentations: getNavLinkClass('/presentations'),
-    company: getNavLinkClass('/company'),
     admin: getNavLinkClass('/admin'),
     requestsDropdown: getDropdownButtonClass(),
     requestsDropdownMobile: getDropdownButtonClass(true),
     homeMobile: getNavLinkClass('/', true),
-    submittedFeedbacksMobile: getNavLinkClass('/feedbacks', true),
+    myProfileMobile: getNavLinkClass('/my-profile', true),
+    myProjectsMobile: getNavLinkClass('/my-projects', true),
     leavesMobile: getNavLinkClass('/leaves', true),
     expenseRefundsMobile: getNavLinkClass('/expense-refunds', true),
-    presentationsMobile: getNavLinkClass('/presentations', true),
-    companyMobile: getNavLinkClass('/company', true),
     adminMobile: getNavLinkClass('/admin', true),
   }), [getNavLinkClass, getDropdownButtonClass]);
 
@@ -120,10 +122,11 @@ export default function Navigation() {
             <Link href="/" className={navClasses.home}>
               Home
             </Link>
-            <Link href="/feedbacks" className={navClasses.submittedFeedbacks}>
-              <span className="text-center leading-tight">
-                Feedbacks
-              </span>
+            <Link href="/my-profile" className={navClasses.myProfile}>
+              My Profile
+            </Link>
+            <Link href="/my-projects" className={navClasses.myProjects}>
+              My Projects
             </Link>
             
             {/* Requests dropdown */}
@@ -133,7 +136,7 @@ export default function Navigation() {
                 className={navClasses.requestsDropdown}
               >
                 <span className="text-center leading-tight">
-                  Requests
+                  My Requests
                 </span>
                 <svg
                   className={`ml-2 h-4 w-4 transition-transform duration-200 ${
@@ -175,18 +178,7 @@ export default function Navigation() {
               )}
             </div>
 
-            <Link href="/presentations" className={navClasses.presentations}>
-              Presentations
-            </Link>
-            <Link href="/company" className={navClasses.company}>
-              Company
-            </Link>
-            {isAdmin && (
-              <Link href="/admin" className={navClasses.admin}>
-                Admin
-              </Link>
-            )}
-            <div className="flex items-center space-x-3 ml-8 pl-8 border-l border-wp-border/50">
+            <div className="flex items-center border-l border-wp-border/50 gap-4">
               {session && <NotificationBell />}
               {session ? (
                 <button
@@ -203,8 +195,9 @@ export default function Navigation() {
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="flex items-center lg:hidden">
+          {/* Mobile menu button and notification bell */}
+          <div className="flex items-center gap-4 lg:hidden">
+            {session && <NotificationBell />}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-3 rounded-lg text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
@@ -245,11 +238,18 @@ export default function Navigation() {
             Home
           </Link>
           <Link
-            href="/feedbacks"
-            className={navClasses.submittedFeedbacksMobile}
+            href="/my-profile"
+            className={navClasses.myProfileMobile}
             onClick={() => setIsMenuOpen(false)}
           >
-            Feedbacks
+            My Profile
+          </Link>
+          <Link
+            href="/my-projects"
+            className={navClasses.myProjectsMobile}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            My Projects
           </Link>
           
           <Link
@@ -266,34 +266,7 @@ export default function Navigation() {
           >
             Expense Refunds
           </Link>
-
-          <Link
-            href="/presentations"
-            className={navClasses.presentationsMobile}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Presentations
-          </Link>
-          <Link
-            href="/company"
-            className={navClasses.companyMobile}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Company
-          </Link>
-          <Link
-            href="/admin"
-            className={navClasses.adminMobile}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Admin
-          </Link>
           <div className="pt-4 mt-4 border-t border-wp-border/30">
-            {session && (
-              <div className="mb-4 flex justify-center">
-                <NotificationBell />
-              </div>
-            )}
             {session ? (
               <button
                 onClick={() => {

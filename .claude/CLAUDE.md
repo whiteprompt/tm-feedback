@@ -19,13 +19,13 @@ npm run lint
 ```
 
 ## Tech Stack
-- Next.js 15.3.2 with Turbopack
+- Next.js 16.0.1 with Turbopack
 - React 19
 - TypeScript
 - Tailwind CSS 4
 - NextAuth for authentication
 - Supabase for database
-- Notion API integration
+- Staffing API integration (https://staffing.whiteprompt.com)
 
 ## Project Structure
 - `/src/app/` - Next.js app router pages and API routes

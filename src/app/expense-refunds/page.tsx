@@ -9,6 +9,7 @@ import PageHeader from '@/components/PageHeader';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import EmptyState from '@/components/EmptyState';
+import ExternalLinkCard from '@/components/ExternalLinkCard';
 
 interface ExpenseRefund {
   id: string;
@@ -116,42 +117,25 @@ export default function ExpenseRefundsPage() {
       <PageHeader 
         title="My Expense Refunds"
         description="Track and manage all your submitted expense refund requests."
+        actionButton={{
+          label: "New Expense Refund",
+          href: "/expense-refunds/bulk",
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          )
+        }}
       />
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-16 wp-fade-in">
-        <button
-          onClick={() => router.push('/expense-refunds/new')}
-          className="flex-1 text-white py-4 px-6 wp-body font-medium rounded-lg flex items-center justify-center space-x-3 border hover:border-wp-primary/50 cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          <span>Submit Manual Expense</span>
-        </button>
-
-        <button
-          onClick={() => router.push('/expense-refunds/new-v2')}
-          className="flex-1 text-white py-4 px-6 wp-body font-medium rounded-lg flex items-center justify-center space-x-3 border hover:border-wp-primary/50 cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          <span>Submit Smart Expense</span>
-        </button>
-        
-        <button
-          onClick={() => router.push('/expense-refunds/bulk')}
-          className="flex-1 text-white py-4 px-6 wp-body font-medium rounded-lg flex items-center justify-center space-x-3 border hover:border-wp-primary/50 cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 12l2 2 4-4" />
-          </svg>
-          <span>Bulk Submit</span>
-        </button>
-      </div>
-
-      <br/>
+      {/* Obtain Refund Link Card */}
+      <ExternalLinkCard
+        title="Obtain your refund"
+        description="Process reimbursements and expense claims"
+        icon="💰"
+        href="https://sites.google.com/whiteprompt.com/intranet/administration/get-your-refund"
+      />
+      <br />
 
       {/* Filter Section */}
       <div className="wp-card p-6 mb-16 wp-fade-in">

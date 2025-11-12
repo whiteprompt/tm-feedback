@@ -8,9 +8,8 @@ export enum LeaveType {
 export enum NotificationModule {
   Leaves = "Leaves",
   ExpenseRefunds = "Expense Refunds",
-  Feedbacks = "Feedbacks",
-  Presentations = "Presentations",
-  Company = "Company",
+  MyProjects = "My Projects",
+  MyProfile = "My Profile",
 }
 
 export interface Notification {

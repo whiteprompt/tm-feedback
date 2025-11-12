@@ -28,7 +28,7 @@ export function NotificationBell() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
         className="relative p-2 rounded-lg text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
@@ -51,7 +51,7 @@ export function NotificationBell() {
 
         {/* Unread Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-wp-primary to-wp-accent text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg animate-pulse">
+          <span className="absolute -top-1 -right-1 h-5 w-5 bg-linear-to-r from-wp-primary to-wp-accent text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg animate-pulse">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
