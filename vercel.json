@@ -1,12 +1,3 @@
 {
-    "crons": [
-        {
-            "path": "/api/cron/sync-notion",
-            "schedule": "0 9 * * *"
-        },
-        {
-            "path": "/api/cron/cache-cleanup",
-            "schedule": "0 8 * * *"
-        }
-    ]
+    "crons": []
 }

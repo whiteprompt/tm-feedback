@@ -9,6 +9,7 @@ import PageHeader from '@/components/PageHeader';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import ExternalLinkCard from '@/components/ExternalLinkCard';
 import { beginOfMonth } from '@/utils/date';
 import { addDays, differenceInDays, endOfMonth, format } from 'date-fns';
 
@@ -302,6 +303,14 @@ export default function LeavesPage() {
         }}
       />
 
+      {/* Request Leave Link Card */}
+      <ExternalLinkCard
+        title="Request a leave"
+        description="Submit your leave request for approval"
+        icon="🏖️"
+        href="https://sites.google.com/whiteprompt.com/intranet/administration/leaves/notify-your-leave"
+      />
+      <br />
       {/* Holidays Section */}
       <div className="wp-card p-6 mb-8 wp-fade-in">
         <div className="flex items-center justify-between mb-6">

@@ -27,14 +27,11 @@ export function NotificationsDropdown({ onClose }: NotificationsDropdownProps) {
       case NotificationModule.ExpenseRefunds:
         router.push(`/expense-refunds`);
         break;
-      case NotificationModule.Feedbacks:
-        router.push('/feedbacks');
+      case NotificationModule.MyProjects:
+        router.push('/my-projects');
         break;
-      case NotificationModule.Presentations:
-        router.push('/presentations');
-        break;
-      case NotificationModule.Company:
-        router.push('/company');
+      case NotificationModule.MyProfile:
+        router.push('/my-profile');
         break;
       default:
         router.push('/');
@@ -57,22 +54,16 @@ export function NotificationsDropdown({ onClose }: NotificationsDropdownProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
           </svg>
         );
-      case NotificationModule.Feedbacks:
+      case NotificationModule.MyProjects:
         return (
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
           </svg>
         );
-      case NotificationModule.Presentations:
+      case NotificationModule.MyProfile:
         return (
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V3a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1h8z" />
-          </svg>
-        );
-      case NotificationModule.Company:
-        return (
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
         );
       default:
@@ -90,12 +81,10 @@ export function NotificationsDropdown({ onClose }: NotificationsDropdownProps) {
         return 'text-green-500';
       case NotificationModule.ExpenseRefunds:
         return 'text-blue-500';
-      case NotificationModule.Feedbacks:
+      case NotificationModule.MyProjects:
         return 'text-purple-500';
-      case NotificationModule.Presentations:
+      case NotificationModule.MyProfile:
         return 'text-orange-500';
-      case NotificationModule.Company:
-        return 'text-gray-500';
       default:
         return 'text-wp-primary';
     }
@@ -177,7 +166,7 @@ export function NotificationsDropdown({ onClose }: NotificationsDropdownProps) {
               >
                 <div className="flex items-start space-x-3">
                   {/* Module Icon */}
-                  <div className={`flex-shrink-0 ${getModuleColor(notification.module)}`}>
+                  <div className={`shrink-0 ${getModuleColor(notification.module)}`}>
                     {getModuleIcon(notification.module)}
                   </div>
 

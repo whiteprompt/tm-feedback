@@ -5,12 +5,11 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import WelcomeSection from '@/components/my-profile/WelcomeSection';
-import VideoSection from '@/components/my-profile/VideoSection';
-import CompanyNewsCarousel from '@/components/my-profile/CompanyNewsCarousel';
-import ImportantProcesses from '@/components/my-profile/ImportantProcesses';
+import Allocations from '@/components/my-projects/Allocations';
+import Presentations from '@/components/my-projects/Presentations';
+import Feedbacks from '@/components/my-projects/Feedbacks';
 
-export default function HomePage() {
+export default function MyProjectsPage() {
   const { status } = useSession();
   const router = useRouter();
 
@@ -30,15 +29,21 @@ export default function HomePage() {
 
   return (
     <PageLayout>
+      <div className="mb-16 wp-fade-in">
+        <h1 className="wp-heading-1 mb-4">My Projects</h1>
+        <p className="wp-body-large max-w-3xl">
+          Manage your project allocations, presentations, and feedbacks all in one place.
+        </p>
+      </div>
+
       <div className="space-y-16">
-        <WelcomeSection />
+        <Allocations />
         <br />
-        <VideoSection />
+        <Presentations />
         <br />
-        <CompanyNewsCarousel />
-        <br />
-        <ImportantProcesses />
+        <Feedbacks />
       </div>
     </PageLayout>
   );
 }
+
