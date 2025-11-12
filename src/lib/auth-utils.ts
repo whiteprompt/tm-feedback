@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { cookies, headers } from "next/headers";
 
@@ -11,7 +10,7 @@ export async function getAuthenticatedUser() {
   void (await headers());
 
   // Get the session with proper request context
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   // Debug logging for session isolation
   console.log(`[DEBUG] Session user email: ${session?.user?.email || 'null'}`);
