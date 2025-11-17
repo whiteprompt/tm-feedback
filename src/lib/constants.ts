@@ -75,7 +75,6 @@ export interface ExpenseRefundForm {
 
 export interface Allocation {
   project: {
-    accountManager: string;
     clientName: string;
     id: string;
     projectName: string;
