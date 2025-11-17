@@ -1,34 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  /* White Prompt Color System */
-  --wp-primary: #00A3B4;
-  --wp-primary-dark: #008C9A;
-  --wp-accent: #00D4E6;
+  /* Whiteprompt Design System - Based on whiteprompt.com/from-idea-to-mvp */
+
+  /* Primary Background Colors */
+  --wp-bg-primary: #1A1A1A;       /* Dark charcoal - main background */
+  --wp-bg-secondary: #4A4D57;     /* Medium gray - secondary backgrounds */
+  --wp-bg-card: #2A2A2A;          /* Card background */
+
+  /* Accent Colors */
+  --wp-primary: #00D9FF;          /* Cyan - primary accent */
+  --wp-primary-dark: #00B8D4;     /* Darker cyan for hover states */
+  --wp-accent: #00D9FF;           /* Cyan accent (same as primary) */
+
+  /* Badge/Pill Colors */
+  --wp-badge: #3D4068;            /* Purple-tinted badge background */
+
+  /* Text Colors */
+  --wp-text-primary: #FFFFFF;     /* White - primary text */
+  --wp-text-secondary: #A0A0A0;   /* Light gray - secondary text */
+  --wp-text-muted: #64748B;       /* Muted gray */
+
+  /* Border Colors */
+  --wp-border: #3A3D45;           /* Subtle dark gray borders */
+  --wp-border-light: #4A4D57;     /* Lighter border variant */
+
+  /* Legacy purple for existing components */
   --wp-purple: #6366F1;
   --wp-purple-dark: #4F46E5;
-  --wp-dark: #0F0F23;
-  --wp-dark-lighter: #1A1A2E;
-  --wp-dark-card: #16213E;
-  --wp-text-primary: #FFFFFF;
-  --wp-text-secondary: #94A3B8;
-  --wp-text-muted: #64748B;
-  --wp-border: #334155;
-  --wp-border-light: #475569;
-  
+
   /* Gradients */
-  --wp-gradient-primary: linear-gradient(135deg, #0F0F23 0%, #1A1A2E 50%, #16213E 100%);
-  --wp-gradient-card: linear-gradient(145deg, rgba(22, 33, 62, 0.8) 0%, rgba(26, 26, 46, 0.6) 100%);
-  --wp-gradient-button: linear-gradient(135deg, #00A3B4 0%, #00D4E6 100%);
+  --wp-gradient-primary: #1A1A1A; /* Solid background instead of gradient */
+  --wp-gradient-card: linear-gradient(145deg, rgba(42, 42, 42, 0.9) 0%, rgba(26, 26, 26, 0.8) 100%);
+  --wp-gradient-button: linear-gradient(135deg, #00D9FF 0%, #00B8D4 100%);
   --wp-gradient-purple: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
-  --wp-gradient-overlay: linear-gradient(135deg, rgba(15, 15, 35, 0.95) 0%, rgba(22, 33, 62, 0.8) 100%);
-  
+  --wp-gradient-overlay: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.8) 100%);
+
   /* Shadows */
-  --wp-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --wp-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --wp-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
-  --wp-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
-  --wp-shadow-glow: 0 0 30px rgba(0, 163, 180, 0.3);
+  --wp-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --wp-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --wp-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+  --wp-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --wp-shadow-glow: 0 0 30px rgba(0, 217, 255, 0.3);
   
   /* Typography */
   --wp-font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -42,9 +55,10 @@
   --color-wp-accent: var(--wp-accent);
   --color-wp-purple: var(--wp-purple);
   --color-wp-purple-dark: var(--wp-purple-dark);
-  --color-wp-dark: var(--wp-dark);
-  --color-wp-dark-lighter: var(--wp-dark-lighter);
-  --color-wp-dark-card: var(--wp-dark-card);
+  --color-wp-bg-primary: var(--wp-bg-primary);
+  --color-wp-bg-secondary: var(--wp-bg-secondary);
+  --color-wp-bg-card: var(--wp-bg-card);
+  --color-wp-badge: var(--wp-badge);
   --color-wp-text-primary: var(--wp-text-primary);
   --color-wp-text-secondary: var(--wp-text-secondary);
   --color-wp-text-muted: var(--wp-text-muted);
@@ -54,12 +68,12 @@
   --font-body: var(--wp-font-body);
   --font-mono: var(--wp-font-mono);
 }
-
+/* 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
+} */
 
 html {
   scroll-behavior: smooth;
@@ -68,7 +82,7 @@ html {
 }
 
 body {
-  background: var(--wp-gradient-primary);
+  background: var(--wp-bg-primary);
   color: var(--wp-text-primary);
   font-family: var(--wp-font-body);
   font-weight: 400;

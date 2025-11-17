@@ -243,18 +243,10 @@ export default function LeavesPage() {
         icon="🏖️"
         href="https://sites.google.com/whiteprompt.com/intranet/administration/leaves/notify-your-leave"
       />
-      <br />
-      
        {/* Vacations Summary Table */}
        <VacationsSummaryTable leaves={leaves} initialBalance={teamMember?.annualLeavesBalance || 0} />
-
-      <br/>
-
       {/* Leaves Summary Table */}
       <LeavesSummaryTable leaves={leaves} />
-
-      <br/>
-
       {/* Filter Section */}
       <div className="wp-card p-6 mb-16 wp-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -304,9 +296,6 @@ export default function LeavesPage() {
           </div>
         </div>
       </div>
-
-      <br/>
-
       {/* Content */}
       <div className="wp-card p-8">
         {error ? (

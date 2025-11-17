@@ -135,8 +135,6 @@ export default function ExpenseRefundsPage() {
         icon="💰"
         href="https://sites.google.com/whiteprompt.com/intranet/administration/get-your-refund"
       />
-      <br />
-
       {/* Filter Section */}
       <div className="wp-card p-6 mb-16 wp-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -187,9 +185,6 @@ export default function ExpenseRefundsPage() {
           </div>
         </div>
       </div>
-
-      <br/>
-
       {error ? (
         <ErrorDisplay message={error} />
       ) : filteredExpenseRefunds.length === 0 ? (

@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNotifications } from '@/contexts/NotificationsContext';
-import { NotificationsDropdown } from './NotificationsDropdown';
 
 export function NotificationBell() {
   const { unreadCount, loading } = useNotifications();
@@ -61,11 +60,6 @@ export function NotificationBell() {
           <div className="absolute -top-1 -right-1 h-5 w-5 border-2 border-wp-primary border-t-transparent rounded-full animate-spin" />
         )}
       </button>
-
-      {/* Dropdown */}
-      {isDropdownOpen && (
-        <NotificationsDropdown onClose={() => setIsDropdownOpen(false)} />
-      )}
     </div>
   );
 }

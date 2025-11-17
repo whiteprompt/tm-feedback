@@ -2,23 +2,25 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { 
+import {
   useState,
   useCallback,
   useMemo,
   useRef,
   useEffect,
 } from 'react';
-import { usePathname } from 'next/navigation';
-import { NotificationBell } from './NotificationBell';
+import { usePathname, useRouter } from 'next/navigation';
+import { useNotifications } from '@/contexts/NotificationsContext';
+import NavDropdown from './NavDropdown';
 
 export default function Navigation() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isRequestsDropdownOpen, setIsRequestsDropdownOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const pathname = usePathname();
-  const requestsDropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const { unreadCount } = useNotifications();
 
   // Helper function to determine if a route is active
   const isActive = useCallback((route: string) => {
@@ -33,19 +35,48 @@ export default function Navigation() {
     return pathname.startsWith('/leaves') || pathname.startsWith('/expense-refunds');
   }, [pathname]);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (requestsDropdownRef.current && !requestsDropdownRef.current.contains(event.target as Node)) {
-        setIsRequestsDropdownOpen(false);
+      const target = event.target as HTMLElement;
+      
+      // Don't close if clicking on a button or inside a button
+      const isButton = target.tagName === 'BUTTON' || target.closest('button') !== null;
+      if (isButton) {
+        return; // Let the button handle its own click
+      }
+      
+      // Check if click is inside the dropdown containers
+      const clickedInsideUserMenu = userMenuRef.current?.contains(target);
+      
+      // Only close if clicking outside
+      if (userMenuRef.current && !clickedInsideUserMenu) {
+        setIsUserMenuOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    // Use click event - we check for buttons first to avoid closing
+    document.addEventListener('click', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+
+  // Helper function to get user initials
+  const getUserInitials = useCallback(() => {
+    if (session?.user?.name) {
+      const names = session.user.name.split(' ');
+      if (names.length >= 2) {
+        return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+      }
+      return session.user.name.substring(0, 2).toUpperCase();
+    }
+    if (session?.user?.email) {
+      return session.user.email.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  }, [session]);
+
 
   // Helper function to get navigation link classes with White Prompt styling
   const getNavLinkClass = useCallback((route: string, isMobile = false) => {
@@ -54,12 +85,12 @@ export default function Navigation() {
       : "relative px-8 py-3 text-sm font-medium transition-all duration-300 rounded-lg min-h-[40px] min-w-[120px] flex items-center justify-center";
     
     const activeClasses = isMobile
-      ? "bg-gradient-to-r from-wp-primary to-wp-accent text-white shadow-lg"
-      : "bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border border-wp-primary/30 shadow-glow";
+      ? "bg-[#00D9FF] text-black shadow-lg"
+      : "bg-[#00D9FF] text-black";
     
     const inactiveClasses = isMobile
-      ? "text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10"
-      : "text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10";
+      ? "text-white hover:bg-[#00D9FF]/20"
+      : "text-white hover:bg-[#00D9FF]/20";
 
     return `${baseClasses} ${isActive(route) ? activeClasses : inactiveClasses}`;
   }, [isActive]);
@@ -71,12 +102,12 @@ export default function Navigation() {
       : "relative px-8 py-3 text-sm font-medium transition-all duration-300 rounded-lg min-h-[40px] min-w-[120px] flex items-center justify-center";
     
     const activeClasses = isMobile
-      ? "bg-gradient-to-r from-wp-primary to-wp-accent text-white shadow-lg"
-      : "bg-gradient-to-r from-wp-primary/20 to-wp-accent/20 text-wp-primary border border-wp-primary/30 shadow-glow";
+      ? "bg-[#00D9FF] text-black shadow-lg"
+      : "bg-[#00D9FF] text-black";
     
     const inactiveClasses = isMobile
-      ? "text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10"
-      : "text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10";
+      ? "text-white hover:bg-[#00D9FF]/20"
+      : "text-white hover:bg-[#00D9FF]/20";
 
     return `${baseClasses} ${isRequestsActive() ? activeClasses : inactiveClasses}`;
   }, [isRequestsActive]);
@@ -105,15 +136,11 @@ export default function Navigation() {
       <div className="wp-container">
         <div className="flex justify-between items-center h-20">
           <div className="shrink-0 flex items-center">
-            <Link href="/" className="flex items-center group">
-              <Image
-                src="/logo.svg"
-                alt="White Prompt Logo"
-                width={140}
-                height={35}
-                priority
-                className="h-8 w-auto filter brightness-0 invert transition-all duration-300 group-hover:brightness-110 group-hover:scale-105"
-              />             
+            <Link href="/" className="flex items-center group transition-all duration-300 hover:scale-105">
+              <span className="text-2xl md:text-3xl font-bold">
+                <span className="text-white">white</span>
+                <span className="text-[#00D9FF]">prompt</span>
+              </span>
             </Link>
           </div>
           
@@ -130,63 +157,128 @@ export default function Navigation() {
             </Link>
             
             {/* Requests dropdown */}
-            <div className="relative" ref={requestsDropdownRef}>
-              <button
-                onClick={() => setIsRequestsDropdownOpen(!isRequestsDropdownOpen)}
-                className={navClasses.requestsDropdown}
-              >
-                <span className="text-center leading-tight">
-                  My Requests
-                </span>
-                <svg
-                  className={`ml-2 h-4 w-4 transition-transform duration-200 ${
-                    isRequestsDropdownOpen ? 'rotate-180' : ''
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {isRequestsDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 w-56 bg-wp-dark border border-wp-border/30 rounded-lg shadow-lg z-50">
-                  <Link
-                    href="/leaves"
-                    className={`block px-6 py-4 text-base transition-all duration-300 rounded-t-lg ${
-                      isActive('/leaves') 
-                        ? 'from-wp-primary/20 to-wp-accent/20 text-wp-primary border-l-2 border-wp-primary' 
-                        : 'text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10'
-                    }`}
-                    onClick={() => setIsRequestsDropdownOpen(false)}
-                  >
-                    Leaves
-                  </Link>
-                  <Link
-                    href="/expense-refunds"
-                    className={`block px-6 py-4 text-base transition-all duration-300 rounded-b-lg ${
-                      isActive('/expense-refunds') 
-                        ? 'from-wp-primary/20 to-wp-accent/20 text-wp-primary border-l-2 border-wp-primary' 
-                        : 'text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10'
-                    }`}
-                    onClick={() => setIsRequestsDropdownOpen(false)}
-                  >
-                    Expense Refunds
-                  </Link>
-                </div>
-              )}
-            </div>
+            <NavDropdown
+              label="My Requests"
+              items={[
+                { href: '/leaves', label: 'Leaves' },
+                { href: '/expense-refunds', label: 'Expense Refunds' },
+              ]}
+              buttonClassName={navClasses.requestsDropdown}
+              isActive={(pathname) => {
+                return pathname.startsWith('/leaves') || pathname.startsWith('/expense-refunds');
+              }}
+            />
 
-            <div className="flex items-center border-l border-wp-border/50 gap-4">
-              {session && <NotificationBell />}
+            <div className="flex items-center border-l border-wp-border/50 pl-4">
               {session ? (
-                <button
-                  onClick={() => signOut()}
-                  className="wp-button-primary"
-                >
-                  Sign out
-                </button>
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#00D9FF]/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
+                  >
+                    {/* Avatar */}
+                    <div className="relative">
+                      {session.user?.image ? (
+                        <img
+                          src={session.user.image}
+                          alt={session.user?.name || 'User'}
+                          className="h-10 w-10 rounded-full border-2 border-[#00D9FF]"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-[#00D9FF] flex items-center justify-center border-2 border-[#00D9FF]">
+                          <span className="text-black font-semibold text-sm">
+                            {getUserInitials()}
+                          </span>
+                        </div>
+                      )}
+                      {/* Unread notification badge */}
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 h-5 w-5 bg-[#00D9FF] text-black text-xs font-bold rounded-full flex items-center justify-center border-2 border-wp-dark">
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                      )}
+                    </div>
+                    {/* Dropdown arrow */}
+                    <svg
+                      className={`h-4 w-4 text-white transition-transform duration-200 ${
+                        isUserMenuOpen ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {/* User Menu Dropdown */}
+                  {isUserMenuOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-64 bg-wp-dark border border-wp-border/30 rounded-lg shadow-lg z-50 overflow-hidden">
+                      {/* User Info Section */}
+                      <div className="px-4 py-4 border-b border-wp-border/30 bg-wp-dark-lighter/50">
+                        <div className="flex items-center gap-3">
+                          {session.user?.image ? (
+                            <img
+                              src={session.user.image}
+                              alt={session.user?.name || 'User'}
+                              className="h-12 w-12 rounded-full border-2 border-[#00D9FF]"
+                            />
+                          ) : (
+                            <div className="h-12 w-12 rounded-full bg-[#00D9FF] flex items-center justify-center border-2 border-[#00D9FF]">
+                              <span className="text-black font-semibold">
+                                {getUserInitials()}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-white truncate">
+                              {session.user?.name || 'User'}
+                            </p>
+                            <p className="text-xs text-wp-text-secondary truncate">
+                              {session.user?.email}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
+                      <div className="py-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsUserMenuOpen(false);
+                            router.push('/notifications');
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-[#00D9FF]/20 transition-all duration-200 relative text-left"
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                          </svg>
+                          <span className="flex-1">Notifications</span>
+                          {unreadCount > 0 && (
+                            <span className="px-2 py-0.5 bg-[#00D9FF] text-black text-xs font-bold rounded-full">
+                              {unreadCount > 99 ? '99+' : unreadCount}
+                            </span>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Sign Out Button */}
+                      <div className="px-4 py-3 border-t border-wp-border/30 bg-wp-dark-lighter/50">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsUserMenuOpen(false);
+                            signOut();
+                          }}
+                          className="w-full px-4 py-2 bg-[#00D9FF] text-black font-semibold rounded-lg hover:bg-[#00D9FF]/90 transition-all duration-300"
+                        >
+                          Sign out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <Link href="/auth/signin" className="wp-button-primary">
                   Sign in
@@ -195,9 +287,102 @@ export default function Navigation() {
             </div>
           </div>
 
-          {/* Mobile menu button and notification bell */}
+          {/* Mobile menu button */}
           <div className="flex items-center gap-4 lg:hidden">
-            {session && <NotificationBell />}
+            {session && (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="p-2 rounded-lg hover:bg-[#00D9FF]/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
+                >
+                  {session.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user?.name || 'User'}
+                      className="h-8 w-8 rounded-full border-2 border-[#00D9FF]"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-[#00D9FF] flex items-center justify-center border-2 border-[#00D9FF]">
+                      <span className="text-black font-semibold text-xs">
+                        {getUserInitials()}
+                      </span>
+                    </div>
+                  )}
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-[#00D9FF] text-black text-xs font-bold rounded-full flex items-center justify-center border-2 border-wp-dark text-[10px]">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+                {/* Mobile User Menu - same as desktop but positioned differently */}
+                {isUserMenuOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-wp-dark border border-wp-border/30 rounded-lg shadow-lg z-50 overflow-hidden">
+                    {/* User Info Section */}
+                    <div className="px-4 py-4 border-b border-wp-border/30 bg-wp-dark-lighter/50">
+                      <div className="flex items-center gap-3">
+                        {session.user?.image ? (
+                          <img
+                            src={session.user.image}
+                            alt={session.user?.name || 'User'}
+                            className="h-12 w-12 rounded-full border-2 border-[#00D9FF]"
+                          />
+                        ) : (
+                          <div className="h-12 w-12 rounded-full bg-[#00D9FF] flex items-center justify-center border-2 border-[#00D9FF]">
+                            <span className="text-black font-semibold">
+                              {getUserInitials()}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-white truncate">
+                            {session.user?.name || 'User'}
+                          </p>
+                          <p className="text-xs text-wp-text-secondary truncate">
+                            {session.user?.email}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="py-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsUserMenuOpen(false);
+                          router.push('/notifications');
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-[#00D9FF]/20 transition-all duration-200 relative text-left"
+                      >
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span className="flex-1">Notifications</span>
+                        {unreadCount > 0 && (
+                          <span className="px-2 py-0.5 bg-[#00D9FF] text-black text-xs font-bold rounded-full">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </span>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Sign Out Button */}
+                    <div className="px-4 py-3 border-t border-wp-border/30 bg-wp-dark-lighter/50">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsUserMenuOpen(false);
+                          signOut();
+                        }}
+                        className="w-full px-4 py-2 bg-[#00D9FF] text-black font-semibold rounded-lg hover:bg-[#00D9FF]/90 transition-all duration-300"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-3 rounded-lg text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
@@ -266,18 +451,8 @@ export default function Navigation() {
           >
             Expense Refunds
           </Link>
-          <div className="pt-4 mt-4 border-t border-wp-border/30">
-            {session ? (
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  signOut();
-                }}
-                className="w-full wp-button-primary"
-              >
-                Sign out
-              </button>
-            ) : (
+          {!session && (
+            <div className="pt-4 mt-4 border-t border-wp-border/30">
               <Link
                 href="/auth/signin"
                 className="block w-full wp-button-primary text-center"
@@ -285,8 +460,8 @@ export default function Navigation() {
               >
                 Sign in
               </Link>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </nav>

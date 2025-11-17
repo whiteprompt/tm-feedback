@@ -19,6 +19,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.email = user.email;
+        token.name = user.name;
+        token.image = user.image;
         // token.email = "alejandro.brizo@whiteprompt.com";
       }
       return token;
@@ -26,6 +28,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token && session.user) {
         session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.image as string;
       }
       return session;
     },

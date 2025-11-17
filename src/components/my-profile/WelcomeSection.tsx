@@ -26,7 +26,6 @@ export default function WelcomeSection({
       <p className="flex justify-center">
         {sitePurpose}
       </p>
-      <br />
     </section>
   );
 }

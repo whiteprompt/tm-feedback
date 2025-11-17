@@ -143,7 +143,6 @@ export default function AdminPage() {
             <p className="wp-body-large max-w-2xl mx-auto">
               Manage system settings, feature toggles, and maintenance operations.
             </p>
-            <br />
           </div>
 
           <div className="space-y-8 wp-slide-up">
@@ -180,7 +179,6 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
-            <br />
             {/* System Operations Card */}
             <div className="wp-card p-8">
               <div className="flex items-center mb-6">
