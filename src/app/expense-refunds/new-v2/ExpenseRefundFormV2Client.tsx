@@ -276,7 +276,6 @@ export default function ExpenseRefundFormV2Client() {
 
       // Verify the concept exists in our options
       const conceptExists = EXPENSE_CONCEPTS.find(c => c.label === extractedData.concept);
-      console.log('Concept exists in options:', conceptExists);
 
       setFormData(prev => ({
         ...prev,
@@ -403,7 +402,7 @@ export default function ExpenseRefundFormV2Client() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className="min-h-screen bg-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
       <Navigation />
       <main className="wp-section-sm">
         <div className="wp-container">

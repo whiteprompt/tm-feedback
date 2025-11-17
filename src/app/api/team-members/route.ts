@@ -15,9 +15,6 @@ export async function GET() {
   try {
     const { error, email } = await getAuthenticatedUser();
 
-    // Debug logging for session isolation
-    console.log(`[DEBUG] API request for email: ${email}`);
-
     if (error) {
       return error;
     }
@@ -26,7 +23,6 @@ export async function GET() {
 
     const cachedData = await teamMembersCache.get<TeamMember[]>();
     if (cachedData) {
-      console.log(`[Cache] Returning cached data for team members`);
       return NextResponse.json(cachedData);
     }
 
@@ -54,8 +50,6 @@ export async function GET() {
         name: `${member.lastName} ${member.firstName}`,
       }))
       .filter((member) => member.status === "active");
-
-    console.log(teamMembers[0]);
 
     // Sort by name for better UX
     // teamMembers.sort((a, b) => a.name.localeCompare(b.name));

@@ -16,7 +16,7 @@ export default function Allocations({
     <section className="mb-16 wp-slide-up">
       <div className="wp-card p-8">
         <div className="flex items-center mb-6">
-          <div className="w-12 h-12 bg-gradient-to-r from-wp-purple to-wp-purple-dark rounded-full flex items-center justify-center mr-4">
+          <div className="w-12 h-12 bg-linear-to-r from-wp-purple to-wp-purple-dark rounded-full flex items-center justify-center mr-4">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
@@ -39,21 +39,21 @@ export default function Allocations({
             <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Information</h3>
             <p className="wp-body text-wp-text-muted">No team member information available.</p>
           </div>
-        ) : teamMember.allocations && teamMember.allocations.length > 0 ? (
+        ) : teamMember?.allocations?.length ? (
           <div className="grid gap-4">
             {teamMember.allocations.map((allocation: Allocation, index: number) => (
               <div
                 key={index}
                 className={`p-6 rounded-lg border transition-all duration-300 ${
                   allocation.active
-                    ? 'bg-gradient-to-r from-wp-primary/10 to-wp-accent/10 border-wp-primary/30'
+                    ? 'b-linear-to-r from-wp-primary/10 to-wp-accent/10 border-wp-primary/30'
                     : 'bg-wp-dark-card/50 border-wp-border'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="wp-body font-semibold text-wp-text-primary mb-2">
-                      {allocation.project}
+                      {`${allocation.project?.clientName}-${allocation.project?.projectName}`}
                     </h3>
                     <div className="flex items-center space-x-4 text-sm text-wp-text-secondary">
                       <span>Start: {allocation.start}</span>
@@ -62,7 +62,7 @@ export default function Allocations({
                     </div>
                   </div>
                   {allocation.active && (
-                    <span className="px-8 py-3 bg-gradient-to-r from-wp-primary to-wp-accent text-white text-base font-bold rounded-full min-w-[100px] text-center">
+                    <span className="px-8 py-3 bg-linear-to-r from-wp-primary to-wp-accent text-white text-base font-bold rounded-full min-w-[100px] text-center">
                       Active
                     </span>
                   )}

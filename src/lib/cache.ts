@@ -38,11 +38,9 @@ class TeamMemberCache {
       const data = await redis.get(cacheKey);
 
       if (data) {
-        console.log(`[Cache] Redis hit for user: ${userEmail}`);
         return data as T;
       }
 
-      console.log(`[Cache] Miss for user: ${userEmail}`);
       return null;
     } catch (error) {
       console.error(`[Cache] Redis error for user ${userEmail}:`, error);
@@ -60,9 +58,6 @@ class TeamMemberCache {
 
     try {
       await redis.setex(cacheKey, this.CACHE_TTL, value);
-      console.log(
-        `[Cache] Redis set for user: ${userEmail}, TTL: ${this.CACHE_TTL}s`
-      );
     } catch (error) {
       console.error(
         `[Cache] Redis error setting cache for user ${userEmail}:`,
@@ -83,7 +78,6 @@ class TeamMemberCache {
 
     try {
       await redis.del(cacheKey);
-      console.log(`[Cache] Redis deleted for user: ${userEmail}`);
     } catch (error) {
       console.error(
         `[Cache] Redis error deleting cache for user ${userEmail}:`,
@@ -125,11 +119,9 @@ class TeamMembersCache {
       const data = await redis.get(cacheKey);
 
       if (data) {
-        console.log(`[Cache] Redis hit for team members`);
         return data as T;
       }
 
-      console.log(`[Cache] Miss for team members`);
       return null;
     } catch (error) {
       console.error(`[Cache] Redis error for team members:`, error);
@@ -147,9 +139,6 @@ class TeamMembersCache {
 
     try {
       await redis.setex(cacheKey, this.CACHE_TTL, value);
-      console.log(
-        `[Cache] Redis set for team members, TTL: ${this.CACHE_TTL}s`
-      );
     } catch (error) {
       console.error(
         `[Cache] Redis error setting cache for team members:`,
@@ -168,7 +157,6 @@ class TeamMembersCache {
 
     try {
       await redis.del(cacheKey);
-      console.log(`[Cache] Redis deleted for team members`);
     } catch (error) {
       console.error(
         `[Cache] Redis error deleting cache for team members:`,
@@ -212,11 +200,9 @@ class ExchangeRatesCache {
       const data = await redis.get(cacheKey);
 
       if (data) {
-        console.log(`[Cache] Redis hit for exchange rates`);
         return data as T;
       }
 
-      console.log(`[Cache] Miss for exchange rates`);
       return null;
     } catch (error) {
       console.error(`[Cache] Redis error for exchange rates:`, error);
@@ -236,9 +222,6 @@ class ExchangeRatesCache {
 
     try {
       await redis.setex(cacheKey, this.CACHE_TTL, value);
-      console.log(
-        `[Cache] Redis set for exchange rates, TTL: ${this.CACHE_TTL}s`
-      );
     } catch (error) {
       console.error(
         `[Cache] Redis error setting cache for exchange rates:`,
@@ -259,7 +242,6 @@ class ExchangeRatesCache {
 
     try {
       await redis.del(cacheKey);
-      console.log(`[Cache] Redis deleted for exchange rates`);
     } catch (error) {
       console.error(
         `[Cache] Redis error deleting cache for exchange rates:`,

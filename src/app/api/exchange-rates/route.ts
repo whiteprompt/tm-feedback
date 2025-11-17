@@ -14,15 +14,11 @@ export async function GET() {
     // Try to get cached rates first
     const cachedRates = await exchangeRatesCache.get<ExchangeRatesResponse>();
     if (cachedRates) {
-      console.log("[ExchangeRates] Cache hit - returning cached rates");
       return NextResponse.json({
         ...cachedRates,
         cached: true,
       });
     }
-
-    // Cache miss or Redis unavailable - fetch fresh rates
-    console.log("[ExchangeRates] Cache miss - fetching fresh rates");
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
@@ -72,9 +68,6 @@ export async function GET() {
     // Try to return stale cached data as fallback
     const staleRates = await exchangeRatesCache.get<ExchangeRatesResponse>();
     if (staleRates) {
-      console.log(
-        "[ExchangeRates] Returning stale cached data due to API error"
-      );
       return NextResponse.json({
         ...staleRates,
         cached: true,

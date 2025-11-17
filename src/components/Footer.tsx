@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="wp-container py-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-wp-primary to-wp-accent rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 b-linear-to-r from-wp-primary to-wp-accent rounded-full flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
