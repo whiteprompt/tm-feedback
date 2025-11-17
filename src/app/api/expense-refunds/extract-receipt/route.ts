@@ -55,9 +55,6 @@ export async function POST(request: NextRequest) {
             const dataExchangeRate = await responseExchangeRate.json();
             const currencyCode = currency.toUpperCase();
             exchangeRate = dataExchangeRate.rates[currencyCode] || 1;
-            console.log(
-              `[ExtractReceipt] Exchange rate for ${currencyCode}: ${exchangeRate}`
-            );
           }
         } catch (error) {
           console.error("Error fetching exchange rate:", error);

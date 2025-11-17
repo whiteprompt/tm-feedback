@@ -8,6 +8,7 @@ import ErrorBanner from '@/components/ErrorBanner';
 import { useRouter } from 'next/navigation';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
 import { useFeedbacks } from '@/contexts/FeedbacksContext';
+import { Allocation } from '@/lib/constants';
 
 interface Project {
   id: string;
@@ -63,12 +64,10 @@ export default function TeamMemberFeedbackClient() {
 
   useEffect(() => {
     if (teamMember?.allocations && isClient) {
-      setProjects(teamMember.allocations.map((allocation: {
-        project: string
-      }) => ({
-        id: allocation.project,
-        name: allocation.project
-      }))?.filter((project: Project) => !project.name?.toLowerCase().includes('wp')));
+      setProjects(teamMember.allocations.map((allocation: Allocation) => ({
+        id: allocation.project.id,
+        name: allocation.project.projectName
+      })).filter((project: Project) => !project.name?.toLowerCase().includes('wp')));
     }
   }, [teamMember, isClient]);
 

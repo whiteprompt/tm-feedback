@@ -137,7 +137,6 @@ export async function POST(request: NextRequest) {
     );
 
     if (!response.ok) {
-      console.log(response);
       throw new Error(
         `Staffing service responded with status: ${response.status}`
       );

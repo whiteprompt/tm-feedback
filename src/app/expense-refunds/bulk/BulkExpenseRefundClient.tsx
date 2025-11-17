@@ -80,7 +80,6 @@ export default function BulkExpenseRefundClient() {
         const response = await fetch('/api/team-members');
         if (response.ok) {
           const data = await response.json();
-          console.log('Team members API response:', data);
           
           // Handle both error response and successful response
           if (data.error) {
@@ -354,14 +353,11 @@ export default function BulkExpenseRefundClient() {
     const getExchangeRateForCurrency = async (currency: string): Promise<string> => {
       if (currency === 'USD') return '1';
       
-      console.log(`[BulkForm] Fetching exchange rate for currency: ${currency}`);
-      
       try {
         const response = await fetch('/api/exchange-rates');
         if (response.ok) {
           const data = await response.json();
           const rate = data.rates[currency];
-          console.log(`[BulkForm] Exchange rate for ${currency}:`, rate);
           return rate ? rate.toString() : '1';
         }
       } catch (error) {
@@ -374,14 +370,12 @@ export default function BulkExpenseRefundClient() {
     const newFormData: BulkExpenseRefundForm[] = await Promise.all(
       newExtractedData.map(async (item) => {
         const currency = mapCurrency(item.currency);
-        console.log(`[BulkForm] Processing item - Original currency: "${item.currency}", Mapped currency: "${currency}"`);
         
         // Always fetch the correct exchange rate for non-USD currencies
         // Don't trust the extracted exchange rate as it might be incorrect
         let exchangeRate = '1';
         if (currency !== 'USD') {
           exchangeRate = await getExchangeRateForCurrency(currency);
-          console.log(`[BulkForm] Final exchange rate for ${currency}: ${exchangeRate}`);
         }
         
         return {
@@ -495,7 +489,6 @@ export default function BulkExpenseRefundClient() {
 
       // Wait for all submissions to complete
       const results = await Promise.all(submissionPromises);
-      console.log('Bulk submission results:', results);
 
       // Reset form and clear unsaved changes flag
       setFiles([]);
@@ -548,7 +541,7 @@ export default function BulkExpenseRefundClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className="min-h-screen b-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
       <Navigation />
       <main className="wp-section-sm">
         <div className="wp-container">

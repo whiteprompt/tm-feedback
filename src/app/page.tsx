@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import WelcomeSection from '@/components/my-profile/WelcomeSection';
-import VideoSection from '@/components/my-profile/VideoSection';
 import CompanyNewsCarousel from '@/components/my-profile/CompanyNewsCarousel';
 import ImportantProcesses from '@/components/my-profile/ImportantProcesses';
+import HolidaysSection from '@/components/leaves/HolidaysSection';
+import UnreadNotificationsTable from '@/components/UnreadNotificationsTable';
 
 export default function HomePage() {
   const { status } = useSession();
@@ -33,7 +34,9 @@ export default function HomePage() {
       <div className="space-y-16">
         <WelcomeSection />
         <br />
-        <VideoSection />
+        <UnreadNotificationsTable />
+        <br />
+        <HolidaysSection />
         <br />
         <CompanyNewsCarousel />
         <br />

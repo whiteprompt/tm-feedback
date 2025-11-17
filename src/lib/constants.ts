@@ -74,7 +74,11 @@ export interface ExpenseRefundForm {
 }
 
 export interface Allocation {
-  project: string;
+  project: {
+    clientName: string;
+    id: string;
+    projectName: string;
+  };
   start: string;
   end?: string;
   active?: boolean;
@@ -90,6 +94,7 @@ export interface Contract {
   active?: boolean;
   isActive?: boolean;
   type?: string;
+  paidAnnualLeave?: number;
 }
 
 export interface AccessTool {
@@ -108,6 +113,7 @@ export interface TeamMember {
   mobile: string;
   identificationType: string;
   identificationNumber: string;
+  annualLeavesBalance?: number;
   contracts?: Contract[];
   allocations?: Allocation[];
   accesses?: string[];

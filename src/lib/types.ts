@@ -10,6 +10,7 @@ export enum NotificationModule {
   ExpenseRefunds = "Expense Refunds",
   MyProjects = "My Projects",
   MyProfile = "My Profile",
+  Presentations = "Presentations",
 }
 
 export interface Notification {
@@ -32,4 +33,24 @@ export interface CreateNotificationRequest {
 
 export interface MarkNotificationReadRequest {
   id: string;
+}
+
+export interface Leave {
+  notionId: string;
+  fromDate: string;
+  toDate: string;
+  type: string;
+  status: string;
+  days: number;
+  comments?: string;
+  certificate?: string;
+  totalDays: number;
+}
+
+export interface Holiday {
+  id: string;
+  name: string;
+  date: string;
+  country: string;
+  type?: string;
 }

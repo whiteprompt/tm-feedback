@@ -251,7 +251,7 @@ export default function ExpenseRefundFormClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className="min-h-screen bg-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
       <Navigation />
         <main className="wp-section-sm">
           <div className="wp-container">

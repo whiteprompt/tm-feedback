@@ -12,9 +12,6 @@ export async function GET() {
   try {
     const { error, email } = await getAuthenticatedUser();
 
-    // Debug logging for session isolation
-    console.log(`[DEBUG] API request for email: ${email}`);
-
     if (error) {
       return error;
     }
@@ -22,14 +19,8 @@ export async function GET() {
     // Check cache first
     const cachedData = await teamMemberCache.get<TeamMember>(email!);
     if (cachedData) {
-      console.log(`[Cache] Returning cached data for user: ${email}`);
       return NextResponse.json(cachedData);
     }
-
-    // Cache miss - fetch from external API
-    console.log(
-      `[Cache] Cache miss for user: ${email}, fetching from external API`
-    );
 
     const notionUrl = new URL(
       `${STAFFING_API_URL}/notion-webhooks/team-member?q=${email}&includeAllocations=true&includeContracts=true`
@@ -60,6 +51,7 @@ export async function GET() {
       identificationNumber: data.identificationNumber,
       country: data.country,
       countryAcronym: data.countryAcronym,
+      annualLeavesBalance: data.annualLeavesBalance,
       allocations: data.allocations
         ?.sort(
           (a, b) => new Date(b.start).getTime() - new Date(a.start).getTime()
@@ -81,6 +73,7 @@ export async function GET() {
           amountType: contract.amountType,
           amount: contract.amount,
           start: formatDate(contract.start),
+          paidAnnualLeave: contract.paidAnnualLeave,
           end: contract.end ? formatDate(contract.end) : "",
           active: !contract.end || new Date(contract.end) > new Date(),
         })),

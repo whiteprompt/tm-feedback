@@ -19,6 +19,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.email = user.email;
+        // token.email = "alejandro.brizo@whiteprompt.com";
       }
       return token;
     },

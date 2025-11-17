@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import PageHeader from '@/components/PageHeader';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import LeaveFormClient from './LeaveFormClient';
+import LeaveFormClient from '@/components/leaves/LeaveFormClient';
 
 export default function NewLeavePage() {
   const { status } = useSession();
