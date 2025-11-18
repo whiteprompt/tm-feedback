@@ -32,7 +32,7 @@ export default function Navigation() {
 
   // Helper function to check if requests dropdown should be active
   const isRequestsActive = useCallback(() => {
-    return pathname.startsWith('/leaves') || pathname.startsWith('/expense-refunds');
+    return pathname.startsWith('/leaves') || pathname.startsWith('/expense-refunds') || pathname.startsWith('/other-requests');
   }, [pathname]);
 
   // Close dropdowns when clicking outside
@@ -162,10 +162,11 @@ export default function Navigation() {
               items={[
                 { href: '/leaves', label: 'Leaves' },
                 { href: '/expense-refunds', label: 'Expense Refunds' },
+                { href: '/other-requests', label: 'Other Requests' },
               ]}
               buttonClassName={navClasses.requestsDropdown}
               isActive={(pathname) => {
-                return pathname.startsWith('/leaves') || pathname.startsWith('/expense-refunds');
+                return pathname.startsWith('/leaves') || pathname.startsWith('/expense-refunds') || pathname.startsWith('/other-requests');
               }}
             />
 
@@ -450,6 +451,13 @@ export default function Navigation() {
             onClick={() => setIsMenuOpen(false)}
           >
             Expense Refunds
+          </Link>
+          <Link
+            href="/other-requests"
+            className={getNavLinkClass('/other-requests', true)}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Other Requests
           </Link>
           {!session && (
             <div className="pt-4 mt-4 border-t border-wp-border/30">

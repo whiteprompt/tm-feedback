@@ -15,23 +15,29 @@ export default function ExternalLinkCard({
   href,
   className = '',
 }: ExternalLinkCardProps) {
+  const isPlaceholder = href === '#';
+  
   return (
     <div className={`mb-8 wp-fade-in ${className}`}>
       <a
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group wp-card p-6 hover:scale-105 transition-all duration-300 hover:shadow-xl hover:shadow-wp-primary/20 block"
+        {...(isPlaceholder ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+        className={`group wp-card p-6 transition-all duration-300 hover:shadow-xl hover:shadow-wp-primary/20 block h-full flex flex-col ${
+          isPlaceholder 
+            ? 'opacity-60 cursor-not-allowed hover:scale-100' 
+            : 'hover:scale-105'
+        }`}
+        onClick={isPlaceholder ? (e) => e.preventDefault() : undefined}
       >
-        <div className="flex items-start space-x-4">
+        <div className="flex items-start space-x-4 flex-1">
           <div className="text-3xl group-hover:scale-110 transition-transform duration-300">
             {icon}
           </div>
-          <div className="flex-1">
+          <div className="flex-1 flex flex-col">
             <h3 className="wp-heading-3 text-wp-text-primary mb-2 group-hover:text-wp-primary transition-colors duration-300">
               {title}
             </h3>
-            <p className="wp-body-small text-wp-text-secondary group-hover:text-wp-text-muted transition-colors duration-300">
+            <p className="wp-body-small text-wp-text-secondary group-hover:text-wp-text-muted transition-colors duration-300 flex-1">
               {description}
             </p>
           </div>
