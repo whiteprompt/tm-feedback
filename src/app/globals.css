@@ -68,12 +68,6 @@
   --font-body: var(--wp-font-body);
   --font-mono: var(--wp-font-mono);
 }
-/* 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-} */
 
 html {
   scroll-behavior: smooth;

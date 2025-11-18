@@ -11,10 +11,12 @@ import UnreadNotificationsTable from '@/components/UnreadNotificationsTable';
 import HolidaysSection from '@/components/leaves/HolidaysSection';
 import CompanyNewsCarousel from '@/components/home/CompanyNewsCarousel';
 import VideoSection from '@/components/home/VideoSection';
+import { useTeamMember } from '@/contexts/TeamMemberContext';
 
 export default function HomePage() {
   const { status } = useSession();
   const router = useRouter();
+  const { teamMember } = useTeamMember();
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -47,8 +49,8 @@ export default function HomePage() {
     <PageLayout>
       {/* Hero Section */}
       <HeroSection
-        badge="Team Management Platform"
-        headline="Manage All Company Tasks & Stay Updated"
+        badge="Team Member Portal"
+        headline="Manage Your Tasks & Stay Updated"
         subheadline="Your central hub for managing every task across the company—from feedback and leave requests to expenses and projects. Stay connected with real-time company news and updates, all in one modern platform."
         primaryCta={{
           text: "Get Started",
@@ -76,10 +78,10 @@ export default function HomePage() {
         </FullWidthContainerSection>
 
         <FullWidthContainerSection
-          headline="Plan Ahead with Smart Holiday Management"
-          description="Keep track of company holidays and plan your time off effectively with our integrated holiday calendar."
+          headline={`Next Holidays in ${teamMember?.country}`}
+          description={`Official holidays for ${new Date().getFullYear()} - ${new Date().getFullYear() + 1}`}
         >
-          <HolidaysSection />
+          <HolidaysSection countryAcronym={teamMember?.countryAcronym || 'ar'} />
         </FullWidthContainerSection>
 
         <FullWidthContainerSection

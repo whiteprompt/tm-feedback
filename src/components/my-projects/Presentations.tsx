@@ -14,22 +14,16 @@ interface Presentation {
   comments: string;
 }
 
-interface PresentationsProps {
-  description?: string;
-}
-
 const STATUS_COLORS = {
   'Presented': 'bg-gradient-to-r from-green-500 to-green-600 text-white',
-  'Cancelled': 'bg-gradient-to-r from-red-500 to-red-600 text-white',
+  'Cancelled': 'bg-gradient-to-r from-pink-400 to-pink-600 text-white',
   'Rejected': 'bg-gradient-to-r from-orange-500 to-orange-600 text-white',
   'Accepted': 'bg-gradient-to-r from-blue-500 to-green-600 text-white',
   'Follow-up': 'bg-gradient-to-r from-wp-primary to-wp-accent text-white',
   'Interview': 'bg-gradient-to-r from-purple-500 to-purple-600 text-white',
 } as const;
 
-export default function Presentations({
-  description = "Track your presentation history and status updates. View all your past and upcoming presentations with their current status."
-}: PresentationsProps) {
+export default function Presentations() {
   const { data: session, status } = useSession();
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,13 +79,7 @@ export default function Presentations({
                 Status
               </th>
               <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
-                Start
-              </th>
-              <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
-                End
-              </th>
-              <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
-                Last Updated
+                Date
               </th>
               <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
                 Comments
@@ -110,13 +98,7 @@ export default function Presentations({
                   </span>
                 </td>
                 <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center">
-                  {new Date(presentation.start).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center">
-                  {new Date(presentation.end).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center">
-                  {new Date(presentation.lastUpdated).toLocaleString()}
+                  {new Date(presentation.end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </td>
                 <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center max-w-xs truncate">
                   {presentation.comments}
@@ -131,8 +113,8 @@ export default function Presentations({
 
   return (
     <DataCard<Presentation>
-      title="Processes"
-      description={description}
+      // title="Processes"
+      // description={description}
       icon={icon}
       iconBgClassName="bg-linear-to-r from-wp-primary to-wp-accent"
       data={error ? null : presentations}
@@ -144,8 +126,8 @@ export default function Presentations({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4zM9 6v10h6V6H9z" />
           </svg>
         ),
-        title: 'No Presentations',
-        message: 'No presentations found for your account.',
+        title: 'No Client introductions',
+        message: 'No client introductions found for your account.',
       }}
       noDataState={{
         icon: (

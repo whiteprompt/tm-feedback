@@ -8,8 +8,8 @@ interface VideoSectionProps {
 
 export default function VideoSection({
   videoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ", // Placeholder video
-  title = "Welcome Video",
-  description = "Watch this video to learn more about our platform and how to get started."
+  title = "",
+  description = ""
 }: VideoSectionProps) {
   // Extract video ID from YouTube URL if full URL is provided
   const getEmbedUrl = (url: string) => {

@@ -19,8 +19,6 @@ export const ContractsCard: React.FC<ContractsCardProps> = ({
 
   return (
     <DataCard<Contract>
-      title="Contracts"
-      icon={icon}
       iconBgClassName="bg-linear-to-r from-green-500 to-green-600"
       data={teamMember?.contracts || null}
       emptyState={{
@@ -72,7 +70,7 @@ export const ContractsCard: React.FC<ContractsCardProps> = ({
                 </p>
               </div>
               {contract.active && (
-                <span className="px-8 py-3 bg-linear-to-r from-green-500 to-green-600 text-white text-base font-bold rounded-full min-w-[100px] text-center">
+                <span className="px-8 py-3 bg-linear-to-r text-white text-base font-bold rounded-full min-w-[100px] text-center">
                   Active
                 </span>
               )}

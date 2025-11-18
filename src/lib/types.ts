@@ -53,4 +53,5 @@ export interface Holiday {
   date: string;
   country: string;
   type?: string;
+  description?: string;
 }

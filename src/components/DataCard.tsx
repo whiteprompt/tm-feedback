@@ -9,9 +9,9 @@ export interface EmptyStateConfig {
 }
 
 export interface DataCardProps<T> {
-  title: string;
+  title?: string;
   description?: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   iconBgClassName?: string;
   data: T[] | null | undefined;
   isLoading?: boolean;
@@ -68,19 +68,21 @@ export function DataCard<T>({
 
   const content = (
     <div className={cardClassName}>
-      <div className="flex items-center mb-6">
-        <div className={`w-12 h-12 ${iconBgClassName} rounded-full flex items-center justify-center mr-4`}>
-          {icon}
+      {title && (
+        <div className="flex items-center mb-6">
+          <div className={`w-12 h-12 ${iconBgClassName} rounded-full flex items-center justify-center mr-4`}>
+            {icon}
+          </div>
+          <div className="flex-1">
+            <h2 className="wp-heading-3">{title}</h2>
+            {description && (
+              <p className="wp-body-small text-wp-text-secondary mt-2">
+                {description}
+              </p>
+            )}
+          </div>
         </div>
-        <div className="flex-1">
-          <h2 className="wp-heading-3">{title}</h2>
-          {description && (
-            <p className="wp-body-small text-wp-text-secondary mt-2">
-              {description}
-            </p>
-          )}
-        </div>
-      </div>
+      )}
 
       {isLoading ? (
         <div className="text-center py-8">
@@ -92,7 +94,11 @@ export function DataCard<T>({
         renderEmptyState(emptyState || defaultEmptyState)
       ) : (
         <div className="grid gap-4">
-          {data.map((item, index) => renderItem(item, index))}
+          {data.map((item, index) => (
+            <React.Fragment key={(item as any)?.id ?? index}>
+              {renderItem(item, index)}
+            </React.Fragment>
+          ))}
         </div>
       )}
     </div>

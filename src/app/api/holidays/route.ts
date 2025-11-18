@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { STAFFING_API_URL } from "@/lib/constants";
+import { holidaysCache } from "@/lib/cache";
 
 export interface Holiday {
   id: string;
@@ -23,6 +24,11 @@ export async function GET(request: NextRequest) {
     const country = searchParams.get("country"); // Default to Dominican Republic
     const fromDate = searchParams.get("fromDate") || "2025-01-01";
     const endDate = searchParams.get("endDate") || "2026-01-01";
+
+    const cachedHolidays = await holidaysCache.get(country as string);
+    if (cachedHolidays) {
+      return NextResponse.json(cachedHolidays);
+    }
 
     if (!country) {
       return NextResponse.json(
@@ -48,6 +54,10 @@ export async function GET(request: NextRequest) {
     }
 
     const holidays: Holiday[] = await response.json();
+
+    if (holidays.length > 0) {
+      await holidaysCache.set(country as string, holidays);
+    }
 
     return NextResponse.json(holidays);
   } catch (error) {

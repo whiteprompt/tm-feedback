@@ -54,6 +54,7 @@ export default function UnreadNotificationsTable() {
           </svg>
         );
       case NotificationModule.MyProjects:
+      case NotificationModule.Presentations:
         return (
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
@@ -81,6 +82,7 @@ export default function UnreadNotificationsTable() {
       case NotificationModule.ExpenseRefunds:
         return 'text-blue-500';
       case NotificationModule.MyProjects:
+      case NotificationModule.Presentations:
         return 'text-purple-500';
       case NotificationModule.MyProfile:
         return 'text-orange-500';
@@ -91,7 +93,7 @@ export default function UnreadNotificationsTable() {
 
   return (
     <div className="wp-card p-6 mb-8 wp-fade-in">
-      <div className="flex items-center justify-between mb-6">
+      {/* <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-wp-primary/10 rounded-lg">
             <svg className="w-6 h-6 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +109,7 @@ export default function UnreadNotificationsTable() {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {loading ? (
         <div className="flex items-center justify-center py-12">

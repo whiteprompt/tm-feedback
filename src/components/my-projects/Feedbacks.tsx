@@ -3,11 +3,6 @@
 import { useFeedbacks } from '@/contexts/FeedbacksContext';
 import Link from 'next/link';
 import ErrorDisplay from '@/components/ErrorDisplay';
-import EmptyState from '@/components/EmptyState';
-
-interface FeedbacksProps {
-  description?: string;
-}
 
 const SATISFACTION_MAP = {
   'happy': { emoji: '😊', label: 'Happy', color: 'text-green-400' },
@@ -15,39 +10,12 @@ const SATISFACTION_MAP = {
   'sad': { emoji: '😞', label: 'Sad', color: 'text-red-400' }
 } as const;
 
-export default function Feedbacks({
-  description = "Review all your previously submitted project feedbacks and satisfaction ratings. Share your experience and help improve our projects."
-}: FeedbacksProps) {
+export default function Feedbacks() {
   const { feedbacks, loading, error } = useFeedbacks();
 
   return (
     <section className="mb-16 wp-slide-up">
       <div className="wp-card p-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-linear-to-r from-wp-purple to-wp-purple-dark rounded-full flex items-center justify-center mr-4">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="wp-heading-3">Feedbacks</h2>
-              <p className="wp-body-small text-wp-text-secondary mt-2">
-                {description}
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/feedbacks/new"
-            className="wp-button-primary flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            New
-          </Link>
-        </div>
-
         {loading ? (
           <div className="text-center py-12">
             <div className="flex flex-col items-center space-y-4">

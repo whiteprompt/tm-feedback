@@ -1,32 +1,49 @@
-import { Suspense } from 'react';
-import TeamMemberFeedbackClient from './TeamMemberFeedbackClient';
-import Navigation from '@/components/Navigation';
+'use client';
+
+import TeamMemberFeedbackClient from '@/components/feedbacks/TeamMemberFeedbackClient';
+import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import PageLayout from '@/components/PageLayout';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { HeroSection } from '@/components/home/HeroSection';
+import { FullWidthContainerSection } from '@/components/FullWidthContainerSection';
+
 
 export const dynamic = 'force-dynamic';
 
 export default function Page() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen">
-        <Navigation />
-        <main className="wp-section-sm">
-          <div className="wp-slide-up">
-            <div className="wp-card p-8">
-              <div className="animate-pulse">
-                <div className="h-12 bg-wp-dark-card/50 rounded w-1/3 mb-8"></div>
-                <div className="space-y-6">
-                  <div className="h-16 bg-wp-dark-card/50 rounded"></div>
-                  <div className="h-16 bg-wp-dark-card/50 rounded"></div>
-                  <div className="h-32 bg-wp-dark-card/50 rounded"></div>
-                  <div className="h-16 bg-wp-dark-card/50 rounded"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    }>
-      <TeamMemberFeedbackClient />
-    </Suspense>
-  );
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+      return;
+    }
+  }, [status, router]);
+
+  if (status === 'loading') {
+    return <LoadingSpinner />;
+  }
+
+  if (status === 'unauthenticated') {
+    return null;
+  }
+    return (
+      <PageLayout>
+        <HeroSection
+          badge="Submit New Feedback"
+          headline="Submit a new feedback for your project allocations."
+          subheadline="Submit a new feedback for your project allocations."
+          primaryCta={{
+            text: "Go back to feedbacks",
+            onClick: () => router.push("/my-projects"),
+          }}
+        />
+        <FullWidthContainerSection>
+          <TeamMemberFeedbackClient />
+        </FullWidthContainerSection>
+      </PageLayout>
+    );
 } 

@@ -28,15 +28,6 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
 }) => {
   return (
     <div className="wp-card p-8">
-      <header className="flex items-center mb-8">
-        <div className="w-12 h-12 bg-linear-to-br from-wp-primary to-wp-accent rounded-full flex items-center justify-center mr-4">
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </div>
-        <h2 className="wp-heading-3">Personal Information</h2>
-      </header>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <InfoField label="Full Name" value={`${teamMember.firstName} ${teamMember.lastName}`} />
         <InfoField label="Work Email" value={teamMember.email} />

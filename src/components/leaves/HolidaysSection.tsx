@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useTeamMember } from '@/contexts/TeamMemberContext';
 import { Holiday } from '@/lib/types';
 import { beginOfMonth } from '@/utils/date';
-import { addDays, endOfMonth, format } from 'date-fns';
+import { addYears, format } from 'date-fns';
+import { twMerge } from 'tailwind-merge';
 
-export default function HolidaysSection() {
+export default function HolidaysSection({ countryAcronym }: { countryAcronym: string }) {
   const { data: session } = useSession();
-  const { teamMember } = useTeamMember();
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [holidaysLoading, setHolidaysLoading] = useState(true);
   const [holidaysError, setHolidaysError] = useState('');
@@ -17,17 +16,13 @@ export default function HolidaysSection() {
   // Fetch holidays
   useEffect(() => {
     const fetchHolidays = async () => {
-      if (!session?.user?.email || !teamMember?.country) return;
-
       try {
         setHolidaysLoading(true);
         setHolidaysError('');
 
         // Get current month and add the next 6 months
         const fromDate = format(beginOfMonth(new Date()), 'yyyy-MM-dd');
-        const endDate = format(endOfMonth(addDays(new Date(), 180)), 'yyyy-MM-dd');
-
-        let countryAcronym = teamMember.countryAcronym;
+        const endDate = format(addYears(fromDate, 1), 'yyyy-MM-dd');
 
         const response = await fetch(`/api/holidays?fromDate=${fromDate}&endDate=${endDate}&country=${countryAcronym}`);
         
@@ -45,29 +40,13 @@ export default function HolidaysSection() {
       }
     };
 
-    if (session?.user?.email && teamMember?.country) {
+    if (countryAcronym) {
       fetchHolidays();
     }
-  }, [session, teamMember]);
+  }, [session]);
 
   return (
     <div className="wp-card p-6 mb-8 wp-fade-in">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-wp-primary/10 rounded-lg">
-            <svg className="w-6 h-6 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-8 4h8m-4-4v8m-4-4h8" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="wp-heading-2 text-wp-text-primary">Holidays in {teamMember?.country}</h2>
-            <p className="wp-body-small text-wp-text-muted">
-              Official holidays for {new Date().getFullYear()} - {new Date().getFullYear() + 1}
-            </p>
-          </div>
-        </div>
-      </div>
-
       {holidaysLoading ? (
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-wp-primary"></div>
@@ -111,12 +90,10 @@ export default function HolidaysSection() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className={`wp-body font-semibold mb-1 ${
-                      isToday ? 'text-wp-primary' : 'text-wp-text-primary'
-                    }`}>
-                      {holiday.name}
+                    <h3 className={twMerge(`wp-body font-semibold mb-1 wp-text-muted`)}>
+                      {holiday.description}
                     </h3>
-                    <p className="wp-body-small text-wp-text-muted mb-2">
+                    <p className="mb-2 text-sm leading-5 text-white-500">
                       {holidayDate.toLocaleDateString('en-US', {
                         weekday: 'long',
                         year: 'numeric',
@@ -124,11 +101,6 @@ export default function HolidaysSection() {
                         day: 'numeric'
                       })}
                     </p>
-                    {holiday.type && (
-                      <span className="inline-block px-2 py-1 text-xs font-medium bg-wp-primary/20 text-wp-primary rounded-full">
-                        {holiday.type}
-                      </span>
-                    )}
                   </div>
                   <div className={`p-2 rounded-full ${
                     isToday

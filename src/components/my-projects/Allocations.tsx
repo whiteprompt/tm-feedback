@@ -21,9 +21,9 @@ export default function Allocations({
 
   return (
     <DataCard<Allocation>
-      title="Project Allocations"
-      description={description}
-      icon={icon}
+      // title="Project Allocations"
+      // description={description}
+      // icon={icon}
       iconBgClassName="bg-linear-to-r from-wp-purple to-wp-purple-dark"
       data={teamMember?.allocations || null}
       wrapperClassName="mb-16 wp-slide-up"
@@ -49,7 +49,7 @@ export default function Allocations({
           key={index}
           className={`p-6 rounded-lg border transition-all duration-300 ${
             allocation.active
-              ? 'bg-linear-to-r from-wp-primary/10 to-wp-accent/10 border-wp-primary/30'
+              ? 'bg-linear-to-r from-green-500/10 to-green-600/10 border-green-500/30'
               : 'bg-wp-dark-card/50 border-wp-border'
           }`}
         >
@@ -65,7 +65,7 @@ export default function Allocations({
               </div>
             </div>
             {allocation.active && (
-              <span className="px-8 py-3 bg-linear-to-r from-wp-primary to-wp-accent text-white text-base font-bold rounded-full min-w-[100px] text-center">
+              <span className="px-8 py-3 bg-linear-to-r text-white text-base font-bold rounded-full min-w-[100px] text-center">
                 Active
               </span>
             )}

@@ -43,13 +43,18 @@ export default function MyProjectsPage() {
             <Allocations />
           </FullWidthContainerSection>
           <FullWidthContainerSection
-            headline='Processes information'
-            description='Find the information related to the processes you have signed with the company.'>
+            headline='Client introductions information'
+            description='Find the information related to the client introductions you have agreed with the company.'>
              <Presentations />
           </FullWidthContainerSection>
           <FullWidthContainerSection
             headline='My allocations&rsquo; feedbacks'
-            description='Find the information related to the feedbacks you have submitted for your allocations.'>
+            description='Find the information related to the feedbacks you have submitted for your allocations.'
+            primaryCta={{
+              text: "Submit a new Feedback",
+              onClick: () => router.push("/feedbacks/new"),
+            }}
+            >
             <Feedbacks />
           </FullWidthContainerSection>
         </div>
