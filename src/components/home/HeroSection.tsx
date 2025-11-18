@@ -48,6 +48,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               onClick={primaryCta.onClick}
               icon={<span>→</span>}
               iconPosition="right"
+              className='cursor-pointer'
             >
               {primaryCta.text}
             </Button>
@@ -57,6 +58,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               variant="outlined"
               size="lg"
               onClick={secondaryCta.onClick}
+              className='cursor-pointer'
             >
               {secondaryCta.text}
             </Button>

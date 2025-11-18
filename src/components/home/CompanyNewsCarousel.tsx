@@ -35,7 +35,7 @@ export default function CompanyNewsCarousel({
       date: "2024-12-19"
     }
   ],
-  autoPlayInterval = 2500
+  autoPlayInterval = 4000
 }: CompanyNewsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);

@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
 import PageLayout from '@/components/PageLayout';
-import PageHeader from '@/components/PageHeader';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorDisplay from '@/components/ErrorDisplay';
-import ExternalLinkCard from '@/components/ExternalLinkCard';
 import ExpenseRefundsList, { ExpenseRefund } from '@/components/expense-refunds/ExpenseRefundsList';
 import { HeroSection } from '@/components/home/HeroSection';
 import { FullWidthContainerSection } from '@/components/FullWidthContainerSection';
@@ -97,7 +95,7 @@ export default function ExpenseRefundsPage() {
         subheadline="Here&rsquo;s your complete expense refunds information."
         primaryCta={{
           text: "Submit New Expense Refund",
-          onClick: () => router.push("/expense-refunds/new"),
+          onClick: () => router.push("/expense-refunds/bulk"),
         }}
         secondaryCta={{
           text: "Obtain your refund",
