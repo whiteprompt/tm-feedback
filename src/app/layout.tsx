@@ -6,8 +6,14 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Team Member Feedback",
-  description: "A Next.js application with Google authentication",
+  title: "Team Member Portal",
+  description: "A portal for team members to manage their personal information and projects",
+  icons: {
+    icon: [
+      { url: '/favico.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/logo.svg',
+  },
 };
 
 export default function RootLayout({

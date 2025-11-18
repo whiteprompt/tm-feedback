@@ -132,7 +132,7 @@ export default function Navigation() {
   }), [getNavLinkClass, getDropdownButtonClass]);
 
   return (
-    <nav className="backdrop-filter backdrop-blur-lg from-wp-dark/95 to-wp-dark-lighter/90 border-b border-wp-border/30 sticky top-0 z-50">
+    <nav className="backdrop-filter backdrop-blur-lg from-wp-dark/95 to-wp-dark-lighter/90 border-b border-wp-border/30 sticky top-0 z-50" style={{ borderBottomWidth: '1px', borderBottomColor: '#00C7D0' }}>
       <div className="wp-container">
         <div className="flex justify-between items-center h-20">
           <div className="shrink-0 flex items-center">

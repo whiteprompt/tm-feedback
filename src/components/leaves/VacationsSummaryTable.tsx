@@ -195,20 +195,7 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
 
   return (
     <div className="wp-card p-6 mb-8 wp-fade-in">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-wp-primary/10 rounded-lg">
-            <svg className="w-6 h-6 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="wp-heading-2 text-wp-text-primary">Vacations Summary</h2>
-            <p className="wp-body-small text-wp-text-muted">
-              Vacation days allocation and usage
-            </p>
-          </div>
-        </div>
+      <div className="flex justify-end">
         {initialBalance !== undefined && (
           <div className="flex items-center space-x-2 bg-wp-dark-card px-4 py-2 rounded-lg border border-wp-border">
             <span className="wp-body-small text-wp-text-muted">Initial balance:</span>&nbsp;

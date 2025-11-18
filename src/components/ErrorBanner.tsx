@@ -74,7 +74,7 @@ export default function ErrorBanner({
   return (
     <div className={`mb-6 p-4 ${styles.container} rounded-r-lg ${className}`}>
       <div className="flex items-start">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <svg className={`w-5 h-5 ${styles.icon} mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {getIcon()}
           </svg>

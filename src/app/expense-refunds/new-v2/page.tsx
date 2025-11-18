@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import ExpenseRefundFormV2Client from './ExpenseRefundFormV2Client';
+import ExpenseRefundFormV2Client from '@/components/expense-refunds/ExpenseRefundFormV2Client';
 import Navigation from '@/components/Navigation';
 
 export const dynamic = 'force-dynamic';

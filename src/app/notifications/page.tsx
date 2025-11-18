@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import NotificationsCenter from '@/components/NotificationsCenter';
+import { HeroSection } from '@/components/home/HeroSection';
+import { FullWidthContainerSection } from '@/components/FullWidthContainerSection';
 
 export default function NotificationsPage() {
   const { status } = useSession();
@@ -27,14 +29,17 @@ export default function NotificationsPage() {
 
   return (
     <PageLayout>
-      <div className="mb-8 wp-fade-in">
-        <h1 className="wp-heading-1 mb-4">Notifications</h1>
-        <p className="wp-body-large max-w-3xl">
-          Stay up to date with all your important updates and notifications.
-        </p>
-      </div>
+      <HeroSection
+        badge="My notifications"
+        headline="Stay up to date with all your important updates and notifications."
+        subheadline="Here&rsquo;s your complete notifications information."
+      />
 
-      <NotificationsCenter />
+      <div>
+        <FullWidthContainerSection>
+          <NotificationsCenter />
+        </FullWidthContainerSection>
+      </div>
     </PageLayout>
   );
 }

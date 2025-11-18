@@ -37,12 +37,11 @@ export default function TeamMemberPage() {
   return (
     <PageLayout>
       {/* Hero Section */}
-        <HeroSection
-          badge="My main information"
-          headline={`Welcome back, ${teamMember?.firstName || 'Team Member'}!`}
-          subheadline="Here&rsquo;s your complete team member information."
-        />
-
+      <HeroSection
+        badge="My main information"
+        headline={`Welcome back, ${teamMember?.firstName || 'Team Member'}!`}
+        subheadline="Here&rsquo;s your complete team member information."
+      />
       {teamMemberError ? (
         <ErrorDisplay message={teamMemberError} />
       ) : !teamMember ? (
