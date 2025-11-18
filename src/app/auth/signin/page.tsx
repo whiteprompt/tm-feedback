@@ -3,7 +3,6 @@
 import { signIn, useSession } from 'next-auth/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
 function SignInContent() {
@@ -21,7 +20,7 @@ function SignInContent() {
   // Show loading state while checking authentication
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
         <div className="wp-card p-16 max-w-xl w-full space-y-12">
           <div className="text-center">
             <div className="animate-pulse">
@@ -38,7 +37,7 @@ function SignInContent() {
   // If authenticated, show redirecting message (brief moment before redirect)
   if (status === 'authenticated') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
         <div className="wp-card p-16 max-w-xl w-full space-y-12">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin mx-auto mb-8"></div>
@@ -50,18 +49,16 @@ function SignInContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
       {/* <div className="wp-slide-up"> */}
         <div className="wp-card p-16 max-w-xl w-full space-y-12">
           <div className="text-center">
-            <Image
-              src="/logo.svg"
-              alt="Whiteprompt Logo"
-              width={240}
-              height={60}
-              priority
-              className="mb-12 mx-auto"
-            />
+            <div className="mb-12 flex items-center justify-center">
+              <span className="text-3xl md:text-4xl font-bold">
+                <span className="text-white">white</span>
+                <span className="text-[#00D9FF]">prompt</span>
+              </span>
+            </div>
             <h2 className="wp-heading-2 text-wp-text-primary mb-2">
               Welcome Back
             </h2>
@@ -93,7 +90,7 @@ function SignInContent() {
 const DynamicSignInContent = dynamic(() => Promise.resolve(SignInContent), {
   ssr: false,
   loading: () => (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
       <div className="wp-card p-16 max-w-xl w-full space-y-12">
         <div className="animate-pulse">
           <div className="h-16 bg-wp-dark-card/50 rounded w-3/4 mx-auto mb-12"></div>
@@ -107,7 +104,7 @@ const DynamicSignInContent = dynamic(() => Promise.resolve(SignInContent), {
 export default function SignIn() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
         <div className="wp-card p-16 max-w-xl w-full space-y-12">
           <div className="animate-pulse">
             <div className="h-12 bg-wp-dark-card/50 rounded w-3/4 mx-auto mb-8"></div>

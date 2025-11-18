@@ -542,16 +542,10 @@ export default function BulkExpenseRefundClient() {
 
   return (
     <div className="min-h-screen b-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
-      <Navigation />
       <main className="wp-section-sm">
         <div className="wp-container">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-16 wp-fade-in">
-            <div>
-              <h1 className="wp-heading-1 text-wp-text-primary mb-4">Bulk Expense Refunds</h1>
-              <p className="wp-body text-wp-text-secondary">Upload multiple receipts and submit them efficiently</p>
-            </div>
-            
             {/* Progress Steps */}
             <div className="flex items-center space-x-4">
               <div className={`flex items-center space-x-2 ${currentStep === 'upload' ? 'text-wp-primary' : ['extraction', 'review', 'confirmation'].includes(currentStep) ? 'text-green-400' : 'text-wp-text-muted'}`}>

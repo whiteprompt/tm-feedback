@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import Allocations from '@/components/my-projects/Allocations';
 import Presentations from '@/components/my-projects/Presentations';
 import Feedbacks from '@/components/my-projects/Feedbacks';
+import { HeroSection } from '@/components/home/HeroSection';
+import { FullWidthContainerSection } from '@/components/FullWidthContainerSection';
 
 export default function MyProjectsPage() {
   const { status } = useSession();
@@ -29,20 +31,28 @@ export default function MyProjectsPage() {
 
   return (
     <PageLayout>
-      <div className="mb-16 wp-fade-in">
-        <h1 className="wp-heading-1 mb-4">My Projects</h1>
-        <p className="wp-body-large max-w-3xl">
-          Manage your project allocations, presentations, and feedbacks all in one place.
-        </p>
-      </div>
-
-      <div className="space-y-16">
-        <Allocations />
-        <br />
-        <Presentations />
-        <br />
-        <Feedbacks />
-      </div>
+      <HeroSection
+        badge="My projects"
+        headline="Manage your project allocations, processes, and feedbacks all in one place."
+        subheadline="Here&rsquo;s your complete project information."
+      />
+      <div>
+          <FullWidthContainerSection
+            headline='My project allocations'
+            description='Find your project allocations here.'>
+            <Allocations />
+          </FullWidthContainerSection>
+          <FullWidthContainerSection
+            headline='Processes information'
+            description='Find the information related to the processes you have signed with the company.'>
+             <Presentations />
+          </FullWidthContainerSection>
+          <FullWidthContainerSection
+            headline='My allocations&rsquo; feedbacks'
+            description='Find the information related to the feedbacks you have submitted for your allocations.'>
+            <Feedbacks />
+          </FullWidthContainerSection>
+        </div>
     </PageLayout>
   );
 }

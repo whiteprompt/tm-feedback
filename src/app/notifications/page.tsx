@@ -5,18 +5,17 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import LeaveFormClient from '@/components/leaves/LeaveFormClient';
+import NotificationsCenter from '@/components/NotificationsCenter';
 import { HeroSection } from '@/components/home/HeroSection';
 import { FullWidthContainerSection } from '@/components/FullWidthContainerSection';
 
-export default function NewLeavePage() {
+export default function NotificationsPage() {
   const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/signin');
-      return;
     }
   }, [status, router]);
 
@@ -25,23 +24,22 @@ export default function NewLeavePage() {
   }
 
   if (status === 'unauthenticated') {
-    return null; // Will redirect
+    return null;
   }
 
   return (
     <PageLayout>
       <HeroSection
-        badge="Submit New Leave Request"
-        headline="Request time off by filling out the form below."
-        subheadline="Request time off by filling out the form below."
-        primaryCta={{
-          text: "Go back to list",
-          onClick: () => router.push("/leaves"),
-        }}
+        badge="My notifications"
+        headline="Stay up to date with all your important updates and notifications."
+        subheadline="Here&rsquo;s your complete notifications information."
       />
-      <FullWidthContainerSection>
-        <LeaveFormClient />
-      </FullWidthContainerSection>
+
+      <div>
+        <FullWidthContainerSection>
+          <NotificationsCenter />
+        </FullWidthContainerSection>
+      </div>
     </PageLayout>
   );
 }

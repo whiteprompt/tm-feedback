@@ -14,6 +14,7 @@ const LEAVE_TYPE_COLORS = {
   'Vacations': 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white',
   'Vacations taken': 'bg-gradient-to-r from-teal-500 to-teal-600 text-white',
   'Vacations Balance': 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white',
+  'Initial balance used': 'bg-gradient-to-r from-gray-500 to-gray-600 text-white',
 } as const;
 
 export default function VacationsSummaryTable({ leaves, initialBalance }: VacationsSummaryTableProps) {
@@ -189,30 +190,57 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
     return vacationsTaken;
   }, [teamMember, leavesSummary.years, leavesSummary.summary]);
 
+  // Calculate "Initial balance used" per year, tracking remaining balance
+  const initialBalanceUsedByYear = useMemo(() => {
+    const used: { [year: string]: number } = {};
+    let remainingBalance = initialBalance || 0;
+
+    // Process years in chronological order (oldest to newest)
+    const sortedYears = [...leavesSummary.years].reverse();
+
+    sortedYears.forEach(yearStr => {
+      const vacations = averagePaidAnnualLeaveByYear[yearStr];
+      const taken = vacationsTakenByYear[yearStr] || 0;
+
+      if (vacations === null || vacations === undefined) {
+        used[yearStr] = 0;
+        return;
+      }
+
+      // If taken exceeds vacations, user is using initial balance
+      const deficit = taken - vacations;
+      
+      if (deficit > 0 && remainingBalance > 0) {
+        // Use as much as needed, but not more than available
+        const usedThisYear = Math.min(deficit, remainingBalance);
+        used[yearStr] = usedThisYear;
+        remainingBalance -= usedThisYear;
+      } else {
+        used[yearStr] = 0;
+      }
+    });
+
+    return used;
+  }, [initialBalance, leavesSummary.years, averagePaidAnnualLeaveByYear, vacationsTakenByYear]);
+
+  // Calculate remaining initial balance
+  const remainingInitialBalance = useMemo(() => {
+    if (initialBalance === undefined) return undefined;
+    const totalUsed = leavesSummary.years.reduce((sum, year) => sum + (initialBalanceUsedByYear[year] || 0), 0);
+    return initialBalance - totalUsed;
+  }, [initialBalance, leavesSummary.years, initialBalanceUsedByYear]);
+
   if (!leaves?.length) {
     return null;
   }
 
   return (
     <div className="wp-card p-6 mb-8 wp-fade-in">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-wp-primary/10 rounded-lg">
-            <svg className="w-6 h-6 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="wp-heading-2 text-wp-text-primary">Vacations Summary</h2>
-            <p className="wp-body-small text-wp-text-muted">
-              Vacation days allocation and usage
-            </p>
-          </div>
-        </div>
-        {initialBalance !== undefined && (
+      <div className="flex justify-end">
+        {initialBalance !== undefined && initialBalance > 0 && (
           <div className="flex items-center space-x-2 bg-wp-dark-card px-4 py-2 rounded-lg border border-wp-border">
             <span className="wp-body-small text-wp-text-muted">Initial balance:</span>&nbsp;
-            <span className="wp-body font-semibold text-wp-text-primary">{initialBalance} days</span>
+            <span className="wp-body font-semibold text-wp-text-primary">{remainingInitialBalance} days</span>
           </div>
         )}
       </div>
@@ -278,18 +306,37 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                 {leavesSummary.years.reduce((sum, year) => sum + (vacationsTakenByYear[year] || 0), 0)}
               </td>
             </tr>
+            {/* Initial balance used */} 
+            {initialBalance !== undefined && initialBalance > 0 && (
+              <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+                <td className="px-6 py-4">
+                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Initial balance used']}`}>
+                    Initial balance used
+                  </span>
+                </td>
+                {leavesSummary.years.map(year => (
+                  <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                    {initialBalanceUsedByYear[year] || 0}
+                  </td>
+                ))}
+                <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-bold">
+                  {leavesSummary.years.reduce((sum, year) => sum + (initialBalanceUsedByYear[year] || 0), 0)}
+                </td>
+              </tr>
+            )}
             {/* Vacations Balance row */}
             <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
               <td className="px-6 py-4">
                 <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Vacations Balance']}`}>
-                  Vacations Balance
+                  Vacations balance
                 </span>
               </td>
               {leavesSummary.years.map(year => {
                 const vacations = averagePaidAnnualLeaveByYear[year];
                 const taken = vacationsTakenByYear[year] || 0;
+                const initialBalanceUsed = initialBalanceUsedByYear[year] || 0;
                 
-                if (vacations === null || vacations === undefined) {
+                if (!vacations) {
                   return (
                     <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
                       TBD
@@ -297,7 +344,8 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                   );
                 }
                 
-                const balance = vacations - taken;
+                // Balance = (Vacations + Initial balance used) - Vacations taken
+                const balance = (vacations + initialBalanceUsed) - taken;
                 return (
                   <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
                     {balance}
@@ -309,8 +357,9 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                   const allBalances = leavesSummary.years.map(year => {
                     const vacations = averagePaidAnnualLeaveByYear[year];
                     const taken = vacationsTakenByYear[year] || 0;
+                    const initialBalanceUsed = initialBalanceUsedByYear[year] || 0;
                     if (vacations === null || vacations === undefined) return null;
-                    return vacations - taken;
+                    return (vacations + initialBalanceUsed) - taken;
                   }).filter((value): value is number => value !== null);
                   
                   if (allBalances.length === 0) return 'TBD';

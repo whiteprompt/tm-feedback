@@ -9,7 +9,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="wp-section-sm flex-grow">
+      <main className="wp-section-sm grow">
         <div className="wp-container">
           {children}
         </div>
