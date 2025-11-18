@@ -95,7 +95,7 @@ export default function NavDropdown({
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-56 bg-wp-dark border border-wp-border/30 rounded-lg shadow-lg z-50">
+        <div className="absolute top-full left-0 mt-1 w-56 bg-gray-800 border border-wp-border/30 rounded-lg shadow-lg z-50">
           {items.map((item, index) => {
             const active = isItemActive(item.href);
             const isFirst = index === 0;

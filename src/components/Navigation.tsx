@@ -213,9 +213,9 @@ export default function Navigation() {
 
                   {/* User Menu Dropdown */}
                   {isUserMenuOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-64 bg-wp-dark border border-wp-border/30 rounded-lg shadow-lg z-50 overflow-hidden">
+                    <div className="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-wp-border/30 rounded-lg shadow-lg z-50 overflow-hidden">
                       {/* User Info Section */}
-                      <div className="px-4 py-4 border-b border-wp-border/30 bg-wp-dark-lighter/50">
+                      <div className="px-4 py-4 border-b border-wp-border/30 bg-gray-700/50">
                         <div className="flex items-center gap-3">
                           {session.user?.image ? (
                             <img
@@ -249,7 +249,7 @@ export default function Navigation() {
                             setIsUserMenuOpen(false);
                             router.push('/notifications');
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-[#00D9FF]/20 transition-all duration-200 relative text-left"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-[#00D9FF]/20 transition-all duration-200 relative text-left cursor-pointer"
                         >
                           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -264,14 +264,14 @@ export default function Navigation() {
                       </div>
 
                       {/* Sign Out Button */}
-                      <div className="px-4 py-3 border-t border-wp-border/30 bg-wp-dark-lighter/50">
+                      <div className="px-4 py-3 border-t border-wp-border/30 bg-gray-700/50">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setIsUserMenuOpen(false);
                             signOut();
                           }}
-                          className="w-full px-4 py-2 bg-[#00D9FF] text-black font-semibold rounded-lg hover:bg-[#00D9FF]/90 transition-all duration-300"
+                          className="w-full px-4 py-2 bg-[#00D9FF] text-black font-semibold rounded-lg hover:bg-[#00D9FF]/90 transition-all duration-300 cursor-pointer"
                         >
                           Sign out
                         </button>
@@ -316,9 +316,9 @@ export default function Navigation() {
                 </button>
                 {/* Mobile User Menu - same as desktop but positioned differently */}
                 {isUserMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-64 bg-wp-dark border border-wp-border/30 rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-wp-border/30 rounded-lg shadow-lg z-50 overflow-hidden">
                     {/* User Info Section */}
-                    <div className="px-4 py-4 border-b border-wp-border/30 bg-wp-dark-lighter/50">
+                    <div className="px-4 py-4 border-b border-wp-border/30 bg-gray-700/50">
                       <div className="flex items-center gap-3">
                         {session.user?.image ? (
                           <img
@@ -352,7 +352,7 @@ export default function Navigation() {
                           setIsUserMenuOpen(false);
                           router.push('/notifications');
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-[#00D9FF]/20 transition-all duration-200 relative text-left"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-[#00D9FF]/20 transition-all duration-200 relative text-left cursor-pointer"
                       >
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -367,14 +367,14 @@ export default function Navigation() {
                     </div>
 
                     {/* Sign Out Button */}
-                    <div className="px-4 py-3 border-t border-wp-border/30 bg-wp-dark-lighter/50">
+                    <div className="px-4 py-3 border-t border-wp-border/30 bg-gray-700/50">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsUserMenuOpen(false);
                           signOut();
                         }}
-                        className="w-full px-4 py-2 bg-[#00D9FF] text-black font-semibold rounded-lg hover:bg-[#00D9FF]/90 transition-all duration-300"
+                        className="w-full px-4 py-2 bg-[#00D9FF] text-black font-semibold rounded-lg hover:bg-[#00D9FF]/90 transition-all duration-300 cursor-pointer"
                       >
                         Sign out
                       </button>
