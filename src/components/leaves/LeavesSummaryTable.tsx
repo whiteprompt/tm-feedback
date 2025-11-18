@@ -19,8 +19,6 @@ const LEAVE_TYPE_COLORS = {
 } as const;
 
 export default function LeavesSummaryTable({ leaves }: LeavesSummaryTableProps) {
-
-
   // Process leaves to get sum of days per year per category
   const leavesSummary = useMemo(() => {
     const summary: { [category: string]: { [year: string]: number } } = {};

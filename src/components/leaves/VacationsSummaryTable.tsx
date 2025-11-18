@@ -14,7 +14,6 @@ const LEAVE_TYPE_COLORS = {
   'Vacations': 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white',
   'Vacations taken': 'bg-gradient-to-r from-teal-500 to-teal-600 text-white',
   'Vacations Balance': 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white',
-  'Initial balance used': 'bg-gradient-to-r from-gray-500 to-gray-600 text-white',
 } as const;
 
 export default function VacationsSummaryTable({ leaves, initialBalance }: VacationsSummaryTableProps) {
@@ -139,6 +138,11 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
     const vacationsTaken: { [year: string]: number } = {};
 
     if (!teamMember?.contracts || teamMember.contracts.length === 0) {
+      // If no contracts, default to just Annual leave
+      leavesSummary.years.forEach(yearStr => {
+        const annualLeave = leavesSummary.summary['Annual leave']?.[yearStr] || 0;
+        vacationsTaken[yearStr] = annualLeave;
+      });
       return vacationsTaken;
     }
 
@@ -166,7 +170,9 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
       });
 
       if (activeContracts.length === 0) {
-        vacationsTaken[yearStr] = 0;
+        // No active contracts, default to just Annual leave
+        const annualLeave = leavesSummary.summary['Annual leave']?.[yearStr] || 0;
+        vacationsTaken[yearStr] = annualLeave;
         return;
       }
 
@@ -190,45 +196,73 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
     return vacationsTaken;
   }, [teamMember, leavesSummary.years, leavesSummary.summary]);
 
-  // Calculate "Initial balance used" per year, tracking remaining balance
-  const initialBalanceUsedByYear = useMemo(() => {
-    const used: { [year: string]: number } = {};
-    let remainingBalance = initialBalance || 0;
+  // Determine if the last active contract is hourly
+  const isLastActiveContractHourly = useMemo(() => {
+    if (!teamMember?.contracts || teamMember.contracts.length === 0) {
+      return false;
+    }
 
-    // Process years in chronological order (oldest to newest)
-    const sortedYears = [...leavesSummary.years].reverse();
+    const currentDate = new Date();
 
-    sortedYears.forEach(yearStr => {
-      const vacations = averagePaidAnnualLeaveByYear[yearStr];
-      const taken = vacationsTakenByYear[yearStr] || 0;
+    // Filter contracts that are currently active (started and not ended, or open)
+    const activeContracts = (teamMember.contracts || []).filter(contract => {
+      if (!contract.start) return false;
 
-      if (vacations === null || vacations === undefined) {
-        used[yearStr] = 0;
-        return;
+      const contractStart = new Date(contract.start);
+      if (contractStart > currentDate) return false; // Not started yet
+
+      // If contract has no end date, it's still active (open contract)
+      if (!contract.end) {
+        return true;
       }
 
-      // If taken exceeds vacations, user is using initial balance
-      const deficit = taken - vacations;
+      const contractEnd = new Date(contract.end);
+      return contractEnd >= currentDate; // Still active
+    });
+
+    if (activeContracts.length === 0) {
+      return false;
+    }
+
+    // Find the last active contract (most recent start date, or open contract)
+    const lastActiveContract = activeContracts.reduce((latest, contract) => {
+      if (!latest) return contract;
       
-      if (deficit > 0 && remainingBalance > 0) {
-        // Use as much as needed, but not more than available
-        const usedThisYear = Math.min(deficit, remainingBalance);
-        used[yearStr] = usedThisYear;
-        remainingBalance -= usedThisYear;
-      } else {
-        used[yearStr] = 0;
+      const contractStart = new Date(contract.start);
+      const latestStart = new Date(latest.start);
+      
+      // Prefer open contracts (no end date)
+      if (!contract.end && latest.end) return contract;
+      if (contract.end && !latest.end) return latest;
+      
+      // If both have end dates or both are open, pick the one with latest start date
+      return contractStart > latestStart ? contract : latest;
+    });
+
+    return lastActiveContract?.amountType === 'Hourly';
+  }, [teamMember]);
+
+  // Calculate total balance - sum of all Vacations Balance values
+  const totalBalance = useMemo(() => {
+    let sum = 0;
+
+    // Sum all year columns
+    leavesSummary.years.forEach(yearStr => {
+      const vacations = averagePaidAnnualLeaveByYear[yearStr];
+      const taken = vacationsTakenByYear[yearStr] || 0;
+      
+      if (vacations !== null && vacations !== undefined) {
+        sum += vacations - taken;
       }
     });
 
-    return used;
-  }, [initialBalance, leavesSummary.years, averagePaidAnnualLeaveByYear, vacationsTakenByYear]);
+    // Add the "< 2024" column value (initialBalance)
+    if (initialBalance !== undefined) {
+      sum += initialBalance;
+    }
 
-  // Calculate remaining initial balance
-  const remainingInitialBalance = useMemo(() => {
-    if (initialBalance === undefined) return undefined;
-    const totalUsed = leavesSummary.years.reduce((sum, year) => sum + (initialBalanceUsedByYear[year] || 0), 0);
-    return initialBalance - totalUsed;
-  }, [initialBalance, leavesSummary.years, initialBalanceUsedByYear]);
+    return sum;
+  }, [leavesSummary.years, averagePaidAnnualLeaveByYear, vacationsTakenByYear, initialBalance]);
 
   if (!leaves?.length) {
     return null;
@@ -236,15 +270,14 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
 
   return (
     <div className="wp-card p-6 mb-8 wp-fade-in">
-      <div className="flex justify-end">
-        {initialBalance !== undefined && initialBalance > 0 && (
-          <div className="flex items-center space-x-2 bg-wp-dark-card px-4 py-2 rounded-lg border border-wp-border">
-            <span className="wp-body-small text-wp-text-muted">Initial balance:</span>&nbsp;
-            <span className="wp-body font-semibold text-wp-text-primary">{remainingInitialBalance} days</span>
+      {!isLastActiveContractHourly && (
+        <div className="mb-6">
+          <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg border border-wp-border">
+            <span className="wp-body-small font-bold">Balance:</span>
+            <span className="wp-body font-bold text-wp-text-primary">{totalBalance} days</span>
           </div>
-        )}
-      </div>
-
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead>
@@ -258,7 +291,7 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                 </th>
               ))}
               <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
-                Total
+                &lt; 2024
               </th>
             </tr>
           </thead>
@@ -267,7 +300,7 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
             <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
               <td className="px-6 py-4">
                 <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS.Vacations}`}>
-                  Vacations
+                  Annual vacations
                 </span>
               </td>
               {leavesSummary.years.map(year => (
@@ -277,17 +310,8 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                     : 'TBD'}
                 </td>
               ))}
-              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-bold">
-                {(() => {
-                  const allAverages = leavesSummary.years
-                    .map(year => averagePaidAnnualLeaveByYear[year])
-                    .filter((value): value is number => value !== null && value !== undefined);
-                  
-                  if (allAverages.length === 0) return 'TBD';
-                  
-                  const totalAverage = allAverages.reduce((sum, val) => sum + val, 0) / allAverages.length;
-                  return Math.round(totalAverage); // Round to nearest integer
-                })()}
+              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                -
               </td>
             </tr>
             {/* Vacations taken row */}
@@ -302,28 +326,10 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                   {vacationsTakenByYear[year] || 0}
                 </td>
               ))}
-              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-bold">
-                {leavesSummary.years.reduce((sum, year) => sum + (vacationsTakenByYear[year] || 0), 0)}
+              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                -
               </td>
             </tr>
-            {/* Initial balance used */} 
-            {initialBalance !== undefined && initialBalance > 0 && (
-              <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
-                <td className="px-6 py-4">
-                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Initial balance used']}`}>
-                    Initial balance used
-                  </span>
-                </td>
-                {leavesSummary.years.map(year => (
-                  <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
-                    {initialBalanceUsedByYear[year] || 0}
-                  </td>
-                ))}
-                <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-bold">
-                  {leavesSummary.years.reduce((sum, year) => sum + (initialBalanceUsedByYear[year] || 0), 0)}
-                </td>
-              </tr>
-            )}
             {/* Vacations Balance row */}
             <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
               <td className="px-6 py-4">
@@ -334,9 +340,8 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
               {leavesSummary.years.map(year => {
                 const vacations = averagePaidAnnualLeaveByYear[year];
                 const taken = vacationsTakenByYear[year] || 0;
-                const initialBalanceUsed = initialBalanceUsedByYear[year] || 0;
                 
-                if (!vacations) {
+                if (vacations === null || vacations === undefined) {
                   return (
                     <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
                       TBD
@@ -344,28 +349,16 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                   );
                 }
                 
-                // Balance = (Vacations + Initial balance used) - Vacations taken
-                const balance = (vacations + initialBalanceUsed) - taken;
+                // Balance = Vacations - Vacations taken
+                const balance = vacations - taken;
                 return (
                   <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
                     {balance}
                   </td>
                 );
               })}
-              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-bold">
-                {(() => {
-                  const allBalances = leavesSummary.years.map(year => {
-                    const vacations = averagePaidAnnualLeaveByYear[year];
-                    const taken = vacationsTakenByYear[year] || 0;
-                    const initialBalanceUsed = initialBalanceUsedByYear[year] || 0;
-                    if (vacations === null || vacations === undefined) return null;
-                    return (vacations + initialBalanceUsed) - taken;
-                  }).filter((value): value is number => value !== null);
-                  
-                  if (allBalances.length === 0) return 'TBD';
-                  
-                  return allBalances.reduce((sum, val) => sum + val, 0);
-                })()}
+              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                {initialBalance !== undefined ? initialBalance : '-'}
               </td>
             </tr>
           </tbody>
