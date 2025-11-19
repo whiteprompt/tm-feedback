@@ -65,6 +65,52 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
     return { summary, years: allYears };
   }, [leaves]);
 
+  // Determine if the last active contract is hourly
+  const isLastActiveContractHourly = useMemo(() => {
+    if (!teamMember?.contracts || teamMember.contracts.length === 0) {
+      return false;
+    }
+
+    const currentDate = new Date();
+
+    // Filter contracts that are currently active (started and not ended, or open)
+    const activeContracts = (teamMember.contracts || []).filter(contract => {
+      if (!contract.start) return false;
+
+      const contractStart = new Date(contract.start);
+      if (contractStart > currentDate) return false; // Not started yet
+
+      // If contract has no end date, it's still active (open contract)
+      if (!contract.end) {
+        return true;
+      }
+
+      const contractEnd = new Date(contract.end);
+      return contractEnd >= currentDate; // Still active
+    });
+
+    if (activeContracts.length === 0) {
+      return false;
+    }
+
+    // Find the last active contract (most recent start date, or open contract)
+    const lastActiveContract = activeContracts.reduce((latest, contract) => {
+      if (!latest) return contract;
+      
+      const contractStart = new Date(contract.start);
+      const latestStart = new Date(latest.start);
+      
+      // Prefer open contracts (no end date)
+      if (!contract.end && latest.end) return contract;
+      if (contract.end && !latest.end) return latest;
+      
+      // If both have end dates or both are open, pick the one with latest start date
+      return contractStart > latestStart ? contract : latest;
+    });
+
+    return lastActiveContract?.amountType === 'Hourly';
+  }, [teamMember]);
+
   // Calculate average of paidAnnualLeave per year based on active contracts
   const averagePaidAnnualLeaveByYear = useMemo(() => {
     const averages: { [year: string]: number | null } = {};
@@ -76,6 +122,15 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
     // For each year in the summary, calculate the average
     leavesSummary.years.forEach(yearStr => {
       const year = parseInt(yearStr);
+
+      // Calculate proration factor
+      const currentYear = new Date().getFullYear();
+
+      // Future years: 0 ONLY if not Hourly
+      if (year > currentYear && !isLastActiveContractHourly) {
+        averages[yearStr] = 0;
+        return;
+      }
 
       // Filter contracts that are active in this year
       const activeContracts = (teamMember.contracts || []).filter(contract => {
@@ -104,34 +159,49 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
       if (validLeaves.length === 0) {
         averages[yearStr] = null;
       } else {
-        // Calculate proration factor if team member started after Jan 1 of this year
-        let prorationFactor = 1; // Default: full year
-        
+        let prorationFactor = 1;
+        const yearStart = new Date(year, 0, 1);
+        const yearEnd = new Date(year, 11, 31);
+
+        // Determine calculation end date (Today for current year, Dec 31 for past years)
+        let calcEnd = yearEnd;
+        if (year === currentYear) {
+          calcEnd = new Date();
+          calcEnd.setHours(0, 0, 0, 0);
+        }
+
+        // Determine calculation start date (StartDate or Jan 1)
+        let calcStart = yearStart;
         if (teamMember?.startDate) {
           const startDate = new Date(teamMember.startDate);
-          const yearStart = new Date(year, 0, 1); // January 1st of the year
-          const yearEnd = new Date(year, 11, 31); // December 31st of the year
-          
-          // If start date is after January 1st of this year, calculate proration
-          if (startDate > yearStart && startDate <= yearEnd) {
-            // Calculate days from start date to end of year
-            const daysRemaining = Math.ceil((yearEnd.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-            const totalDaysInYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 366 : 365;
-            prorationFactor = daysRemaining / totalDaysInYear;
-          } else if (startDate > yearEnd) {
-            // Team member started after this year, no vacation for this year
-            prorationFactor = 0;
+          startDate.setHours(0, 0, 0, 0);
+          if (startDate > yearStart) {
+            calcStart = startDate;
           }
         }
-        
+
+        if (calcStart > calcEnd) {
+          prorationFactor = 0;
+        } else {
+          const daysActive = (calcEnd.getTime() - calcStart.getTime()) / (1000 * 60 * 60 * 24) + 1;
+          const totalDaysInYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 366 : 365;
+          prorationFactor = daysActive / totalDaysInYear;
+          if (prorationFactor > 1) prorationFactor = 1;
+        }
+
+        // Override proration for Hourly contracts in current year (Always use the number)
+        if (year === currentYear && isLastActiveContractHourly) {
+          prorationFactor = 1;
+        }
+
         const sum = validLeaves.reduce((acc, value) => acc + value, 0);
         const average = (sum / validLeaves.length) * prorationFactor;
-        averages[yearStr] = Math.round(average); // Round to nearest integer
+        averages[yearStr] = Math.ceil(average); // Round to upper number
       }
     });
 
     return averages;
-  }, [teamMember, leavesSummary.years]);
+  }, [teamMember, leavesSummary.years, isLastActiveContractHourly]);
 
   // Calculate "Vacations taken" per year based on active contract amountType
   const vacationsTakenByYear = useMemo(() => {
@@ -196,52 +266,6 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
     return vacationsTaken;
   }, [teamMember, leavesSummary.years, leavesSummary.summary]);
 
-  // Determine if the last active contract is hourly
-  const isLastActiveContractHourly = useMemo(() => {
-    if (!teamMember?.contracts || teamMember.contracts.length === 0) {
-      return false;
-    }
-
-    const currentDate = new Date();
-
-    // Filter contracts that are currently active (started and not ended, or open)
-    const activeContracts = (teamMember.contracts || []).filter(contract => {
-      if (!contract.start) return false;
-
-      const contractStart = new Date(contract.start);
-      if (contractStart > currentDate) return false; // Not started yet
-
-      // If contract has no end date, it's still active (open contract)
-      if (!contract.end) {
-        return true;
-      }
-
-      const contractEnd = new Date(contract.end);
-      return contractEnd >= currentDate; // Still active
-    });
-
-    if (activeContracts.length === 0) {
-      return false;
-    }
-
-    // Find the last active contract (most recent start date, or open contract)
-    const lastActiveContract = activeContracts.reduce((latest, contract) => {
-      if (!latest) return contract;
-      
-      const contractStart = new Date(contract.start);
-      const latestStart = new Date(latest.start);
-      
-      // Prefer open contracts (no end date)
-      if (!contract.end && latest.end) return contract;
-      if (contract.end && !latest.end) return latest;
-      
-      // If both have end dates or both are open, pick the one with latest start date
-      return contractStart > latestStart ? contract : latest;
-    });
-
-    return lastActiveContract?.amountType === 'Hourly';
-  }, [teamMember]);
-
   // Calculate total balance - sum of all Vacations Balance values
   const totalBalance = useMemo(() => {
     let sum = 0;
@@ -269,102 +293,113 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
   }
 
   return (
-    <div className="wp-card p-6 mb-8 wp-fade-in">
-      {!isLastActiveContractHourly && (
-        <div className="mb-6">
-          <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg border border-wp-border">
-            <span className="wp-body-small font-bold">Balance:</span>
-            <span className="wp-body font-bold text-wp-text-primary">{totalBalance} days</span>
+    <>
+      <div className="wp-card p-6 mb-8 wp-fade-in">
+        {!isLastActiveContractHourly && (
+          <div className="mb-6">
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg border border-wp-border">
+              <span className="wp-body-small font-bold">Balance as of today:</span>
+              <span className="wp-body font-bold text-wp-text-primary">{totalBalance} days</span>
+            </div>
           </div>
-        </div>
-      )}
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead>
-            <tr className="border-b border-wp-border">
-              <th className="px-6 py-4 text-left wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
-                Category
-              </th>
-              {leavesSummary.years.map(year => (
-                <th key={year} className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
-                  {year}
+        )}
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-wp-border">
+                <th className="px-6 py-4 text-left wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                  Category
                 </th>
-              ))}
-              <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
-                &lt; 2024
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Vacations row */}
-            <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
-              <td className="px-6 py-4">
-                <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS.Vacations}`}>
-                  Annual vacations
-                </span>
-              </td>
-              {leavesSummary.years.map(year => (
-                <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
-                  {averagePaidAnnualLeaveByYear[year] !== null && averagePaidAnnualLeaveByYear[year] !== undefined
-                    ? averagePaidAnnualLeaveByYear[year]
-                    : 'TBD'}
+                {leavesSummary.years.map(year => (
+                  <th key={year} className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                    {year}
+                  </th>
+                ))}
+                <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                  &lt; 2024
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Vacations row */}
+              <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+                <td className="px-6 py-4">
+                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS.Vacations}`}>
+                    Annual vacations
+                  </span>
                 </td>
-              ))}
-              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
-                -
-              </td>
-            </tr>
-            {/* Vacations taken row */}
-            <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
-              <td className="px-6 py-4">
-                <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Vacations taken']}`}>
-                  Vacations taken
-                </span>
-              </td>
-              {leavesSummary.years.map(year => (
-                <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
-                  {vacationsTakenByYear[year] || 0}
+                {leavesSummary.years.map(year => (
+                  <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                    {averagePaidAnnualLeaveByYear[year] !== null && averagePaidAnnualLeaveByYear[year] !== undefined
+                      ? averagePaidAnnualLeaveByYear[year]
+                      : 'TBD'}
+                  </td>
+                ))}
+                <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                  -
                 </td>
-              ))}
-              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
-                -
-              </td>
-            </tr>
-            {/* Vacations Balance row */}
-            <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
-              <td className="px-6 py-4">
-                <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Vacations Balance']}`}>
-                  Vacations balance
-                </span>
-              </td>
-              {leavesSummary.years.map(year => {
-                const vacations = averagePaidAnnualLeaveByYear[year];
-                const taken = vacationsTakenByYear[year] || 0;
-                
-                if (vacations === null || vacations === undefined) {
+              </tr>
+              {/* Vacations taken row */}
+              <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+                <td className="px-6 py-4">
+                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Vacations taken']}`}>
+                    Vacations taken
+                  </span>
+                </td>
+                {leavesSummary.years.map(year => (
+                  <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                    {vacationsTakenByYear[year] || 0}
+                  </td>
+                ))}
+                <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                  -
+                </td>
+              </tr>
+              {/* Vacations Balance row */}
+              <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+                <td className="px-6 py-4">
+                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Vacations Balance']}`}>
+                    Vacations balance
+                  </span>
+                </td>
+                {leavesSummary.years.map(year => {
+                  const vacations = averagePaidAnnualLeaveByYear[year];
+                  const taken = vacationsTakenByYear[year] || 0;
+                  
+                  if (vacations === null || vacations === undefined) {
+                    return (
+                      <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                        TBD
+                      </td>
+                    );
+                  }
+                  
+                  // Balance = Vacations - Vacations taken
+                  const balance = vacations - taken;
                   return (
                     <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
-                      TBD
+                      {balance}
                     </td>
                   );
-                }
-                
-                // Balance = Vacations - Vacations taken
-                const balance = vacations - taken;
-                return (
-                  <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
-                    {balance}
-                  </td>
-                );
-              })}
-              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
-                {initialBalance !== undefined ? initialBalance : '-'}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                })}
+                <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                  {initialBalance !== undefined ? initialBalance : '-'}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+      {/* {teamMember?.contracts && teamMember.contracts.length > 0 && (
+        <div className="mb-6 ml-2 mr-2 rounded-lg border border-wp-border">
+          <p className="text-base md:text-lg text-gray-400 leading-relaxed whitespace-pre-line">
+            {isLastActiveContractHourly
+              ? 'This balance is for informational purposes only and does not represent a financial payment obligation.'
+              : 'Annual Vacation: Total annual vacaction days are earned upon the completion of the full calendar year (Jan 1 to Dec 31).\nIf the period of service is incomplete, the days will be calculated on a strictly prorated basis according to the time worked.'}
+          </p>
+        </div>
+      )} */}
+    </>
   );
 }
 

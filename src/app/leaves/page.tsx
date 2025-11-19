@@ -207,19 +207,6 @@ export default function LeavesPage() {
 
   return (
     <PageLayout>
-      {/* <PageHeader 
-        title="My Leaves"
-        description="Review all your previously submitted leaves."
-        actionButton={{
-          label: "Submit New Leave",
-          href: "/leaves/new",
-          icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-          )
-        }}
-      /> */}
       <HeroSection
         badge="My leaves"
         headline="Manage your leaves and vacations all in one place."
@@ -237,7 +224,8 @@ export default function LeavesPage() {
         {/* Vacations Summary Table */}
         <FullWidthContainerSection
           headline='Vacations summary'
-          description='Find the information related to the vacations you have taken.'>
+          description='Find the information related to the vacations you have taken.'
+        >
           <VacationsSummaryTable leaves={leaves} initialBalance={teamMember?.annualLeavesBalance || 0} />
         </FullWidthContainerSection>
         {/* Leaves Summary Table */}

@@ -4,7 +4,6 @@ import React from 'react';
 import { Section } from './Section';
 import Divider from './Divider';
 import { Button } from './home/Button';
-import { twMerge } from 'tailwind-merge';
 
 interface FullWidthContainerSectionProps {
   headline?: string;
@@ -42,7 +41,7 @@ export const FullWidthContainerSection: React.FC<FullWidthContainerSectionProps>
                 </h2>
               )}
               {description && (
-                <p className="text-base md:text-lg text-gray-400 leading-relaxed">
+                <p className="text-base md:text-lg text-gray-400 leading-relaxed whitespace-pre-line">
                   {description}
                 </p>
               )}
