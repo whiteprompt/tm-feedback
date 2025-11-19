@@ -16,6 +16,7 @@ import { eachDayOfInterval, isWeekend } from 'date-fns';
 import { Leave } from '@/lib/types';
 import { HeroSection } from '@/components/home/HeroSection';
 import { FullWidthContainerSection } from '@/components/FullWidthContainerSection';
+import Tabs from '@/components/Tabs';
 
 
 // Calculate business days (excluding weekends) between two dates
@@ -228,35 +229,41 @@ export default function LeavesPage() {
         >
           <VacationsSummaryTable leaves={leaves} initialBalance={teamMember?.annualLeavesBalance || 0} />
         </FullWidthContainerSection>
-        {/* Leaves Summary Table */}
-        <FullWidthContainerSection
-          headline='Leaves summary'
-          description='Find the information related to the leaves you have taken.'>
-          <LeavesSummaryTable leaves={leaves} />
-        </FullWidthContainerSection>
+        {/* Leaves Tabs Section */}
         <FullWidthContainerSection
           headline='My leaves'
           description='Review all your previously submitted leaves.'>
-          {error ? (
-            <ErrorDisplay message={error} />
-          ) : (
-            <LeavesList
-              data={filteredLeaves}
-              isLoading={loading}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-              totalCount={leaves.length}
-              deletingLeaveId={deletingLeaveId}
-              uploadingLeaveId={uploadingLeaveId}
-              onDeleteClick={handleDeleteClick}
-              onFileInputChange={handleFileInputChange}
-              showDeleteModal={showDeleteModal}
-              leaveToDelete={leaveToDelete}
-              onDeleteConfirm={handleDeleteConfirm}
-              onDeleteCancel={handleDeleteCancel}
-              calculateBusinessDays={calculateBusinessDays}
-            />
-          )}
+          <Tabs
+            tabs={[
+              {
+                label: 'List View',
+                content: error ? (
+                  <ErrorDisplay message={error} />
+                ) : (
+                  <LeavesList
+                    data={filteredLeaves}
+                    isLoading={loading}
+                    statusFilter={statusFilter}
+                    onStatusFilterChange={setStatusFilter}
+                    totalCount={leaves.length}
+                    deletingLeaveId={deletingLeaveId}
+                    uploadingLeaveId={uploadingLeaveId}
+                    onDeleteClick={handleDeleteClick}
+                    onFileInputChange={handleFileInputChange}
+                    showDeleteModal={showDeleteModal}
+                    leaveToDelete={leaveToDelete}
+                    onDeleteConfirm={handleDeleteConfirm}
+                    onDeleteCancel={handleDeleteCancel}
+                    calculateBusinessDays={calculateBusinessDays}
+                  />
+                )
+              },
+              {
+                label: 'By year',
+                content: <LeavesSummaryTable leaves={leaves} />
+              }
+            ]}
+          />
         </FullWidthContainerSection>
       </div>
     </PageLayout>
