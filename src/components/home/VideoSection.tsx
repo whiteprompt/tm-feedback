@@ -30,12 +30,14 @@ export default function VideoSection({
   };
 
   return (
-    <section className="mb-16 wp-slide-up">
+    <section className="wp-slide-up mb-16">
       <div className="wp-card p-8">
-        <div className="text-center mb-6">
+        <div className="mb-6 text-center">
           <h2 className="wp-heading-2 mb-4">{title}</h2>
           {description && (
-            <p className="wp-body-large text-wp-text-secondary max-w-2xl mx-auto">
+            <p className={`
+              wp-body-large text-wp-text-secondary mx-auto max-w-2xl
+            `}>
               {description}
             </p>
           )}
@@ -43,7 +45,7 @@ export default function VideoSection({
         
         <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
           <iframe
-            className="absolute top-0 left-0 w-full h-full rounded-lg"
+            className="absolute top-0 left-0 h-full w-full rounded-lg"
             src={getEmbedUrl(videoUrl)}
             title={title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

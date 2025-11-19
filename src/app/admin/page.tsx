@@ -116,10 +116,15 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen">
         <Navigation />
-        <div className="flex items-center justify-center min-h-screen wp-fade-in">
+        <div className={`
+          wp-fade-in flex min-h-screen items-center justify-center
+        `}>
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
+              <div className={`
+                border-wp-primary/30 border-t-wp-primary h-16 w-16 animate-spin
+                rounded-full border-4
+              `}></div>
             </div>
             <p className="wp-body text-wp-text-secondary">Loading admin panel...</p>
           </div>
@@ -138,19 +143,22 @@ export default function AdminPage() {
       <main className="wp-section-sm">
         <div className="wp-container">
           {/* Header Section */}
-          <div className="text-center mb-16 wp-fade-in">
+          <div className="wp-fade-in mb-16 text-center">
             <h1 className="wp-heading-1 mb-4">Admin Dashboard</h1>
-            <p className="wp-body-large max-w-2xl mx-auto">
+            <p className="wp-body-large mx-auto max-w-2xl">
               Manage system settings, feature toggles, and maintenance operations.
             </p>
           </div>
 
-          <div className="space-y-8 wp-slide-up">
+          <div className="wp-slide-up space-y-8">
             {/* Feature Toggles Card */}
             <div className="wp-card p-8">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 from-wp-primary to-wp-accent rounded-full flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mb-6 flex items-center">
+                <div className={`
+                  from-wp-primary to-wp-accent mr-4 flex h-12 w-12 items-center
+                  justify-center rounded-full
+                `}>
+                  <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
                   </svg>
                 </div>
@@ -159,21 +167,37 @@ export default function AdminPage() {
 
               <div className="space-y-6">
 
-                <div className="flex items-center justify-between p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
+                <div className={`
+                  bg-wp-dark-card/30 border-wp-border/50 flex items-center
+                  justify-between rounded-lg border p-6
+                `}>
                   <div className="flex-1">
-                    <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Enable Hourly Cache Cleanup</h3>
+                    <h3 className={`
+                      wp-body text-wp-text-primary mb-1 font-semibold
+                    `}>Enable Hourly Cache Cleanup</h3>
                     <p className="wp-body-small text-wp-text-secondary">Enable or disable automatic cache cleanup every hour</p>
                   </div>
                   <button
                     onClick={toggleCacheCleanup}
-                    className={`relative inline-flex h-6 w-12 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50 ${
-                      enableCacheCleanup ? 'from-wp-primary to-wp-accent' : 'bg-wp-border'
-                    }`}
+                    className={`
+                      focus:ring-wp-primary/50 focus:ring-2 focus:outline-none
+                      relative inline-flex h-6 w-12 items-center rounded-full
+                      transition-all duration-300
+                      ${
+                      enableCacheCleanup ? 'from-wp-primary to-wp-accent' : `
+                        bg-wp-border
+                      `
+                    }
+                    `}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                      className={`
+                        inline-block h-4 w-4 transform rounded-full bg-white
+                        shadow-md transition-transform duration-300
+                        ${
                         enableCacheCleanup ? 'translate-x-7' : 'translate-x-1'
-                      }`}
+                      }
+                      `}
                     />
                   </button>
                 </div>
@@ -181,9 +205,12 @@ export default function AdminPage() {
             </div>
             {/* System Operations Card */}
             <div className="wp-card p-8">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 from-wp-purple to-wp-purple-dark rounded-full flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mb-6 flex items-center">
+                <div className={`
+                  from-wp-purple to-wp-purple-dark mr-4 flex h-12 w-12
+                  items-center justify-center rounded-full
+                `}>
+                  <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -191,22 +218,35 @@ export default function AdminPage() {
                 <h2 className="wp-heading-3">System Operations</h2>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
-                  <div className="flex items-center justify-between mb-4">
+              <div className={`
+                grid gap-6
+                md:grid-cols-2
+              `}>
+                <div className={`
+                  bg-wp-dark-card/30 border-wp-border/50 rounded-lg border p-6
+                `}>
+                  <div className="mb-4 flex items-center justify-between">
                     <div>
-                      <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Sync Notion Data</h3>
+                      <h3 className={`
+                        wp-body text-wp-text-primary mb-1 font-semibold
+                      `}>Sync Notion Data</h3>
                       <p className="wp-body-small text-wp-text-secondary">Manually trigger the Notion sync process</p>
                     </div>
                   </div>
                   <button
                     onClick={triggerCron}
                     disabled={cronStatus.includes('Running')}
-                    className="w-full wp-button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`
+                      wp-button-primary w-full
+                      disabled:cursor-not-allowed disabled:opacity-50
+                    `}
                   >
                     {cronStatus.includes('Running') ? (
                       <div className="flex items-center justify-center">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                        <div className={`
+                          mr-2 h-4 w-4 animate-spin rounded-full border-2
+                          border-white/30 border-t-white
+                        `}></div>
                         Running...
                       </div>
                     ) : (
@@ -214,31 +254,47 @@ export default function AdminPage() {
                     )}
                   </button>
                   {cronStatus && !cronStatus.includes('Running') && (
-                    <div className={`mt-3 p-3 rounded-lg text-sm ${
+                    <div className={`
+                      mt-3 rounded-lg p-3 text-sm
+                      ${
                       cronStatus.includes('successfully') 
-                        ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
-                        : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                    }`}>
+                        ? `
+                          border border-green-500/20 bg-green-500/10
+                          text-green-400
+                        ` 
+                        : 'border border-red-500/20 bg-red-500/10 text-red-400'
+                    }
+                    `}>
                       {cronStatus}
                     </div>
                   )}
                 </div>
 
-                <div className="p-6 bg-wp-dark-card/30 rounded-lg border border-wp-border/50">
-                  <div className="flex items-center justify-between mb-4">
+                <div className={`
+                  bg-wp-dark-card/30 border-wp-border/50 rounded-lg border p-6
+                `}>
+                  <div className="mb-4 flex items-center justify-between">
                     <div>
-                      <h3 className="wp-body font-semibold text-wp-text-primary mb-1">Clean Cache</h3>
+                      <h3 className={`
+                        wp-body text-wp-text-primary mb-1 font-semibold
+                      `}>Clean Cache</h3>
                       <p className="wp-body-small text-wp-text-secondary">Manually remove expired cache entries</p>
                     </div>
                   </div>
                   <button
                     onClick={triggerCacheCleanup}
                     disabled={cacheCleanupStatus.includes('Running')}
-                    className="w-full wp-button-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`
+                      wp-button-secondary w-full
+                      disabled:cursor-not-allowed disabled:opacity-50
+                    `}
                   >
                     {cacheCleanupStatus.includes('Running') ? (
                       <div className="flex items-center justify-center">
-                        <div className="w-4 h-4 border-2 border-wp-text-primary/30 border-t-wp-text-primary rounded-full animate-spin mr-2"></div>
+                        <div className={`
+                          border-wp-text-primary/30 border-t-wp-text-primary
+                          mr-2 h-4 w-4 animate-spin rounded-full border-2
+                        `}></div>
                         Running...
                       </div>
                     ) : (
@@ -246,11 +302,17 @@ export default function AdminPage() {
                     )}
                   </button>
                   {cacheCleanupStatus && !cacheCleanupStatus.includes('Running') && (
-                    <div className={`mt-3 p-3 rounded-lg text-sm ${
+                    <div className={`
+                      mt-3 rounded-lg p-3 text-sm
+                      ${
                       cacheCleanupStatus.includes('successfully') || cacheCleanupStatus.includes('completed')
-                        ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
-                        : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                    }`}>
+                        ? `
+                          border border-green-500/20 bg-green-500/10
+                          text-green-400
+                        ` 
+                        : 'border border-red-500/20 bg-red-500/10 text-red-400'
+                    }
+                    `}>
                       {cacheCleanupStatus}
                     </div>
                   )}

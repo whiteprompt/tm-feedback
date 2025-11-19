@@ -36,17 +36,26 @@ export const FullWidthContainerSection: React.FC<FullWidthContainerSectionProps>
           {(headline || description || primaryCta || secondaryCta) && (
             <div className="text-center">
               {headline && (
-                <h2 className="text-3xl md:text-4xl font-semibold text-white mb-6">
+                <h2 className={`
+                  mb-6 text-3xl font-semibold text-white
+                  md:text-4xl
+                `}>
                   {headline}
                 </h2>
               )}
               {description && (
-                <p className="text-base md:text-lg text-gray-400 leading-relaxed whitespace-pre-line">
+                <p className={`
+                  text-base leading-relaxed whitespace-pre-line text-gray-400
+                  md:text-lg
+                `}>
                   {description}
                 </p>
               )}
               {(primaryCta || secondaryCta) && (
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-6">
+                <div className={`
+                  mt-6 flex flex-col items-center justify-center gap-4
+                  sm:flex-row
+                `}>
                   {primaryCta && (
                     <Button
                       variant="secondary"
@@ -75,7 +84,7 @@ export const FullWidthContainerSection: React.FC<FullWidthContainerSectionProps>
           )}
 
           {/* Content - Centered with spacing */}
-          <div className="w-full flex justify-center px-4">
+          <div className="flex w-full justify-center px-4">
             <div className="w-full max-w-7xl">
               <div className="flex justify-center">
                 <div className="w-full">

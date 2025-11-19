@@ -37,7 +37,7 @@ export function DataCard<T>({
 }: DataCardProps<T>) {
   const defaultEmptyState: EmptyStateConfig = {
     icon: (
-      <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
       </svg>
     ),
@@ -46,7 +46,7 @@ export function DataCard<T>({
 
   const defaultNoDataState: EmptyStateConfig = {
     icon: (
-      <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
       </svg>
     ),
@@ -55,7 +55,7 @@ export function DataCard<T>({
   };
 
   const renderEmptyState = (config: EmptyStateConfig) => (
-    <div className="text-center py-8">
+    <div className="py-8 text-center">
       <div className="text-wp-text-muted mb-4">
         {config.icon}
       </div>
@@ -69,8 +69,12 @@ export function DataCard<T>({
   const content = (
     <div className={cardClassName}>
       {title && (
-        <div className="flex items-center mb-6">
-          <div className={`w-12 h-12 ${iconBgClassName} rounded-full flex items-center justify-center mr-4`}>
+        <div className="mb-6 flex items-center">
+          <div className={`
+            h-12 w-12
+            ${iconBgClassName}
+            mr-4 flex items-center justify-center rounded-full
+          `}>
             {icon}
           </div>
           <div className="flex-1">
@@ -85,7 +89,7 @@ export function DataCard<T>({
       )}
 
       {isLoading ? (
-        <div className="text-center py-8">
+        <div className="py-8 text-center">
           <p className="wp-body text-wp-text-muted">Loading...</p>
         </div>
       ) : data === null || data === undefined ? (

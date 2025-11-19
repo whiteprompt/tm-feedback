@@ -41,7 +41,7 @@ const LEAVE_TYPE_COLORS = {
 } as const;
 
 const renderEmptyState = (config: { icon?: React.ReactNode; title?: string; message: string }) => (
-  <div className="text-center py-8">
+  <div className="py-8 text-center">
     <div className="text-wp-text-muted mb-4">
       {config.icon}
     </div>
@@ -55,7 +55,6 @@ const renderEmptyState = (config: { icon?: React.ReactNode; title?: string; mess
 export default function LeavesList({
   data,
   isLoading = false,
-  description = "Review all your previously submitted leaves.",
   statusFilter = 'All',
   onStatusFilterChange,
   totalCount,
@@ -69,15 +68,9 @@ export default function LeavesList({
   onDeleteCancel,
   calculateBusinessDays
 }: LeavesListProps) {
-  const icon = (
-    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-8 4h8m-4-4v8m-4-4h8" />
-    </svg>
-  );
-
   const defaultEmptyState = {
     icon: (
-      <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-8 4h8m-4-4v8m-4-4h8" />
       </svg>
     ),
@@ -89,18 +82,23 @@ export default function LeavesList({
 
   return (
     <>
-      <div className="mb-16 wp-slide-up">
+      <div className="wp-slide-up mb-16">
         <div className="wp-card p-8">
           {/* Filter Section */}
           {onStatusFilterChange && (
-            <div className="mb-6 pb-6 border-b border-wp-border">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="border-wp-border mb-6 border-b pb-6">
+              <div className={`
+                flex flex-col gap-4
+                sm:flex-row sm:items-center sm:justify-between
+              `}>
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
-                    <svg className="w-5 h-5 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="text-wp-primary h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
                     </svg>
-                    <label htmlFor="status-filter" className="wp-body text-wp-text-primary font-medium">
+                    <label htmlFor="status-filter" className={`
+                      wp-body text-wp-text-primary font-medium
+                    `}>
                       Filter by Status
                     </label>
                   </div>
@@ -109,14 +107,25 @@ export default function LeavesList({
                       id="status-filter"
                       value={statusFilter}
                       onChange={(e) => onStatusFilterChange(e.target.value)}
-                      className="appearance-none bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg pl-4 pr-10 py-2 min-w-[180px] transition-all duration-200 hover:border-wp-primary/50 cursor-pointer text-sm"
+                      className={`
+                        bg-wp-dark-secondary border-wp-border
+                        text-wp-text-primary min-w-[180px] cursor-pointer
+                        appearance-none rounded-lg border-2 py-2 pr-10 pl-4
+                        text-sm transition-all duration-200
+                        focus:border-wp-primary focus:ring-wp-primary/20
+                        focus:ring-2
+                        hover:border-wp-primary/50
+                      `}
                     >
                       <option value="All">All Status</option>
                       <option value="Done">✅ Done</option>
                       <option value="Rejected">❌ Rejected</option>
                     </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <svg className="w-5 h-5 text-wp-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className={`
+                      pointer-events-none absolute inset-y-0 right-0 flex
+                      items-center pr-3
+                    `}>
+                      <svg className="text-wp-text-muted h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -127,15 +136,23 @@ export default function LeavesList({
                   {statusFilter !== 'All' && (
                     <button
                       onClick={() => onStatusFilterChange('All')}
-                      className="inline-flex items-center space-x-2 px-4 py-2 bg-wp-primary/10 hover:bg-wp-primary/20 text-wp-primary rounded-lg transition-all duration-200 border border-wp-primary/30 hover:border-wp-primary/50"
+                      className={`
+                        bg-wp-primary/10 text-wp-primary border-wp-primary/30
+                        inline-flex items-center space-x-2 rounded-lg border
+                        px-4 py-2 transition-all duration-200
+                        hover:bg-wp-primary/20 hover:border-wp-primary/50
+                      `}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                       <span className="text-sm font-medium">Clear Filter</span>
                     </button>
                   )}
-                  <div className="text-sm text-wp-text-muted bg-wp-dark-card px-3 py-2 rounded-lg border border-wp-border">
+                  <div className={`
+                    text-wp-text-muted bg-wp-dark-card border-wp-border
+                    rounded-lg border px-3 py-2 text-sm
+                  `}>
                     {statusFilter === 'All' ? 'Showing all' : `Filtered by: ${statusFilter}`}
                   </div>
                 </div>
@@ -157,13 +174,13 @@ export default function LeavesList({
 
           {/* Data Content */}
           {isLoading ? (
-            <div className="text-center py-8">
+            <div className="py-8 text-center">
               <p className="wp-body text-wp-text-muted">Loading...</p>
             </div>
           ) : data === null || data === undefined ? (
             renderEmptyState({
               icon: (
-                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
               ),
@@ -173,73 +190,127 @@ export default function LeavesList({
           ) : data.length === 0 ? (
             renderEmptyState(defaultEmptyState)
           ) : (
-            <div className="overflow-hidden flex justify-center">
-              <div className="overflow-x-auto w-full">
-                <table className="min-w-full mx-auto">
+            <div className="flex justify-center overflow-hidden">
+              <div className="w-full overflow-x-auto">
+                <table className="mx-auto min-w-full">
                   <thead>
-                    <tr className="border-b border-wp-border">
-                      <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                    <tr className="border-wp-border border-b">
+                      <th className={`
+                        wp-body-small text-wp-text-muted px-6 py-4 text-center
+                        font-semibold tracking-wider uppercase
+                      `}>
                         Type
                       </th>
-                      <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                      <th className={`
+                        wp-body-small text-wp-text-muted px-6 py-4 text-center
+                        font-semibold tracking-wider uppercase
+                      `}>
                         Start Date
                       </th>
-                      <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                      <th className={`
+                        wp-body-small text-wp-text-muted px-6 py-4 text-center
+                        font-semibold tracking-wider uppercase
+                      `}>
                         End Date
                       </th>
-                      <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                      <th className={`
+                        wp-body-small text-wp-text-muted px-6 py-4 text-center
+                        font-semibold tracking-wider uppercase
+                      `}>
                         Days
                       </th>
-                      <th className="px-10 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                      <th className={`
+                        wp-body-small text-wp-text-muted px-10 py-4 text-center
+                        font-semibold tracking-wider uppercase
+                      `}>
                         Status
                       </th>
-                      <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                      <th className={`
+                        wp-body-small text-wp-text-muted px-6 py-4 text-center
+                        font-semibold tracking-wider uppercase
+                      `}>
                         Comments
                       </th>
-                      <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                      <th className={`
+                        wp-body-small text-wp-text-muted px-6 py-4 text-center
+                        font-semibold tracking-wider uppercase
+                      `}>
                         Actions
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.sort((a, b) => new Date(b.fromDate).getTime() - new Date(a.fromDate).getTime()).map((leave, index) => (
-                      <tr key={leave.notionId || index} className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+                      <tr key={leave.notionId || index} className={`
+                        border-wp-border/50 border-b transition-colors
+                        hover:bg-wp-dark-card/30
+                      `}>
                         <td className="px-6 py-6 text-center">
-                          <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS[leave.type as keyof typeof LEAVE_TYPE_COLORS] || LEAVE_TYPE_COLORS.Unknown}`}>
+                          <span className={`
+                            rounded-full px-4 py-2 text-sm font-semibold
+                            ${LEAVE_TYPE_COLORS[leave.type as keyof typeof LEAVE_TYPE_COLORS] || LEAVE_TYPE_COLORS.Unknown}
+                          `}>
                             {leave.type}
                           </span>
                         </td>
-                        <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center">
+                        <td className={`
+                          wp-body-small text-wp-text-secondary px-6 py-6
+                          text-center
+                        `}>
                           {new Date(leave.fromDate).toLocaleDateString()}
                         </td>
-                        <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center">
+                        <td className={`
+                          wp-body-small text-wp-text-secondary px-6 py-6
+                          text-center
+                        `}>
                           {new Date(leave.toDate).toLocaleDateString()}
                         </td>
-                        <td className="px-6 py-6 wp-body text-wp-text-primary font-medium text-center">
+                        <td className={`
+                          wp-body text-wp-text-primary px-6 py-6 text-center
+                          font-medium
+                        `}>
                           {leave.totalDays}
                         </td>
                         <td className="px-6 py-6 text-center">
-                          <span className={`px-4 py-2 text-sm font-semibold rounded-full ${STATUS_COLORS[leave.status as keyof typeof STATUS_COLORS] || STATUS_COLORS['Requires approval']}`}>
+                          <span className={`
+                            rounded-full px-4 py-2 text-sm font-semibold
+                            ${STATUS_COLORS[leave.status as keyof typeof STATUS_COLORS] || STATUS_COLORS['Requires approval']}
+                          `}>
                             {leave.status || 'Done'}
                           </span>
                         </td>
-                        <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center max-w-xs truncate">
+                        <td className={`
+                          wp-body-small text-wp-text-secondary max-w-xs truncate
+                          px-6 py-6 text-center
+                        `}>
                           {leave.comments || '-'}
                         </td>
                         <td className="px-6 py-6 text-center">
-                          <div className="flex items-center justify-center space-x-2">
+                          <div className={`
+                            flex items-center justify-center space-x-2
+                          `}>
                             {/* Delete Button - Always visible */}
                             {onDeleteClick && (
                               <button
                                 onClick={() => onDeleteClick(leave)}
                                 disabled={deletingLeaveId === leave.notionId}
-                                className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-all duration-200 border border-red-500/30 hover:border-red-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className={`
+                                  rounded-lg border border-red-500/30
+                                  bg-red-500/10 p-2 text-red-500 transition-all
+                                  duration-200
+                                  hover:border-red-500/50 hover:bg-red-500/20
+                                  disabled:cursor-not-allowed
+                                  disabled:opacity-50
+                                `}
                                 title="Delete leave"
                               >
                                 {deletingLeaveId === leave.notionId ? (
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
+                                  <div className={`
+                                    h-4 w-4 animate-spin rounded-full border-b-2
+                                    border-red-500
+                                  `}></div>
                                 ) : (
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                   </svg>
                                 )}
@@ -260,13 +331,24 @@ export default function LeavesList({
                                 <button
                                   onClick={() => document.getElementById(`certificate-upload-${leave.notionId}`)?.click()}
                                   disabled={uploadingLeaveId === leave.notionId}
-                                  className="p-2 bg-wp-primary/10 hover:bg-wp-primary/20 text-wp-primary rounded-lg transition-all duration-200 border border-wp-primary/30 hover:border-wp-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className={`
+                                    bg-wp-primary/10 text-wp-primary
+                                    border-wp-primary/30 rounded-lg border p-2
+                                    transition-all duration-200
+                                    hover:bg-wp-primary/20
+                                    hover:border-wp-primary/50
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-50
+                                  `}
                                   title="Upload certificate"
                                 >
                                   {uploadingLeaveId === leave.notionId ? (
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-wp-primary"></div>
+                                    <div className={`
+                                      border-wp-primary h-4 w-4 animate-spin
+                                      rounded-full border-b-2
+                                    `}></div>
                                   ) : (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                     </svg>
                                   )}
@@ -278,10 +360,16 @@ export default function LeavesList({
                             {leave.certificate && (
                               <button
                                 onClick={() => window.open(leave.certificate, '_blank')}
-                                className="p-2 bg-green-500/10 hover:bg-green-500/20 text-green-500 rounded-lg transition-all duration-200 border border-green-500/30 hover:border-green-500/50"
+                                className={`
+                                  rounded-lg border border-green-500/30
+                                  bg-green-500/10 p-2 text-green-500
+                                  transition-all duration-200
+                                  hover:border-green-500/50
+                                  hover:bg-green-500/20
+                                `}
                                 title="View certificate"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>

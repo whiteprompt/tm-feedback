@@ -294,71 +294,111 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
 
   return (
     <>
-      <div className="wp-card p-6 mb-8 wp-fade-in">
+      <div className="wp-card wp-fade-in mb-8 p-6">
         {!isLastActiveContractHourly && (
           <div className="mb-6">
-            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg border border-wp-border">
+            <div className={`
+              border-wp-border inline-flex items-center space-x-2 rounded-lg
+              border px-4 py-2
+            `}>
               <span className="wp-body-small font-bold">Balance as of today:</span>
-              <span className="wp-body font-bold text-wp-text-primary">{totalBalance} days</span>
+              <span className="wp-body text-wp-text-primary font-bold">{totalBalance} days</span>
             </div>
           </div>
         )}
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
-              <tr className="border-b border-wp-border">
-                <th className="px-6 py-4 text-left wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <tr className="border-wp-border border-b">
+                <th className={`
+                  wp-body-small text-wp-text-muted px-6 py-4 text-left
+                  font-semibold tracking-wider uppercase
+                `}>
                   Category
                 </th>
                 {leavesSummary.years.map(year => (
-                  <th key={year} className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                  <th key={year} className={`
+                    wp-body-small text-wp-text-muted px-6 py-4 text-center
+                    font-semibold tracking-wider uppercase
+                  `}>
                     {year}
                   </th>
                 ))}
-                <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <th className={`
+                  wp-body-small text-wp-text-muted px-6 py-4 text-center
+                  font-semibold tracking-wider uppercase
+                `}>
                   &lt; 2024
                 </th>
               </tr>
             </thead>
             <tbody>
               {/* Vacations row */}
-              <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+              <tr className={`
+                border-wp-border/50 border-b transition-colors
+                hover:bg-wp-dark-card/30
+              `}>
                 <td className="px-6 py-4">
-                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS.Vacations}`}>
+                  <span className={`
+                    rounded-full px-4 py-2 text-sm font-semibold
+                    ${LEAVE_TYPE_COLORS.Vacations}
+                  `}>
                     Annual vacations
                   </span>
                 </td>
                 {leavesSummary.years.map(year => (
-                  <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                  <td key={year} className={`
+                    wp-body text-wp-text-primary px-6 py-4 text-center
+                    font-medium
+                  `}>
                     {averagePaidAnnualLeaveByYear[year] !== null && averagePaidAnnualLeaveByYear[year] !== undefined
                       ? averagePaidAnnualLeaveByYear[year]
                       : 'TBD'}
                   </td>
                 ))}
-                <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                <td className={`
+                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
+                `}>
                   -
                 </td>
               </tr>
               {/* Vacations taken row */}
-              <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+              <tr className={`
+                border-wp-border/50 border-b transition-colors
+                hover:bg-wp-dark-card/30
+              `}>
                 <td className="px-6 py-4">
-                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Vacations taken']}`}>
+                  <span className={`
+                    rounded-full px-4 py-2 text-sm font-semibold
+                    ${LEAVE_TYPE_COLORS['Vacations taken']}
+                  `}>
                     Vacations taken
                   </span>
                 </td>
                 {leavesSummary.years.map(year => (
-                  <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                  <td key={year} className={`
+                    wp-body text-wp-text-primary px-6 py-4 text-center
+                    font-medium
+                  `}>
                     {vacationsTakenByYear[year] || 0}
                   </td>
                 ))}
-                <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                <td className={`
+                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
+                `}>
                   -
                 </td>
               </tr>
               {/* Vacations Balance row */}
-              <tr className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+              <tr className={`
+                border-wp-border/50 border-b transition-colors
+                hover:bg-wp-dark-card/30
+              `}>
                 <td className="px-6 py-4">
-                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS['Vacations Balance']}`}>
+                  <span className={`
+                    rounded-full px-4 py-2 text-sm font-semibold
+                    ${LEAVE_TYPE_COLORS['Vacations Balance']}
+                  `}>
                     Vacations balance
                   </span>
                 </td>
@@ -368,7 +408,10 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                   
                   if (vacations === null || vacations === undefined) {
                     return (
-                      <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                      <td key={year} className={`
+                        wp-body text-wp-text-primary px-6 py-4 text-center
+                        font-medium
+                      `}>
                         TBD
                       </td>
                     );
@@ -377,12 +420,17 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                   // Balance = Vacations - Vacations taken
                   const balance = vacations - taken;
                   return (
-                    <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                    <td key={year} className={`
+                      wp-body text-wp-text-primary px-6 py-4 text-center
+                      font-medium
+                    `}>
                       {balance}
                     </td>
                   );
                 })}
-                <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                <td className={`
+                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
+                `}>
                   {initialBalance !== undefined ? initialBalance : '-'}
                 </td>
               </tr>

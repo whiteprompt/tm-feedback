@@ -6,7 +6,11 @@ interface BadgeProps {
 }
 
 export const Badge: React.FC<BadgeProps> = ({ children, className = '' }) => {
-  const classes = `bg-[#3D4068] text-white px-4 py-2 rounded-full text-sm font-medium inline-block ${className}`;
+  const classes = `
+    inline-block rounded-full bg-[#3D4068] px-4 py-2 text-sm font-medium
+    text-white
+    ${className}
+  `;
 
   return <span className={classes}>{children}</span>;
 };

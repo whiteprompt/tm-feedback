@@ -233,11 +233,14 @@ export default function ExpenseRefundFormClient() {
 
   if (status === 'loading' || !isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="wp-fade-in">
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
+              <div className={`
+                border-wp-primary/30 border-t-wp-primary h-16 w-16 animate-spin
+                rounded-full border-4
+              `}></div>
             </div>
             <p className="wp-body text-wp-text-secondary">Loading your information...</p>
           </div>
@@ -251,12 +254,18 @@ export default function ExpenseRefundFormClient() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className={`
+      from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary
+      min-h-screen bg-linear-to-br
+    `}>
       <Navigation />
         <main className="wp-section-sm">
           <div className="wp-container">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-16 wp-fade-in">
+          <div className={`
+            wp-fade-in mb-16 flex flex-col gap-6
+            sm:flex-row sm:items-center sm:justify-between
+          `}>
             <h1 className="wp-heading-1 text-wp-text-primary mb-4">Submit Expense Refund</h1>
             <p className="wp-body text-wp-text-secondary">Submit a new expense refund request</p>
           </div>
@@ -265,22 +274,37 @@ export default function ExpenseRefundFormClient() {
           <div className="wp-card p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
-              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <label className={`
+                wp-body-small text-wp-text-muted font-semibold tracking-wider
+                uppercase
+              `}>
                 Title <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                className={`
+                  bg-wp-dark-card/60 border-wp-border wp-body
+                  text-wp-text-primary placeholder-wp-text-muted w-full
+                  rounded-lg border px-4 py-3 transition-all duration-300
+                  focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                  focus:outline-none
+                `}
                 placeholder="Enter a title for your expense refund"
                 required
               />
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className={`
+              grid gap-6
+              md:grid-cols-3
+            `}>
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Amount <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -289,14 +313,23 @@ export default function ExpenseRefundFormClient() {
                   min="0"
                   value={formData.amount}
                   onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                  className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                  className={`
+                    bg-wp-dark-card/60 border-wp-border wp-body
+                    text-wp-text-primary placeholder-wp-text-muted w-full
+                    rounded-lg border px-4 py-3 transition-all duration-300
+                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                    focus:outline-none
+                  `}
                   placeholder="0.00"
                   required
                 />
               </div>
 
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Currency <span className="text-red-400">*</span>
                 </label>
                 <CurrencySelect
@@ -308,7 +341,10 @@ export default function ExpenseRefundFormClient() {
               </div>
 
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Exchange Rate
                 </label>
                 <div className="relative">
@@ -318,13 +354,24 @@ export default function ExpenseRefundFormClient() {
                     min="0"
                     value={formData.exchangeRate}
                     onChange={(e) => setFormData(prev => ({ ...prev, exchangeRate: e.target.value }))}
-                    className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                    className={`
+                      bg-wp-dark-card/60 border-wp-border wp-body
+                      text-wp-text-primary placeholder-wp-text-muted w-full
+                      rounded-lg border px-4 py-3 transition-all duration-300
+                      focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                      focus:outline-none
+                    `}
                     placeholder="1.0000"
                     disabled={fetchingExchangeRate}
                   />
                   {fetchingExchangeRate && (
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <div className="w-4 h-4 border-2 border-wp-primary border-t-transparent rounded-full animate-spin"></div>
+                    <div className={`
+                      absolute top-1/2 right-3 -translate-y-1/2 transform
+                    `}>
+                      <div className={`
+                        border-wp-primary h-4 w-4 animate-spin rounded-full
+                        border-2 border-t-transparent
+                      `}></div>
                     </div>
                   )}
                 </div>
@@ -337,9 +384,15 @@ export default function ExpenseRefundFormClient() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className={`
+              grid gap-6
+              md:grid-cols-2
+            `}>
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Concept <span className="text-red-400">*</span>
                 </label>
                 <ConceptSelect
@@ -351,21 +404,33 @@ export default function ExpenseRefundFormClient() {
               </div>
 
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Date <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="date"
                   value={formData.submittedDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, submittedDate: e.target.value }))}
-                  className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                  className={`
+                    bg-wp-dark-card/60 border-wp-border wp-body
+                    text-wp-text-primary w-full rounded-lg border px-4 py-3
+                    transition-all duration-300
+                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                    focus:outline-none
+                  `}
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-3">
-              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <label className={`
+                wp-body-small text-wp-text-muted font-semibold tracking-wider
+                uppercase
+              `}>
                 Description <span className="text-red-400">*</span>
               </label>
               <p className="wp-body-small text-wp-text-secondary mb-4">
@@ -375,14 +440,24 @@ export default function ExpenseRefundFormClient() {
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={5}
-                className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300 resize-none"
+                className={`
+                  bg-wp-dark-card/60 border-wp-border wp-body
+                  text-wp-text-primary placeholder-wp-text-muted w-full
+                  resize-none rounded-lg border px-4 py-3 transition-all
+                  duration-300
+                  focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                  focus:outline-none
+                `}
                 placeholder="Describe the expense and its business purpose"
                 required
               />
             </div>
 
             <div className="space-y-3">
-              <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <label className={`
+                wp-body-small text-wp-text-muted font-semibold tracking-wider
+                uppercase
+              `}>
                 Receipt
               </label>
               <p className="wp-body-small text-wp-text-secondary mb-4">
@@ -393,10 +468,20 @@ export default function ExpenseRefundFormClient() {
                   type="file"
                   accept="image/jpeg,image/jpg,image/png,application/pdf"
                   onChange={handleFileChange}
-                  className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-wp-primary file:text-white hover:file:bg-wp-primary/80 focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                  className={`
+                    bg-wp-dark-card/60 border-wp-border wp-body
+                    text-wp-text-primary w-full rounded-lg border px-4 py-3
+                    transition-all duration-300
+                    file:bg-wp-primary file:mr-4 file:rounded-lg file:border-0
+                    file:px-4 file:py-2 file:text-sm file:font-medium
+                    file:text-white
+                    hover:file:bg-wp-primary/80
+                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                    focus:outline-none
+                  `}
                 />
                 {formData.receiptFile && (
-                  <div className="mt-2 wp-body-small text-wp-text-secondary">
+                  <div className="wp-body-small text-wp-text-secondary mt-2">
                     Selected: {formData.receiptFile.name}
                   </div>
                 )}
@@ -420,23 +505,38 @@ export default function ExpenseRefundFormClient() {
                     router.push('/expense-refunds');
                   }
                 }}
-                className="flex-1 py-4 px-6 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body font-medium text-wp-text-secondary hover:text-wp-text-primary hover:bg-wp-dark-card/80 focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                className={`
+                  bg-wp-dark-card/60 border-wp-border wp-body
+                  text-wp-text-secondary flex-1 rounded-lg border px-6 py-4
+                  font-medium transition-all duration-300
+                  hover:text-wp-text-primary hover:bg-wp-dark-card/80
+                  focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                  focus:outline-none
+                `}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 wp-button-primary py-4 px-6 wp-body disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                className={`
+                  wp-button-primary wp-body flex flex-1 items-center
+                  justify-center space-x-2 px-6 py-4 transition-all duration-300
+                  hover:scale-105
+                  disabled:cursor-not-allowed disabled:opacity-50
+                `}
               >
                 {loading ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className={`
+                      h-5 w-5 animate-spin rounded-full border-2 border-white
+                      border-t-transparent
+                    `}></div>
                     <span>Submitting...</span>
                   </>
                 ) : (
                   <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                     <span>Submit Expense Refund</span>

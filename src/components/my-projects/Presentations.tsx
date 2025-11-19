@@ -60,47 +60,72 @@ export default function Presentations() {
   }, [session, status]);
 
   const icon = (
-    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4zM9 6v10h6V6H9z" />
     </svg>
   );
 
   // Render the table as a single item since DataCard expects items in a grid
   const renderTable = () => (
-    <div className="overflow-hidden flex justify-center col-span-full">
-      <div className="overflow-x-auto w-full">
-        <table className="min-w-full mx-auto">
+    <div className="col-span-full flex justify-center overflow-hidden">
+      <div className="w-full overflow-x-auto">
+        <table className="mx-auto min-w-full">
           <thead>
-            <tr className="border-b border-wp-border">
-              <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+            <tr className="border-wp-border border-b">
+              <th className={`
+                wp-body-small text-wp-text-muted px-6 py-4 text-center
+                font-semibold tracking-wider uppercase
+              `}>
                 Client
               </th>
-              <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <th className={`
+                wp-body-small text-wp-text-muted px-6 py-4 text-center
+                font-semibold tracking-wider uppercase
+              `}>
                 Status
               </th>
-              <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <th className={`
+                wp-body-small text-wp-text-muted px-6 py-4 text-center
+                font-semibold tracking-wider uppercase
+              `}>
                 Date
               </th>
-              <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <th className={`
+                wp-body-small text-wp-text-muted px-6 py-4 text-center
+                font-semibold tracking-wider uppercase
+              `}>
                 Comments
               </th>
             </tr>
           </thead>
           <tbody>
             {presentations.map((presentation, index) => (
-              <tr key={index} className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
-                <td className="px-6 py-6 wp-body text-wp-text-primary font-medium text-center">
+              <tr key={index} className={`
+                border-wp-border/50 border-b transition-colors
+                hover:bg-wp-dark-card/30
+              `}>
+                <td className={`
+                  wp-body text-wp-text-primary px-6 py-6 text-center font-medium
+                `}>
                   {presentation.projectPlainName || presentation.projectName}
                 </td>
                 <td className="px-6 py-6 text-center">
-                  <span className={`px-4 py-2 text-sm font-semibold rounded-full ${STATUS_COLORS[presentation.status]}`}>
+                  <span className={`
+                    rounded-full px-4 py-2 text-sm font-semibold
+                    ${STATUS_COLORS[presentation.status]}
+                  `}>
                     {presentation.status}
                   </span>
                 </td>
-                <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center">
+                <td className={`
+                  wp-body-small text-wp-text-secondary px-6 py-6 text-center
+                `}>
                   {new Date(presentation.end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </td>
-                <td className="px-6 py-6 wp-body-small text-wp-text-secondary text-center max-w-xs truncate">
+                <td className={`
+                  wp-body-small text-wp-text-secondary max-w-xs truncate px-6
+                  py-6 text-center
+                `}>
                   {presentation.comments}
                 </td>
               </tr>
@@ -122,7 +147,7 @@ export default function Presentations() {
       wrapperClassName="mb-16 wp-slide-up"
       emptyState={{
         icon: (
-          <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4zM9 6v10h6V6H9z" />
           </svg>
         ),
@@ -131,7 +156,7 @@ export default function Presentations() {
       }}
       noDataState={{
         icon: (
-          <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
         ),

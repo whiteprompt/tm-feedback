@@ -73,20 +73,29 @@ export default function LeavesSummaryTable({ leaves }: LeavesSummaryTableProps) 
   }
 
   return (
-    <div className="wp-card p-6 mb-8 wp-fade-in">
+    <div className="wp-card wp-fade-in mb-8 p-6">
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead>
-            <tr className="border-b border-wp-border">
-              <th className="px-6 py-4 text-left wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+            <tr className="border-wp-border border-b">
+              <th className={`
+                wp-body-small text-wp-text-muted px-6 py-4 text-left
+                font-semibold tracking-wider uppercase
+              `}>
                 Category
               </th>
               {leavesSummary.years.map(year => (
-                <th key={year} className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <th key={year} className={`
+                  wp-body-small text-wp-text-muted px-6 py-4 text-center
+                  font-semibold tracking-wider uppercase
+                `}>
                   {year}
                 </th>
               ))}
-              <th className="px-6 py-4 text-center wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <th className={`
+                wp-body-small text-wp-text-muted px-6 py-4 text-center
+                font-semibold tracking-wider uppercase
+              `}>
                 Total
               </th>
             </tr>
@@ -97,26 +106,39 @@ export default function LeavesSummaryTable({ leaves }: LeavesSummaryTableProps) 
               const total = leavesSummary.years.reduce((sum, year) => sum + (categoryData[year] || 0), 0);
               
               return (
-                <tr key={category} className="border-b border-wp-border/50 hover:bg-wp-dark-card/30 transition-colors">
+                <tr key={category} className={`
+                  border-wp-border/50 border-b transition-colors
+                  hover:bg-wp-dark-card/30
+                `}>
                   <td className="px-6 py-4">
-                    <span className={`px-4 py-2 text-sm font-semibold rounded-full ${LEAVE_TYPE_COLORS[category as keyof typeof LEAVE_TYPE_COLORS] || LEAVE_TYPE_COLORS.Unknown}`}>
+                    <span className={`
+                      rounded-full px-4 py-2 text-sm font-semibold
+                      ${LEAVE_TYPE_COLORS[category as keyof typeof LEAVE_TYPE_COLORS] || LEAVE_TYPE_COLORS.Unknown}
+                    `}>
                       {category}
                     </span>
                   </td>
                   {leavesSummary.years.map(year => (
-                    <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-medium">
+                    <td key={year} className={`
+                      wp-body text-wp-text-primary px-6 py-4 text-center
+                      font-medium
+                    `}>
                       {categoryData[year] || 0}
                     </td>
                   ))}
-                  <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-bold">
+                  <td className={`
+                    wp-body text-wp-text-primary px-6 py-4 text-center font-bold
+                  `}>
                     {total}
                   </td>
                 </tr>
               );
             })}
             {/* Total row */}
-            <tr className="border-t-2 border-wp-primary/50 bg-wp-dark-card/50">
-              <td className="px-6 py-4 wp-body font-semibold text-wp-text-primary">
+            <tr className="border-wp-primary/50 bg-wp-dark-card/50 border-t-2">
+              <td className={`
+                wp-body text-wp-text-primary px-6 py-4 font-semibold
+              `}>
                 Total
               </td>
               {leavesSummary.years.map(year => {
@@ -125,12 +147,16 @@ export default function LeavesSummaryTable({ leaves }: LeavesSummaryTableProps) 
                   0
                 );
                 return (
-                  <td key={year} className="px-6 py-4 wp-body text-wp-text-primary text-center font-bold">
+                  <td key={year} className={`
+                    wp-body text-wp-text-primary px-6 py-4 text-center font-bold
+                  `}>
                     {yearTotal}
                   </td>
                 );
               })}
-              <td className="px-6 py-4 wp-body text-wp-text-primary text-center font-bold">
+              <td className={`
+                wp-body text-wp-text-primary px-6 py-4 text-center font-bold
+              `}>
                 {leaves.reduce((sum, leave) => sum + (leave.days || 0), 0)}
               </td>
             </tr>

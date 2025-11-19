@@ -96,9 +96,9 @@ export default function LeaveFormClient() {
 
   if (success) {
     return (
-      <div className="wp-card p-8 text-center wp-fade-in">
+      <div className="wp-card wp-fade-in p-8 text-center">
         <div className="text-wp-success mb-4">
-          <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
@@ -114,7 +114,7 @@ export default function LeaveFormClient() {
   }
 
   return (
-    <div className="wp-card p-8 wp-fade-in">
+    <div className="wp-card wp-fade-in p-8">
 
       <ErrorBanner 
         error={error} 
@@ -123,10 +123,15 @@ export default function LeaveFormClient() {
       />
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`
+          grid grid-cols-1 gap-6
+          md:grid-cols-2
+        `}>
           {/* Start Date */}
           <div>
-            <label htmlFor="fromDate" className="block wp-body font-medium text-wp-text-primary mb-2">
+            <label htmlFor="fromDate" className={`
+              wp-body text-wp-text-primary mb-2 block font-medium
+            `}>
               Start Date *
             </label>
             <input
@@ -136,13 +141,19 @@ export default function LeaveFormClient() {
               value={formData.fromDate}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg transition-all duration-200"
+              className={`
+                bg-wp-dark-secondary border-wp-border text-wp-text-primary
+                w-full rounded-lg border-2 px-4 py-3 transition-all duration-200
+                focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
+              `}
             />
           </div>
 
           {/* End Date */}
           <div>
-            <label htmlFor="toDate" className="block wp-body font-medium text-wp-text-primary mb-2">
+            <label htmlFor="toDate" className={`
+              wp-body text-wp-text-primary mb-2 block font-medium
+            `}>
               End Date *
             </label>
             <input
@@ -152,19 +163,25 @@ export default function LeaveFormClient() {
               value={formData.toDate}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg transition-all duration-200"
+              className={`
+                bg-wp-dark-secondary border-wp-border text-wp-text-primary
+                w-full rounded-lg border-2 px-4 py-3 transition-all duration-200
+                focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
+              `}
             />
           </div>
         </div>
 
         {/* Days Calculation */}
         {formData.fromDate && formData.toDate && (
-          <div className="p-4 bg-wp-primary/10 border border-wp-primary/30 rounded-lg">
+          <div className={`
+            bg-wp-primary/10 border-wp-primary/30 rounded-lg border p-4
+          `}>
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-wp-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="text-wp-primary mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-8 4h8m-4-4v8m-4-4h8" />
               </svg>
-              <span className="wp-body font-medium text-wp-primary">
+              <span className="wp-body text-wp-primary font-medium">
                 Total days requested: {calculateDays()} day{calculateDays() !== 1 ? 's' : ''}
               </span>
             </div>
@@ -173,7 +190,9 @@ export default function LeaveFormClient() {
 
         {/* Leave Type */}
         <div>
-          <label htmlFor="type" className="block wp-body font-medium text-wp-text-primary mb-2">
+          <label htmlFor="type" className={`
+            wp-body text-wp-text-primary mb-2 block font-medium
+          `}>
             Leave Type *
           </label>
           <select
@@ -182,7 +201,11 @@ export default function LeaveFormClient() {
             value={formData.type}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg transition-all duration-200"
+            className={`
+              bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full
+              rounded-lg border-2 px-4 py-3 transition-all duration-200
+              focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
+            `}
           >
             <option value={LeaveType.AnnualLeave}>Annual Leave</option>
             <option value={LeaveType.UnpaidLeave}>Unpaid Leave</option>
@@ -193,7 +216,9 @@ export default function LeaveFormClient() {
 
         {/* Approval By */}
         <div>
-          <label htmlFor="approvedByEmail" className="block wp-body font-medium text-wp-text-primary mb-2">
+          <label htmlFor="approvedByEmail" className={`
+            wp-body text-wp-text-primary mb-2 block font-medium
+          `}>
             Approval By *
           </label>
           <select
@@ -202,7 +227,11 @@ export default function LeaveFormClient() {
             value={formData.approvedByEmail}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg transition-all duration-200"
+            className={`
+              bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full
+              rounded-lg border-2 px-4 py-3 transition-all duration-200
+              focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
+            `}
           >
             <option value="">Select approver...</option>
             <option value="mariano.selvaggi@whiteprompt.com">mariano.selvaggi@whiteprompt.com</option>
@@ -217,7 +246,9 @@ export default function LeaveFormClient() {
 
         {/* Comments */}
         <div>
-          <label htmlFor="comments" className="block wp-body font-medium text-wp-text-primary mb-2">
+          <label htmlFor="comments" className={`
+            wp-body text-wp-text-primary mb-2 block font-medium
+          `}>
             Comments
           </label>
           <textarea
@@ -227,13 +258,20 @@ export default function LeaveFormClient() {
             onChange={handleInputChange}
             rows={4}
             placeholder="Add any additional comments or details about your leave request..."
-            className="w-full px-4 py-3 bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg transition-all duration-200 resize-none"
+            className={`
+              bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full
+              resize-none rounded-lg border-2 px-4 py-3 transition-all
+              duration-200
+              focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
+            `}
           />
         </div>
 
         {/* Certificate Upload */}
         <div>
-          <label htmlFor="certificate" className="block wp-body font-medium text-wp-text-primary mb-2">
+          <label htmlFor="certificate" className={`
+            wp-body text-wp-text-primary mb-2 block font-medium
+          `}>
             Certificate/Medical Note (Optional)
           </label>
           <div className="relative">
@@ -243,16 +281,26 @@ export default function LeaveFormClient() {
               name="certificate"
               onChange={handleFileChange}
               accept=".jpg,.jpeg,.png,.pdf"
-              className="w-full px-4 py-3 bg-wp-dark-secondary border-2 border-wp-border text-wp-text-primary focus:border-wp-primary focus:ring-2 focus:ring-wp-primary/20 rounded-lg transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-wp-primary file:text-white hover:file:bg-wp-primary/90"
+              className={`
+                bg-wp-dark-secondary border-wp-border text-wp-text-primary
+                w-full rounded-lg border-2 px-4 py-3 transition-all duration-200
+                focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
+                file:bg-wp-primary file:mr-4 file:rounded-full file:border-0
+                file:px-4 file:py-2 file:text-sm file:font-semibold
+                file:text-white
+                hover:file:bg-wp-primary/90
+              `}
             />
           </div>
-          <p className="mt-2 wp-body-small text-wp-text-muted">
+          <p className="wp-body-small text-wp-text-muted mt-2">
             Upload a certificate or medical note if required for your leave type. Accepted formats: JPG, PNG, PDF (max 5MB)
           </p>
           {formData.certificate && (
-            <div className="mt-2 p-3 bg-wp-dark-card border border-wp-border rounded-lg">
+            <div className={`
+              bg-wp-dark-card border-wp-border mt-2 rounded-lg border p-3
+            `}>
               <div className="flex items-center">
-                <svg className="w-5 h-5 text-wp-success mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="text-wp-success mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="wp-body-small text-wp-text-primary">
@@ -264,27 +312,41 @@ export default function LeaveFormClient() {
         </div>
 
         {/* Submit Button */}
-        <div className="flex items-center justify-end space-x-4 pt-6 border-t border-wp-border">
+        <div className={`
+          border-wp-border flex items-center justify-end space-x-4 border-t pt-6
+        `}>
           <button
             type="button"
             onClick={() => router.push('/leaves')}
-            className="px-6 py-3 bg-wp-dark-secondary hover:bg-wp-dark-card text-wp-text-primary border border-wp-border hover:border-wp-primary/50 rounded-lg transition-all duration-200 font-medium"
+            className={`
+              bg-wp-dark-secondary text-wp-text-primary border-wp-border
+              rounded-lg border px-6 py-3 font-medium transition-all
+              duration-200
+              hover:bg-wp-dark-card hover:border-wp-primary/50
+            `}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting || !formData.fromDate || !formData.toDate || !formData.approvedByEmail}
-            className="px-6 py-3 bg-wp-primary hover:bg-wp-primary/90 disabled:bg-wp-text-muted disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium flex items-center space-x-2"
+            className={`
+              bg-wp-primary flex items-center space-x-2 rounded-lg px-6 py-3
+              font-medium text-white transition-all duration-200
+              hover:bg-wp-primary/90
+              disabled:bg-wp-text-muted disabled:cursor-not-allowed
+            `}
           >
             {isSubmitting ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className={`
+                  h-4 w-4 animate-spin rounded-full border-b-2 border-white
+                `}></div>
                 <span>Submitting...</span>
               </>
             ) : (
               <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 <span>Submit Leave Request</span>

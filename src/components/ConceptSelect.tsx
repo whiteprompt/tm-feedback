@@ -49,7 +49,10 @@ export default function ConceptSelect({
   // Determine if we're using value or label format based on current value
   const currentConcept = findConcept(value);
   return (
-    <div className={`space-y-3 ${className}`}>
+    <div className={`
+      space-y-3
+      ${className}
+    `}>
       {showQuickButtons && (
         <div className="flex flex-wrap gap-2">
           {QUICK_CONCEPTS.map((concept) => {
@@ -61,11 +64,18 @@ export default function ConceptSelect({
                 key={concept.value}
                 type="button"
                 onClick={() => handleQuickSelect(concept.value)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 ${
+                className={`
+                  rounded-lg px-3 py-1.5 text-sm font-medium transition-all
+                  duration-300
+                  ${
                   isActive
                     ? 'bg-wp-primary text-white'
-                    : 'bg-wp-primary/20 text-wp-primary hover:bg-wp-primary/30'
-                }`}
+                    : `
+                      bg-wp-primary/20 text-wp-primary
+                      hover:bg-wp-primary/30
+                    `
+                }
+                `}
               >
                 {concept.label}
               </button>

@@ -132,12 +132,21 @@ export default function Navigation() {
   }), [getNavLinkClass, getDropdownButtonClass]);
 
   return (
-    <nav className="backdrop-filter backdrop-blur-lg from-wp-dark/95 to-wp-dark-lighter/90 border-b border-wp-border/30 sticky top-0 z-50" style={{ borderBottomWidth: '1px', borderBottomColor: '#00C7D0' }}>
+    <nav className={`
+      from-wp-dark/95 to-wp-dark-lighter/90 border-wp-border/30 sticky top-0
+      z-50 border-b backdrop-blur-lg backdrop-filter
+    `} style={{ borderBottomWidth: '1px', borderBottomColor: '#00C7D0' }}>
       <div className="wp-container">
-        <div className="flex justify-between items-center h-20">
-          <div className="shrink-0 flex items-center">
-            <Link href="/" className="flex items-center group transition-all duration-300 hover:scale-105">
-              <span className="text-2xl md:text-3xl font-bold">
+        <div className="flex h-20 items-center justify-between">
+          <div className="flex shrink-0 items-center">
+            <Link href="/" className={`
+              group flex items-center transition-all duration-300
+              hover:scale-105
+            `}>
+              <span className={`
+                text-2xl font-bold
+                md:text-3xl
+              `}>
                 <span className="text-white">white</span>
                 <span className="text-[#00D9FF]">prompt</span>
               </span>
@@ -145,7 +154,10 @@ export default function Navigation() {
           </div>
           
           {/* Desktop menu */}
-          <div className="hidden lg:flex lg:items-center gap-1">
+          <div className={`
+            hidden gap-1
+            lg:flex lg:items-center
+          `}>
             <Link href="/" className={navClasses.home}>
               Home
             </Link>
@@ -170,12 +182,17 @@ export default function Navigation() {
               }}
             />
 
-            <div className="flex items-center border-l border-wp-border/50 pl-4">
+            <div className="border-wp-border/50 flex items-center border-l pl-4">
               {session ? (
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#00D9FF]/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
+                    className={`
+                      focus:ring-wp-primary/50 focus:ring-2 focus:outline-none
+                      flex items-center gap-3 rounded-lg p-2 transition-all
+                      duration-300
+                      hover:bg-[#00D9FF]/20
+                    `}
                   >
                     {/* Avatar */}
                     <div className="relative">
@@ -183,27 +200,39 @@ export default function Navigation() {
                         <img
                           src={session.user.image}
                           alt={session.user?.name || 'User'}
-                          className="h-10 w-10 rounded-full border-2 border-[#00D9FF]"
+                          className={`
+                            h-10 w-10 rounded-full border-2 border-[#00D9FF]
+                          `}
                         />
                       ) : (
-                        <div className="h-10 w-10 rounded-full bg-[#00D9FF] flex items-center justify-center border-2 border-[#00D9FF]">
-                          <span className="text-black font-semibold text-sm">
+                        <div className={`
+                          flex h-10 w-10 items-center justify-center
+                          rounded-full border-2 border-[#00D9FF] bg-[#00D9FF]
+                        `}>
+                          <span className="text-sm font-semibold text-black">
                             {getUserInitials()}
                           </span>
                         </div>
                       )}
                       {/* Unread notification badge */}
                       {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 h-5 w-5 bg-[#00D9FF] text-black text-xs font-bold rounded-full flex items-center justify-center border-2 border-wp-dark">
+                        <span className={`
+                          border-wp-dark absolute -top-1 -right-1 flex h-5 w-5
+                          items-center justify-center rounded-full border-2
+                          bg-[#00D9FF] text-xs font-bold text-black
+                        `}>
                           {unreadCount > 99 ? '99+' : unreadCount}
                         </span>
                       )}
                     </div>
                     {/* Dropdown arrow */}
                     <svg
-                      className={`h-4 w-4 text-white transition-transform duration-200 ${
+                      className={`
+                        h-4 w-4 text-white transition-transform duration-200
+                        ${
                         isUserMenuOpen ? 'rotate-180' : ''
-                      }`}
+                      }
+                      `}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -214,28 +243,44 @@ export default function Navigation() {
 
                   {/* User Menu Dropdown */}
                   {isUserMenuOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-wp-border/30 rounded-lg shadow-lg z-50 overflow-hidden">
+                    <div className={`
+                      border-wp-border/30 absolute top-full right-0 z-50 mt-2
+                      w-64 overflow-hidden rounded-lg border bg-gray-800
+                      shadow-lg
+                    `}>
                       {/* User Info Section */}
-                      <div className="px-4 py-4 border-b border-wp-border/30 bg-gray-700/50">
+                      <div className={`
+                        border-wp-border/30 border-b bg-gray-700/50 px-4 py-4
+                      `}>
                         <div className="flex items-center gap-3">
                           {session.user?.image ? (
                             <img
                               src={session.user.image}
                               alt={session.user?.name || 'User'}
-                              className="h-12 w-12 rounded-full border-2 border-[#00D9FF]"
+                              className={`
+                                h-12 w-12 rounded-full border-2 border-[#00D9FF]
+                              `}
                             />
                           ) : (
-                            <div className="h-12 w-12 rounded-full bg-[#00D9FF] flex items-center justify-center border-2 border-[#00D9FF]">
-                              <span className="text-black font-semibold">
+                            <div className={`
+                              flex h-12 w-12 items-center justify-center
+                              rounded-full border-2 border-[#00D9FF]
+                              bg-[#00D9FF]
+                            `}>
+                              <span className="font-semibold text-black">
                                 {getUserInitials()}
                               </span>
                             </div>
                           )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">
+                          <div className="min-w-0 flex-1">
+                            <p className={`
+                              truncate text-sm font-semibold text-white
+                            `}>
                               {session.user?.name || 'User'}
                             </p>
-                            <p className="text-xs text-wp-text-secondary truncate">
+                            <p className={`
+                              text-wp-text-secondary truncate text-xs
+                            `}>
                               {session.user?.email}
                             </p>
                           </div>
@@ -250,14 +295,22 @@ export default function Navigation() {
                             setIsUserMenuOpen(false);
                             router.push('/notifications');
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-[#00D9FF]/20 transition-all duration-200 relative text-left cursor-pointer"
+                          className={`
+                            relative flex w-full cursor-pointer items-center
+                            gap-3 px-4 py-3 text-left text-sm text-white
+                            transition-all duration-200
+                            hover:bg-[#00D9FF]/20
+                          `}
                         >
                           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                           </svg>
                           <span className="flex-1">Notifications</span>
                           {unreadCount > 0 && (
-                            <span className="px-2 py-0.5 bg-[#00D9FF] text-black text-xs font-bold rounded-full">
+                            <span className={`
+                              rounded-full bg-[#00D9FF] px-2 py-0.5 text-xs
+                              font-bold text-black
+                            `}>
                               {unreadCount > 99 ? '99+' : unreadCount}
                             </span>
                           )}
@@ -265,14 +318,21 @@ export default function Navigation() {
                       </div>
 
                       {/* Sign Out Button */}
-                      <div className="px-4 py-3 border-t border-wp-border/30 bg-gray-700/50">
+                      <div className={`
+                        border-wp-border/30 border-t bg-gray-700/50 px-4 py-3
+                      `}>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setIsUserMenuOpen(false);
                             signOut();
                           }}
-                          className="w-full px-4 py-2 bg-[#00D9FF] text-black font-semibold rounded-lg hover:bg-[#00D9FF]/90 transition-all duration-300 cursor-pointer"
+                          className={`
+                            w-full cursor-pointer rounded-lg bg-[#00D9FF] px-4
+                            py-2 font-semibold text-black transition-all
+                            duration-300
+                            hover:bg-[#00D9FF]/90
+                          `}
                         >
                           Sign out
                         </button>
@@ -289,12 +349,19 @@ export default function Navigation() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex items-center gap-4 lg:hidden">
+          <div className={`
+            flex items-center gap-4
+            lg:hidden
+          `}>
             {session && (
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="p-2 rounded-lg hover:bg-[#00D9FF]/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
+                  className={`
+                    focus:ring-wp-primary/50 focus:ring-2 focus:outline-none
+                    rounded-lg p-2 transition-all duration-300
+                    hover:bg-[#00D9FF]/20
+                  `}
                 >
                   {session.user?.image ? (
                     <img
@@ -303,42 +370,61 @@ export default function Navigation() {
                       className="h-8 w-8 rounded-full border-2 border-[#00D9FF]"
                     />
                   ) : (
-                    <div className="h-8 w-8 rounded-full bg-[#00D9FF] flex items-center justify-center border-2 border-[#00D9FF]">
-                      <span className="text-black font-semibold text-xs">
+                    <div className={`
+                      flex h-8 w-8 items-center justify-center rounded-full
+                      border-2 border-[#00D9FF] bg-[#00D9FF]
+                    `}>
+                      <span className="text-xs font-semibold text-black">
                         {getUserInitials()}
                       </span>
                     </div>
                   )}
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-[#00D9FF] text-black text-xs font-bold rounded-full flex items-center justify-center border-2 border-wp-dark text-[10px]">
+                    <span className={`
+                      border-wp-dark absolute -top-1 -right-1 flex h-4 w-4
+                      items-center justify-center rounded-full border-2
+                      bg-[#00D9FF] text-xs text-[10px] font-bold text-black
+                    `}>
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </button>
                 {/* Mobile User Menu - same as desktop but positioned differently */}
                 {isUserMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-wp-border/30 rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className={`
+                    border-wp-border/30 absolute top-full right-0 z-50 mt-2 w-64
+                    overflow-hidden rounded-lg border bg-gray-800 shadow-lg
+                  `}>
                     {/* User Info Section */}
-                    <div className="px-4 py-4 border-b border-wp-border/30 bg-gray-700/50">
+                    <div className={`
+                      border-wp-border/30 border-b bg-gray-700/50 px-4 py-4
+                    `}>
                       <div className="flex items-center gap-3">
                         {session.user?.image ? (
                           <img
                             src={session.user.image}
                             alt={session.user?.name || 'User'}
-                            className="h-12 w-12 rounded-full border-2 border-[#00D9FF]"
+                            className={`
+                              h-12 w-12 rounded-full border-2 border-[#00D9FF]
+                            `}
                           />
                         ) : (
-                          <div className="h-12 w-12 rounded-full bg-[#00D9FF] flex items-center justify-center border-2 border-[#00D9FF]">
-                            <span className="text-black font-semibold">
+                          <div className={`
+                            flex h-12 w-12 items-center justify-center
+                            rounded-full border-2 border-[#00D9FF] bg-[#00D9FF]
+                          `}>
+                            <span className="font-semibold text-black">
                               {getUserInitials()}
                             </span>
                           </div>
                         )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-white truncate">
+                        <div className="min-w-0 flex-1">
+                          <p className={`
+                            truncate text-sm font-semibold text-white
+                          `}>
                             {session.user?.name || 'User'}
                           </p>
-                          <p className="text-xs text-wp-text-secondary truncate">
+                          <p className="text-wp-text-secondary truncate text-xs">
                             {session.user?.email}
                           </p>
                         </div>
@@ -353,14 +439,22 @@ export default function Navigation() {
                           setIsUserMenuOpen(false);
                           router.push('/notifications');
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-[#00D9FF]/20 transition-all duration-200 relative text-left cursor-pointer"
+                        className={`
+                          relative flex w-full cursor-pointer items-center gap-3
+                          px-4 py-3 text-left text-sm text-white transition-all
+                          duration-200
+                          hover:bg-[#00D9FF]/20
+                        `}
                       >
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
                         <span className="flex-1">Notifications</span>
                         {unreadCount > 0 && (
-                          <span className="px-2 py-0.5 bg-[#00D9FF] text-black text-xs font-bold rounded-full">
+                          <span className={`
+                            rounded-full bg-[#00D9FF] px-2 py-0.5 text-xs
+                            font-bold text-black
+                          `}>
                             {unreadCount > 99 ? '99+' : unreadCount}
                           </span>
                         )}
@@ -368,14 +462,21 @@ export default function Navigation() {
                     </div>
 
                     {/* Sign Out Button */}
-                    <div className="px-4 py-3 border-t border-wp-border/30 bg-gray-700/50">
+                    <div className={`
+                      border-wp-border/30 border-t bg-gray-700/50 px-4 py-3
+                    `}>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsUserMenuOpen(false);
                           signOut();
                         }}
-                        className="w-full px-4 py-2 bg-[#00D9FF] text-black font-semibold rounded-lg hover:bg-[#00D9FF]/90 transition-all duration-300 cursor-pointer"
+                        className={`
+                          w-full cursor-pointer rounded-lg bg-[#00D9FF] px-4
+                          py-2 font-semibold text-black transition-all
+                          duration-300
+                          hover:bg-[#00D9FF]/90
+                        `}
                       >
                         Sign out
                       </button>
@@ -386,24 +487,41 @@ export default function Navigation() {
             )}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-3 rounded-lg text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
+              className={`
+                text-wp-text-secondary rounded-lg p-3 transition-all
+                duration-300
+                hover:text-wp-primary hover:bg-wp-primary/10
+                focus:ring-wp-primary/50 focus:ring-2 focus:outline-none
+              `}
             >
               <span className="sr-only">Open main menu</span>
-              <div className="relative w-6 h-6">
+              <div className="relative h-6 w-6">
                 <span
-                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
-                    isMenuOpen ? 'rotate-45 translate-y-2' : 'translate-y-0'
-                  }`}
+                  className={`
+                    absolute block h-0.5 w-6 transform bg-current transition
+                    duration-300 ease-in-out
+                    ${
+                    isMenuOpen ? 'translate-y-2 rotate-45' : 'translate-y-0'
+                  }
+                  `}
                 />
                 <span
-                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out translate-y-2 ${
+                  className={`
+                    absolute block h-0.5 w-6 translate-y-2 transform bg-current
+                    transition duration-300 ease-in-out
+                    ${
                     isMenuOpen ? 'opacity-0' : 'opacity-100'
-                  }`}
+                  }
+                  `}
                 />
                 <span
-                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
-                    isMenuOpen ? '-rotate-45 translate-y-2' : 'translate-y-4'
-                  }`}
+                  className={`
+                    absolute block h-0.5 w-6 transform bg-current transition
+                    duration-300 ease-in-out
+                    ${
+                    isMenuOpen ? 'translate-y-2 -rotate-45' : 'translate-y-4'
+                  }
+                  `}
                 />
               </div>
             </button>
@@ -412,10 +530,19 @@ export default function Navigation() {
       </div>
 
       {/* Mobile menu */}
-      <div className={`lg:hidden transition-all duration-300 ease-in-out ${
-        isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
-      }`}>
-        <div className="px-4 pt-2 pb-6 space-y-2 bg-wp-dark-lighter/95 backdrop-blur-lg border-t border-wp-border/30">
+      <div className={`
+        transition-all duration-300 ease-in-out
+        lg:hidden
+        ${
+        isMenuOpen ? 'max-h-screen opacity-100' : `
+          max-h-0 overflow-hidden opacity-0
+        `
+      }
+      `}>
+        <div className={`
+          bg-wp-dark-lighter/95 border-wp-border/30 space-y-2 border-t px-4 pt-2
+          pb-6 backdrop-blur-lg
+        `}>
           <Link
             href="/"
             className={navClasses.homeMobile}
@@ -460,10 +587,10 @@ export default function Navigation() {
             Other Requests
           </Link>
           {!session && (
-            <div className="pt-4 mt-4 border-t border-wp-border/30">
+            <div className="border-wp-border/30 mt-4 border-t pt-4">
               <Link
                 href="/auth/signin"
-                className="block w-full wp-button-primary text-center"
+                className="wp-button-primary block w-full text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign in

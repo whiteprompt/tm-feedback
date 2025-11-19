@@ -25,7 +25,12 @@ export const Card: React.FC<CardProps> = ({
     lg: 'p-8',
   };
 
-  const classes = `${baseClasses} ${hoverClasses} ${paddingClasses[padding]} ${className}`;
+  const classes = `
+    ${baseClasses}
+    ${hoverClasses}
+    ${paddingClasses[padding]}
+    ${className}
+  `;
 
   return <div className={classes}>{children}</div>;
 };

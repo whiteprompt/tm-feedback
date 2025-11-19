@@ -75,7 +75,7 @@ export default function CompanyNewsCarousel({
 
   if (!newsItems || newsItems.length === 0) {
     return (
-      <section className="mb-16 wp-slide-up">
+      <section className="wp-slide-up mb-16">
         <div className="wp-card p-8 text-center">
           <p className="wp-body text-wp-text-secondary">No news available at the moment.</p>
         </div>
@@ -84,20 +84,26 @@ export default function CompanyNewsCarousel({
   }
 
   return (
-    <section className="mb-16 wp-slide-up">
+    <section className="wp-slide-up mb-16">
       <div className="wp-card p-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           {newsItems.length > 1 && (
             <div className="flex gap-2">
               {newsItems.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
+                  className={`
+                    h-2 rounded-full transition-all duration-300
+                    ${
                     index === currentIndex
-                      ? 'w-8 bg-wp-primary'
-                      : 'w-2 bg-wp-border hover:bg-wp-border-light'
-                  }`}
+                      ? 'bg-wp-primary w-8'
+                      : `
+                        bg-wp-border w-2
+                        hover:bg-wp-border-light
+                      `
+                  }
+                  `}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
@@ -109,11 +115,15 @@ export default function CompanyNewsCarousel({
           {newsItems.length > 1 && (
             <button
               onClick={goToPrevious}
-              className="shrink-0 p-2 rounded-full bg-wp-dark-card/80 backdrop-blur-sm border border-wp-border hover:bg-wp-primary/20 hover:border-wp-primary transition-all duration-300"
+              className={`
+                bg-wp-dark-card/80 border-wp-border shrink-0 rounded-full border
+                p-2 backdrop-blur-sm transition-all duration-300
+                hover:bg-wp-primary/20 hover:border-wp-primary
+              `}
               aria-label="Previous slide"
             >
               <svg
-                className="w-6 h-6 text-wp-text-primary"
+                className="text-wp-text-primary h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -142,15 +152,26 @@ export default function CompanyNewsCarousel({
                     href={item.notionUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block group"
+                    className="group block"
                   >
-                    <div className="p-6 hover:bg-wp-primary/5 transition-all duration-300 rounded-lg">
-                      <div className="flex items-start justify-between mb-4">
-                        <h3 className="wp-heading-3 text-wp-text-primary group-hover:text-wp-primary transition-colors duration-300 flex-1">
+                    <div className={`
+                      hover:bg-wp-primary/5
+                      rounded-lg p-6 transition-all duration-300
+                    `}>
+                      <div className="mb-4 flex items-start justify-between">
+                        <h3 className={`
+                          wp-heading-3 text-wp-text-primary flex-1
+                          transition-colors duration-300
+                          group-hover:text-wp-primary
+                        `}>
                           {item.title}
                         </h3>
                         <svg
-                          className="w-5 h-5 text-wp-text-muted group-hover:text-wp-primary transition-colors duration-300 shrink-0 ml-4"
+                          className={`
+                            text-wp-text-muted ml-4 h-5 w-5 shrink-0
+                            transition-colors duration-300
+                            group-hover:text-wp-primary
+                          `}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -187,11 +208,15 @@ export default function CompanyNewsCarousel({
           {newsItems.length > 1 && (
             <button
               onClick={goToNext}
-              className="shrink-0 p-2 rounded-full bg-wp-dark-card/80 backdrop-blur-sm border border-wp-border hover:bg-wp-primary/20 hover:border-wp-primary transition-all duration-300"
+              className={`
+                bg-wp-dark-card/80 border-wp-border shrink-0 rounded-full border
+                p-2 backdrop-blur-sm transition-all duration-300
+                hover:bg-wp-primary/20 hover:border-wp-primary
+              `}
               aria-label="Next slide"
             >
               <svg
-                className="w-6 h-6 text-wp-text-primary"
+                className="text-wp-text-primary h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

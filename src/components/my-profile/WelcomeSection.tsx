@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
 interface PortalLink {
   title: string;
   href: string;
@@ -19,7 +17,7 @@ export default function WelcomeSection({
   sitePurpose = "Your central hub for managing work, requests, and company resources.",
 }: WelcomeSectionProps) {
   return (
-    <section className="text-center mb-16 wp-fade-in">
+    <section className="wp-fade-in mb-16 text-center">
       <h1 className="wp-heading-1 mb-6">
         {welcomeMessage}
       </h1>

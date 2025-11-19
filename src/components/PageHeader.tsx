@@ -20,7 +20,10 @@ export default function PageHeader({ title, description, actionButton }: PageHea
   );
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-16 wp-fade-in">
+    <div className={`
+      wp-fade-in mb-16 flex flex-col gap-6
+      sm:flex-row sm:items-center sm:justify-between
+    `}>
       <div>
         <h1 className="wp-heading-1 mb-4">{title}</h1>
         <p className="wp-body-large">{description}</p>
@@ -31,14 +34,20 @@ export default function PageHeader({ title, description, actionButton }: PageHea
             href={actionButton.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="wp-button-primary inline-flex items-center space-x-2 whitespace-nowrap"
+            className={`
+              wp-button-primary inline-flex items-center space-x-2
+              whitespace-nowrap
+            `}
           >
             {buttonContent}
           </a>
         ) : (
           <Link
             href={actionButton.href}
-            className="wp-button-primary inline-flex items-center space-x-2 whitespace-nowrap"
+            className={`
+              wp-button-primary inline-flex items-center space-x-2
+              whitespace-nowrap
+            `}
           >
             {buttonContent}
           </Link>

@@ -20,24 +20,10 @@ export default function NavDropdown({
   label,
   items,
   buttonClassName,
-  isActive,
 }: NavDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-
-  // Default active check function
-  const checkIsActive = isActive || ((pathname: string) => {
-    return items.some(item => pathname.startsWith(item.href));
-  });
-
-  // Check if any item is active
-  const hasActiveItem = items.some(item => {
-    if (item.href === '/') {
-      return pathname === '/';
-    }
-    return pathname.startsWith(item.href);
-  });
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -83,9 +69,12 @@ export default function NavDropdown({
           {label}
         </span>
         <svg
-          className={`ml-2 h-4 w-4 transition-transform duration-200 ${
+          className={`
+            ml-2 h-4 w-4 transition-transform duration-200
+            ${
             isOpen ? 'rotate-180' : ''
-          }`}
+          }
+          `}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -95,7 +84,10 @@ export default function NavDropdown({
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-56 bg-gray-800 border border-wp-border/30 rounded-lg shadow-lg z-50">
+        <div className={`
+          border-wp-border/30 absolute top-full left-0 z-50 mt-1 w-56 rounded-lg
+          border bg-gray-800 shadow-lg
+        `}>
           {items.map((item, index) => {
             const active = isItemActive(item.href);
             const isFirst = index === 0;
@@ -105,15 +97,23 @@ export default function NavDropdown({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block px-6 py-4 text-base transition-all duration-300 ${
+                className={`
+                  block px-6 py-4 text-base transition-all duration-300
+                  ${
                   isFirst ? 'rounded-t-lg' : ''
-                } ${
+                }
+                  ${
                   isLast ? 'rounded-b-lg' : ''
-                } ${
+                }
+                  ${
                   active 
                     ? 'bg-[#00D9FF] text-black' 
-                    : 'text-white hover:bg-[#00D9FF]/20'
-                }`}
+                    : `
+                      text-white
+                      hover:bg-[#00D9FF]/20
+                    `
+                }
+                `}
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}

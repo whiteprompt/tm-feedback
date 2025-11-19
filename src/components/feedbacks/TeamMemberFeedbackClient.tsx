@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Select from 'react-select';
-import Navigation from '@/components/Navigation';
 import ErrorBanner from '@/components/ErrorBanner';
 import { useRouter } from 'next/navigation';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
@@ -31,7 +30,7 @@ const SATISFACTION_MAP = {
 } as const;
 
 export default function TeamMemberFeedbackClient() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { getLastFeedbackForProject, refetch } = useFeedbacks();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -254,11 +253,14 @@ export default function TeamMemberFeedbackClient() {
 
   if (status === 'loading' || !isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="wp-fade-in">
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
+              <div className={`
+                border-wp-primary/30 border-t-wp-primary h-16 w-16 animate-spin
+                rounded-full border-4
+              `}></div>
             </div>
             <p className="wp-body text-wp-text-secondary">Loading your information...</p>
           </div>
@@ -272,12 +274,18 @@ export default function TeamMemberFeedbackClient() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-r from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className={`
+      from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary
+      min-h-screen bg-linear-to-r
+    `}>
         <main className="wp-section-sm">
           <div className="wp-card p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Project <span className="text-red-400">*</span>
                 </label>
                 <Select
@@ -316,20 +324,32 @@ export default function TeamMemberFeedbackClient() {
                 />
               </div>
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Role <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.role}
                   onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
-                  className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                  className={`
+                    bg-wp-dark-card/60 border-wp-border wp-body
+                    text-wp-text-primary placeholder-wp-text-muted w-full
+                    rounded-lg border px-4 py-3 transition-all duration-300
+                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                    focus:outline-none
+                  `}
                   placeholder="Enter your role"
                   required
                 />
               </div>
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Responsibilities <span className="text-red-400">*</span>
                 </label>
                 <p className="wp-body-small text-wp-text-secondary mb-4">
@@ -339,29 +359,47 @@ export default function TeamMemberFeedbackClient() {
                   value={formData.responsibilities}
                   onChange={(e) => setFormData(prev => ({ ...prev, responsibilities: e.target.value }))}
                   rows={5}
-                  className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300 resize-none"
+                  className={`
+                    bg-wp-dark-card/60 border-wp-border wp-body
+                    text-wp-text-primary placeholder-wp-text-muted w-full
+                    resize-none rounded-lg border px-4 py-3 transition-all
+                    duration-300
+                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                    focus:outline-none
+                  `}
                   placeholder="Describe your responsibilities"
                   required
                 />
               </div>
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Technologies <span className="text-red-400">*</span>
                 </label>
                 <p className="wp-body-small text-wp-text-secondary mb-4">
                   {`Add technologies you're using in this project. Press Enter or type a comma (,) to add each technology.`}
                 </p>
-                <div className="flex flex-wrap gap-3 mb-4">
+                <div className="mb-4 flex flex-wrap gap-3">
                   {formData.technologies.map((tech) => (
                     <span
                       key={tech}
-                      className="inline-flex items-center px-4 py-2 rounded-full wp-body-small font-medium bg-linear-to-r rom-wp-primary/20 to-wp-accent/20 text-wp-primary border border-wp-primary/30"
+                      className={`
+                        wp-body-small rom-wp-primary/20 to-wp-accent/20
+                        text-wp-primary border-wp-primary/30 inline-flex
+                        items-center rounded-full border bg-linear-to-r px-4
+                        py-2 font-medium
+                      `}
                     >
                       {tech}
                       <button
                         type="button"
                         onClick={() => removeTechnology(tech)}
-                        className="ml-2 text-wp-primary hover:text-wp-accent transition-colors"
+                        className={`
+                          text-wp-primary ml-2 transition-colors
+                          hover:text-wp-accent
+                        `}
                       >
                         ×
                       </button>
@@ -373,16 +411,27 @@ export default function TeamMemberFeedbackClient() {
                   value={currentTech}
                   onChange={(e) => setCurrentTech(e.target.value)}
                   onKeyDown={handleTechKeyDown}
-                  className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                  className={`
+                    bg-wp-dark-card/60 border-wp-border wp-body
+                    text-wp-text-primary placeholder-wp-text-muted w-full
+                    rounded-lg border px-4 py-3 transition-all duration-300
+                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                    focus:outline-none
+                  `}
                   placeholder="Type technology and press Enter or comma (,)"
                 />
               </div>
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Overall Satisfaction <span className="text-red-400">*</span>
                 </label>
-                <div className="flex gap-8 justify-center py-4">
-                  <label className="flex flex-col items-center space-y-2 cursor-pointer group">
+                <div className="flex justify-center gap-8 py-4">
+                  <label className={`
+                    group flex cursor-pointer flex-col items-center space-y-2
+                  `}>
                     <input
                       type="radio"
                       name="satisfaction"
@@ -392,12 +441,23 @@ export default function TeamMemberFeedbackClient() {
                       className="sr-only"
                       required
                     />
-                    <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'happy' ? 'bg-linear-to-r from-green-500 to-green-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-green-500/20'}`}>
+                    <div className={`
+                      rounded-full p-4 transition-all duration-300
+                      ${formData.overallSatisfaction === 'happy' ? `
+                        scale-110 bg-linear-to-r from-green-500 to-green-600
+                        shadow-lg
+                      ` : `
+                        bg-wp-dark-card/60
+                        group-hover:bg-green-500/20
+                      `}
+                    `}>
                       <span className="text-3xl">{SATISFACTION_MAP.happy}</span>
                     </div>
                     <span className="wp-body-small text-wp-text-secondary">Happy</span>
                   </label>
-                  <label className="flex flex-col items-center space-y-2 cursor-pointer group">
+                  <label className={`
+                    group flex cursor-pointer flex-col items-center space-y-2
+                  `}>
                     <input
                       type="radio"
                       name="satisfaction"
@@ -407,12 +467,23 @@ export default function TeamMemberFeedbackClient() {
                       className="sr-only"
                       required
                     />
-                    <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'neutral' ? 'bg-linear-to-r from-yellow-500 to-yellow-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-yellow-500/20'}`}>
+                    <div className={`
+                      rounded-full p-4 transition-all duration-300
+                      ${formData.overallSatisfaction === 'neutral' ? `
+                        scale-110 bg-linear-to-r from-yellow-500 to-yellow-600
+                        shadow-lg
+                      ` : `
+                        bg-wp-dark-card/60
+                        group-hover:bg-yellow-500/20
+                      `}
+                    `}>
                       <span className="text-3xl">{SATISFACTION_MAP.neutral}</span>
                     </div>
                     <span className="wp-body-small text-wp-text-secondary">Neutral</span>
                   </label>
-                  <label className="flex flex-col items-center space-y-2 cursor-pointer group">
+                  <label className={`
+                    group flex cursor-pointer flex-col items-center space-y-2
+                  `}>
                     <input
                       type="radio"
                       name="satisfaction"
@@ -422,7 +493,16 @@ export default function TeamMemberFeedbackClient() {
                       className="sr-only"
                       required
                     />
-                    <div className={`p-4 rounded-full transition-all duration-300 ${formData.overallSatisfaction === 'sad' ? 'bg-linear-to-r from-red-500 to-red-600 shadow-lg scale-110' : 'bg-wp-dark-card/60 group-hover:bg-red-500/20'}`}>
+                    <div className={`
+                      rounded-full p-4 transition-all duration-300
+                      ${formData.overallSatisfaction === 'sad' ? `
+                        scale-110 bg-linear-to-r from-red-500 to-red-600
+                        shadow-lg
+                      ` : `
+                        bg-wp-dark-card/60
+                        group-hover:bg-red-500/20
+                      `}
+                    `}>
                       <span className="text-3xl">{SATISFACTION_MAP.sad}</span>
                     </div>
                     <span className="wp-body-small text-wp-text-secondary">Sad</span>
@@ -430,7 +510,10 @@ export default function TeamMemberFeedbackClient() {
                 </div>
               </div>
               <div className="space-y-3">
-                <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <label className={`
+                  wp-body-small text-wp-text-muted font-semibold tracking-wider
+                  uppercase
+                `}>
                   Comments
                 </label>
                 <p className="wp-body-small text-wp-text-secondary mb-4">
@@ -440,7 +523,14 @@ export default function TeamMemberFeedbackClient() {
                   value={formData.comments}
                   onChange={(e) => setFormData(prev => ({ ...prev, comments: e.target.value }))}
                   rows={4}
-                  className="w-full px-4 py-3 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body text-wp-text-primary placeholder-wp-text-muted focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300 resize-none"
+                  className={`
+                    bg-wp-dark-card/60 border-wp-border wp-body
+                    text-wp-text-primary placeholder-wp-text-muted w-full
+                    resize-none rounded-lg border px-4 py-3 transition-all
+                    duration-300
+                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                    focus:outline-none
+                  `}
                   placeholder="Describe any issues or challenges you're facing in the project"
                 />
               </div>
@@ -459,23 +549,39 @@ export default function TeamMemberFeedbackClient() {
                     }
                     router.push('/my-projects');
                   }}
-                  className="flex-1 py-4 px-6 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body font-medium text-wp-text-secondary hover:text-wp-text-primary hover:bg-wp-dark-card/80 focus:outline-none focus:ring-2 focus:ring-wp-primary focus:border-wp-primary transition-all duration-300"
+                  className={`
+                    bg-wp-dark-card/60 border-wp-border wp-body
+                    text-wp-text-secondary flex-1 rounded-lg border px-6 py-4
+                    font-medium transition-all duration-300
+                    hover:text-wp-text-primary hover:bg-wp-dark-card/80
+                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                    focus:outline-none
+                  `}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 wp-button-primary py-4 px-6 wp-body disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                  className={`
+                    wp-button-primary wp-body flex flex-1 items-center
+                    justify-center space-x-2 px-6 py-4 transition-all
+                    duration-300
+                    hover:scale-105
+                    disabled:cursor-not-allowed disabled:opacity-50
+                  `}
                 >
                   {loading ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className={`
+                        h-5 w-5 animate-spin rounded-full border-2 border-white
+                        border-t-transparent
+                      `}></div>
                       <span>Submitting...</span>
                     </>
                   ) : (
                     <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                       <span>Submit Feedback</span>

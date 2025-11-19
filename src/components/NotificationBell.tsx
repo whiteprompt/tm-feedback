@@ -30,7 +30,12 @@ export function NotificationBell() {
     <div ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="relative p-2 rounded-lg text-wp-text-secondary hover:text-wp-primary hover:bg-wp-primary/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-wp-primary/50"
+        className={`
+          text-wp-text-secondary relative rounded-lg p-2 transition-all
+          duration-300
+          hover:text-wp-primary hover:bg-wp-primary/10
+          focus:ring-wp-primary/50 focus:ring-2 focus:outline-none
+        `}
         aria-label="Notifications"
       >
         {/* Bell Icon */}
@@ -50,14 +55,21 @@ export function NotificationBell() {
 
         {/* Unread Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 h-5 w-5 bg-linear-to-r from-wp-primary to-wp-accent text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg animate-pulse">
+          <span className={`
+            from-wp-primary to-wp-accent absolute -top-1 -right-1 flex h-5 w-5
+            animate-pulse items-center justify-center rounded-full
+            bg-linear-to-r text-xs font-bold text-white shadow-lg
+          `}>
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
 
         {/* Loading Indicator */}
         {loading && (
-          <div className="absolute -top-1 -right-1 h-5 w-5 border-2 border-wp-primary border-t-transparent rounded-full animate-spin" />
+          <div className={`
+            border-wp-primary absolute -top-1 -right-1 h-5 w-5 animate-spin
+            rounded-full border-2 border-t-transparent
+          `} />
         )}
       </button>
     </div>

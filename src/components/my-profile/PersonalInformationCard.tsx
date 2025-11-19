@@ -15,8 +15,14 @@ interface InfoFieldProps {
 }
 
 const InfoField: React.FC<InfoFieldProps> = ({ label, value, className = '' }) => (
-  <div className={`space-y-2 ${className}`}>
-    <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold block">
+  <div className={`
+    space-y-2
+    ${className}
+  `}>
+    <label className={`
+      wp-body-small text-wp-text-muted block font-semibold tracking-wider
+      uppercase
+    `}>
       {label}
     </label>
     <p className="wp-body text-wp-text-primary font-medium">{value}</p>
@@ -28,7 +34,11 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
 }) => {
   return (
     <div className="wp-card p-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className={`
+        grid grid-cols-1 gap-8
+        md:grid-cols-2
+        lg:grid-cols-3
+      `}>
         <InfoField label="Full Name" value={`${teamMember.firstName} ${teamMember.lastName}`} />
         <InfoField label="Work Email" value={teamMember.email} />
         <InfoField label="Start Date" value={formatDate(teamMember.startDate)} />
@@ -37,15 +47,26 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
         <InfoField label="Country" value={teamMember.country || 'Not specified'} />
         
         {/* ID Type and ID Number in the same row */}
-        <div className="md:col-span-2 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className={`
+          grid grid-cols-1 gap-8
+          md:col-span-2 md:grid-cols-2
+          lg:col-span-2
+        `}>
           <InfoField label="ID Type" value={teamMember.identificationType} />
           <InfoField label="ID Number" value={teamMember.identificationNumber} />
         </div>
 
         {/* Access Tools section */}
-        <div className="md:col-span-2 lg:col-span-3 space-y-3">
+        <div className={`
+          space-y-3
+          md:col-span-2
+          lg:col-span-3
+        `}>
           <div>
-            <label className="wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold block mb-2">
+            <label className={`
+              wp-body-small text-wp-text-muted mb-2 block font-semibold
+              tracking-wider uppercase
+            `}>
               Access Tools
             </label>
             <p className="wp-body-small text-wp-text-muted mb-4">
@@ -56,7 +77,10 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
             {(teamMember?.accesses || []).map((access: string, index: number) => (
               <span 
                 key={index} 
-                className="px-3 py-1 bg-wp-primary/20 text-wp-primary rounded-full text-sm font-medium"
+                className={`
+                  bg-wp-primary/20 text-wp-primary rounded-full px-3 py-1
+                  text-sm font-medium
+                `}
               >
                 {access}
               </span>

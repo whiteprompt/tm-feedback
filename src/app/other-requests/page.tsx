@@ -101,17 +101,22 @@ export default function OtherRequestsPage() {
         subheadline="Find quick links to various company processes, from training requests to compensation management."
       />
       <div>
-        {requestLinks.map((category, index) => (
+        {requestLinks.map((category) => (
           <FullWidthContainerSection
             key={category.category}
             headline={category.category}
             description={`Access ${category.category.toLowerCase()} related processes and resources.`}
           >
-            <div className={`${
+            <div className={`
+              ${
               category.links.length === 1 
                 ? 'flex justify-center' 
-                : 'grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch'
-            }`}>
+                : `
+                  grid grid-cols-1 items-stretch gap-6
+                  md:grid-cols-2
+                `
+            }
+            `}>
               {category.links.length === 1 && (
                 <div className="w-full max-w-2xl">
                   {category.links.map((link) => (

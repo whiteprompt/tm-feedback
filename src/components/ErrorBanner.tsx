@@ -72,25 +72,44 @@ export default function ErrorBanner({
   };
 
   return (
-    <div className={`mb-6 p-4 ${styles.container} rounded-r-lg ${className}`}>
+    <div className={`
+      mb-6 p-4
+      ${styles.container}
+      rounded-r-lg
+      ${className}
+    `}>
       <div className="flex items-start">
         <div className="shrink-0">
-          <svg className={`w-5 h-5 ${styles.icon} mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className={`
+            h-5 w-5
+            ${styles.icon}
+            mt-0.5
+          `} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {getIcon()}
           </svg>
         </div>
         <div className="ml-3 flex-1">
-          <h3 className={`text-sm font-medium ${styles.title}`}>
+          <h3 className={`
+            text-sm font-medium
+            ${styles.title}
+          `}>
             {title}
           </h3>
-          <div className={`mt-2 text-sm ${styles.message}`}>
+          <div className={`
+            mt-2 text-sm
+            ${styles.message}
+          `}>
             <p>{error}</p>
           </div>
           <div className="mt-3">
             <button
               type="button"
               onClick={handleDismiss}
-              className={`text-sm font-medium ${styles.dismiss} transition-colors`}
+              className={`
+                text-sm font-medium
+                ${styles.dismiss}
+                transition-colors
+              `}
             >
               Dismiss
             </button>

@@ -25,16 +25,19 @@ export default function UnreadNotificationsTable() {
   };
 
   return (
-    <div className="wp-card p-6 mb-8 wp-fade-in">
+    <div className="wp-card wp-fade-in mb-8 p-6">
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="inline-block h-6 w-6 border-2 border-wp-primary border-t-transparent rounded-full animate-spin" />
-          <p className="ml-3 text-sm text-wp-text-secondary">Loading notifications...</p>
+          <div className={`
+            border-wp-primary inline-block h-6 w-6 animate-spin rounded-full
+            border-2 border-t-transparent
+          `} />
+          <p className="text-wp-text-secondary ml-3 text-sm">Loading notifications...</p>
         </div>
       ) : unreadNotifications.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="py-12 text-center">
           <svg 
-            className="mx-auto h-16 w-16 text-wp-text-muted/50 mb-4" 
+            className="text-wp-text-muted/50 mx-auto mb-4 h-16 w-16" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -57,14 +60,23 @@ export default function UnreadNotificationsTable() {
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
-              <tr className="border-b border-wp-border">
-                <th className="px-6 py-4 text-left wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+              <tr className="border-wp-border border-b">
+                <th className={`
+                  wp-body-small text-wp-text-muted px-6 py-4 text-left
+                  font-semibold tracking-wider uppercase
+                `}>
                   Module
                 </th>
-                <th className="px-6 py-4 text-left wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <th className={`
+                  wp-body-small text-wp-text-muted px-6 py-4 text-left
+                  font-semibold tracking-wider uppercase
+                `}>
                   Message
                 </th>
-                <th className="px-6 py-4 text-right wp-body-small text-wp-text-muted uppercase tracking-wider font-semibold">
+                <th className={`
+                  wp-body-small text-wp-text-muted px-6 py-4 text-right
+                  font-semibold tracking-wider uppercase
+                `}>
                   Date
                 </th>
               </tr>
@@ -74,7 +86,11 @@ export default function UnreadNotificationsTable() {
                 <tr
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
-                  className="border-b border-wp-border/50 hover:bg-wp-primary/10 cursor-pointer transition-colors"
+                  className={`
+                    border-wp-border/50 cursor-pointer border-b
+                    transition-colors
+                    hover:bg-wp-primary/10
+                  `}
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-2">

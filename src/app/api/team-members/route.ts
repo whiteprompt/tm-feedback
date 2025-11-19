@@ -13,7 +13,7 @@ interface TeamMember {
 
 export async function GET() {
   try {
-    const { error, email } = await getAuthenticatedUser();
+    const { error } = await getAuthenticatedUser();
 
     if (error) {
       return error;

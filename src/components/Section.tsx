@@ -30,7 +30,10 @@ export const Section: React.FC<SectionProps> = ({
 
   return (
     <section className={classes}>
-      <div className="max-w-7xl mx-auto px-4 md:px-8">{children}</div>
+      <div className={`
+        mx-auto max-w-7xl px-4
+        md:px-8
+      `}>{children}</div>
     </section>
   );
 };

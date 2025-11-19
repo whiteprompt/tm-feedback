@@ -37,7 +37,10 @@ export default function CurrencySelect({
   const currentCurrency = CURRENCIES.find(currency => currency.value === value);
 
   return (
-    <div className={`space-y-3 ${className}`}>
+    <div className={`
+      space-y-3
+      ${className}
+    `}>
       {showQuickButtons && (
         <div className="flex flex-wrap gap-2">
           {QUICK_CURRENCIES.map((currency) => (
@@ -45,11 +48,18 @@ export default function CurrencySelect({
               key={currency.value}
               type="button"
               onClick={() => handleQuickSelect(currency.value)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 ${
+              className={`
+                rounded-lg px-3 py-1.5 text-sm font-medium transition-all
+                duration-300
+                ${
                 value === currency.value
                   ? 'bg-wp-primary text-white'
-                  : 'bg-wp-primary/20 text-wp-primary hover:bg-wp-primary/30'
-              }`}
+                  : `
+                    bg-wp-primary/20 text-wp-primary
+                    hover:bg-wp-primary/30
+                  `
+              }
+              `}
             >
               {currency.value}
             </button>

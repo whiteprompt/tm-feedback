@@ -45,7 +45,7 @@ export default function TeamMemberPage() {
       {teamMemberError ? (
         <ErrorDisplay message={teamMemberError} />
       ) : !teamMember ? (
-        <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="flex min-h-[60vh] items-center justify-center">
           <ErrorDisplay 
             title="No Information" 
             message="No team member information available." 

@@ -63,10 +63,17 @@ export default function ConfirmationModal({
   const styles = variantStyles[variant];
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 wp-fade-in">
-      <div className="wp-card p-8 max-w-md w-full mx-4 wp-slide-up">
-        <div className="text-center mb-6">
-          <div className={`mx-auto flex items-center justify-center h-12 w-12 rounded-full ${styles.iconBg} mb-4`}>
+    <div className={`
+      wp-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/50
+      backdrop-blur-sm
+    `}>
+      <div className="wp-card wp-slide-up mx-4 w-full max-w-md p-8">
+        <div className="mb-6 text-center">
+          <div className={`
+            mx-auto flex h-12 w-12 items-center justify-center rounded-full
+            ${styles.iconBg}
+            mb-4
+          `}>
             <div className={styles.iconColor}>
               {styles.icon}
             </div>
@@ -80,9 +87,9 @@ export default function ConfirmationModal({
         </div>
 
         {details && details.length > 0 && (
-          <div className="bg-wp-dark-secondary p-4 rounded-lg mb-6 space-y-2">
+          <div className="bg-wp-dark-secondary mb-6 space-y-2 rounded-lg p-4">
             {details.map((detail, index) => (
-              <div key={index} className="flex justify-between items-center">
+              <div key={index} className="flex items-center justify-between">
                 <span className="wp-body-small text-wp-text-muted">{detail.label}:</span>
                 <span className="wp-body-small text-wp-text-primary font-medium">{detail.value}</span>
               </div>
@@ -94,18 +101,32 @@ export default function ConfirmationModal({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-wp-dark-secondary hover:bg-wp-dark-card text-wp-text-primary border border-wp-border hover:border-wp-primary/50 rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`
+              bg-wp-dark-secondary text-wp-text-primary border-wp-border flex-1
+              rounded-lg border px-6 py-3 font-medium transition-all
+              duration-200
+              hover:bg-wp-dark-card hover:border-wp-primary/50
+              disabled:cursor-not-allowed disabled:opacity-50
+            `}
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className={`flex-1 px-6 py-3 ${styles.buttonBg} text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2`}
+            className={`
+              flex-1 px-6 py-3
+              ${styles.buttonBg}
+              flex items-center justify-center space-x-2 rounded-lg font-medium
+              text-white transition-all duration-200
+              disabled:cursor-not-allowed disabled:opacity-50
+            `}
           >
             {isLoading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className={`
+                  h-4 w-4 animate-spin rounded-full border-b-2 border-white
+                `}></div>
                 <span>Processing...</span>
               </>
             ) : (

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Select from 'react-select';
-import Navigation from '@/components/Navigation';
 import ConceptSelect from '@/components/ConceptSelect';
 import CurrencySelect from '@/components/CurrencySelect';
 import ErrorBanner from '@/components/ErrorBanner';
@@ -488,7 +487,7 @@ export default function BulkExpenseRefundClient() {
       });
 
       // Wait for all submissions to complete
-      const results = await Promise.all(submissionPromises);
+      await Promise.all(submissionPromises);
 
       // Reset form and clear unsaved changes flag
       setFiles([]);
@@ -523,11 +522,14 @@ export default function BulkExpenseRefundClient() {
 
   if (status === 'loading' || !isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="wp-fade-in">
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-wp-primary/30 border-t-wp-primary rounded-full animate-spin"></div>
+              <div className={`
+                border-wp-primary/30 border-t-wp-primary h-16 w-16 animate-spin
+                rounded-full border-4
+              `}></div>
             </div>
             <p className="wp-body text-wp-text-secondary">Loading your information...</p>
           </div>
@@ -541,42 +543,113 @@ export default function BulkExpenseRefundClient() {
   }
 
   return (
-    <div className="min-h-screen b-linear-to-br from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary">
+    <div className={`
+      b-linear-to-br from-wp-dark-primary via-wp-dark-secondary
+      to-wp-dark-tertiary min-h-screen
+    `}>
       <main className="wp-section-sm">
         <div className="wp-container">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-16 wp-fade-in">
+          <div className={`
+            wp-fade-in mb-16 flex flex-col gap-6
+            sm:flex-row sm:items-center sm:justify-between
+          `}>
             {/* Progress Steps */}
             <div className="flex items-center space-x-4">
-              <div className={`flex items-center space-x-2 ${currentStep === 'upload' ? 'text-wp-primary' : ['extraction', 'review', 'confirmation'].includes(currentStep) ? 'text-green-400' : 'text-wp-text-muted'}`}>
-                <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${currentStep === 'upload' ? 'border-wp-primary bg-wp-primary/20' : ['extraction', 'review', 'confirmation'].includes(currentStep) ? 'border-green-400 bg-green-400/20' : 'border-wp-text-muted'}`}>
+              <div className={`
+                flex items-center space-x-2
+                ${currentStep === 'upload' ? `text-wp-primary` : ['extraction', 'review', 'confirmation'].includes(currentStep) ? `
+                  text-green-400
+                ` : `text-wp-text-muted`}
+              `}>
+                <div className={`
+                  flex h-8 w-8 items-center justify-center rounded-full border-2
+                  text-sm font-medium
+                  ${currentStep === 'upload' ? `
+                    border-wp-primary bg-wp-primary/20
+                  ` : ['extraction', 'review', 'confirmation'].includes(currentStep) ? `
+                    border-green-400 bg-green-400/20
+                  ` : `border-wp-text-muted`}
+                `}>
                   {['extraction', 'review', 'confirmation'].includes(currentStep) ? '✓' : '1'}
                 </div>
                 <span className="wp-body-small font-medium">Upload</span>
               </div>
               
-              <div className={`w-8 h-0.5 ${['extraction', 'review', 'confirmation'].includes(currentStep) ? 'bg-green-400' : 'bg-wp-text-muted/30'}`}></div>
+              <div className={`
+                h-0.5 w-8
+                ${['extraction', 'review', 'confirmation'].includes(currentStep) ? `
+                  bg-green-400
+                ` : `bg-wp-text-muted/30`}
+              `}></div>
               
-              <div className={`flex items-center space-x-2 ${currentStep === 'extraction' ? 'text-wp-primary' : ['review', 'confirmation'].includes(currentStep) ? 'text-green-400' : 'text-wp-text-muted'}`}>
-                <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${currentStep === 'extraction' ? 'border-wp-primary bg-wp-primary/20' : ['review', 'confirmation'].includes(currentStep) ? 'border-green-400 bg-green-400/20' : 'border-wp-text-muted'}`}>
+              <div className={`
+                flex items-center space-x-2
+                ${currentStep === 'extraction' ? `text-wp-primary` : ['review', 'confirmation'].includes(currentStep) ? `
+                  text-green-400
+                ` : `text-wp-text-muted`}
+              `}>
+                <div className={`
+                  flex h-8 w-8 items-center justify-center rounded-full border-2
+                  text-sm font-medium
+                  ${currentStep === 'extraction' ? `
+                    border-wp-primary bg-wp-primary/20
+                  ` : ['review', 'confirmation'].includes(currentStep) ? `
+                    border-green-400 bg-green-400/20
+                  ` : `border-wp-text-muted`}
+                `}>
                   {['review', 'confirmation'].includes(currentStep) ? '✓' : '2'}
                 </div>
                 <span className="wp-body-small font-medium">Extract</span>
               </div>
               
-              <div className={`w-8 h-0.5 ${['review', 'confirmation'].includes(currentStep) ? 'bg-green-400' : 'bg-wp-text-muted/30'}`}></div>
+              <div className={`
+                h-0.5 w-8
+                ${['review', 'confirmation'].includes(currentStep) ? `
+                  bg-green-400
+                ` : `bg-wp-text-muted/30`}
+              `}></div>
               
-              <div className={`flex items-center space-x-2 ${currentStep === 'review' ? 'text-wp-primary' : currentStep === 'confirmation' ? 'text-green-400' : 'text-wp-text-muted'}`}>
-                <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${currentStep === 'review' ? 'border-wp-primary bg-wp-primary/20' : currentStep === 'confirmation' ? 'border-green-400 bg-green-400/20' : 'border-wp-text-muted'}`}>
+              <div className={`
+                flex items-center space-x-2
+                ${currentStep === 'review' ? `text-wp-primary` : currentStep === 'confirmation' ? `
+                  text-green-400
+                ` : `text-wp-text-muted`}
+              `}>
+                <div className={`
+                  flex h-8 w-8 items-center justify-center rounded-full border-2
+                  text-sm font-medium
+                  ${currentStep === 'review' ? `
+                    border-wp-primary bg-wp-primary/20
+                  ` : currentStep === 'confirmation' ? `
+                    border-green-400 bg-green-400/20
+                  ` : `border-wp-text-muted`}
+                `}>
                   {currentStep === 'confirmation' ? '✓' : '3'}
                 </div>
                 <span className="wp-body-small font-medium">Review</span>
               </div>
               
-              <div className={`w-8 h-0.5 ${currentStep === 'confirmation' ? 'bg-green-400' : 'bg-wp-text-muted/30'}`}></div>
+              <div className={`
+                h-0.5 w-8
+                ${currentStep === 'confirmation' ? `bg-green-400` : `
+                  bg-wp-text-muted/30
+                `}
+              `}></div>
               
-              <div className={`flex items-center space-x-2 ${currentStep === 'confirmation' ? 'text-wp-primary' : 'text-wp-text-muted'}`}>
-                <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium ${currentStep === 'confirmation' ? 'border-wp-primary bg-wp-primary/20' : 'border-wp-text-muted'}`}>
+              <div className={`
+                flex items-center space-x-2
+                ${currentStep === 'confirmation' ? `text-wp-primary` : `
+                  text-wp-text-muted
+                `}
+              `}>
+                <div className={`
+                  flex h-8 w-8 items-center justify-center rounded-full border-2
+                  text-sm font-medium
+                  ${currentStep === 'confirmation' ? `
+                    border-wp-primary bg-wp-primary/20
+                  ` : `border-wp-text-muted`}
+                `}>
                   4
                 </div>
                 <span className="wp-body-small font-medium">Submit</span>
@@ -596,11 +669,18 @@ export default function BulkExpenseRefundClient() {
                   </p>
                 </div>
 
-                <div className="max-w-2xl mx-auto">
-                  <div className="border-2 border-dashed border-wp-border rounded-lg p-8 text-center hover:border-wp-primary/50 transition-colors duration-300 relative">
+                <div className="mx-auto max-w-2xl">
+                  <div className={`
+                    border-wp-border relative rounded-lg border-2 border-dashed
+                    p-8 text-center transition-colors duration-300
+                    hover:border-wp-primary/50
+                  `}>
                     <div className="space-y-4">
-                      <div className="w-16 h-16 mx-auto bg-wp-primary/20 rounded-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className={`
+                        bg-wp-primary/20 mx-auto flex h-16 w-16 items-center
+                        justify-center rounded-full
+                      `}>
+                        <svg className="text-wp-primary h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                       </div>
@@ -615,7 +695,10 @@ export default function BulkExpenseRefundClient() {
                         accept="application/pdf"
                         multiple
                         onChange={handleFileChange}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        className={`
+                          absolute inset-0 h-full w-full cursor-pointer
+                          opacity-0
+                        `}
                       />
                     </div>
                   </div>
@@ -623,26 +706,38 @@ export default function BulkExpenseRefundClient() {
                   {/* File List */}
                   {files.length > 0 && (
                     <div className="mt-6 space-y-3">
-                      <h3 className="wp-body font-semibold text-wp-text-primary">Selected Files ({files.length}/10)</h3>
+                      <h3 className="wp-body text-wp-text-primary font-semibold">Selected Files ({files.length}/10)</h3>
                       {files.map((file, fileIndex) => (
-                        <div key={fileIndex} className="flex items-center justify-between p-3 bg-wp-dark-card/60 border border-wp-border rounded-lg">
+                        <div key={fileIndex} className={`
+                          bg-wp-dark-card/60 border-wp-border flex items-center
+                          justify-between rounded-lg border p-3
+                        `}>
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-red-500/20 rounded flex items-center justify-center">
-                              <svg className="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <div className={`
+                              flex h-8 w-8 items-center justify-center rounded
+                              bg-red-500/20
+                            `}>
+                              <svg className="h-4 w-4 text-red-400" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
                               </svg>
                             </div>
                             <div>
-                              <p className="wp-body-small text-wp-text-primary font-medium">{file.name}</p>
+                              <p className={`
+                                wp-body-small text-wp-text-primary font-medium
+                              `}>{file.name}</p>
                               <p className="wp-body-small text-wp-text-muted">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                             </div>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeFile(fileIndex)}
-                            className="p-1 text-wp-text-muted hover:text-red-400 transition-colors duration-300"
+                            className={`
+                              text-wp-text-muted p-1 transition-colors
+                              duration-300
+                              hover:text-red-400
+                            `}
                           >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </button>
@@ -664,20 +759,25 @@ export default function BulkExpenseRefundClient() {
                   </p>
                 </div>
 
-                <div className="max-w-2xl mx-auto space-y-6">
+                <div className="mx-auto max-w-2xl space-y-6">
                   {/* Overall Progress */}
-                  <div className="bg-wp-dark-card/60 border border-wp-border rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="wp-body font-medium text-wp-text-primary">
+                  <div className={`
+                    bg-wp-dark-card/60 border-wp-border rounded-lg border p-6
+                  `}>
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className="wp-body text-wp-text-primary font-medium">
                         Processing {extractionProgress.current} of {extractionProgress.total} files
                       </span>
                       <span className="wp-body-small text-wp-text-muted">
                         {Math.round((extractionProgress.current / extractionProgress.total) * 100)}%
                       </span>
                     </div>
-                    <div className="w-full bg-wp-dark-primary rounded-full h-2">
+                    <div className="bg-wp-dark-primary h-2 w-full rounded-full">
                       <div 
-                        className="bg-wp-primary h-2 rounded-full transition-all duration-300"
+                        className={`
+                          bg-wp-primary h-2 rounded-full transition-all
+                          duration-300
+                        `}
                         style={{ width: `${(extractionProgress.current / extractionProgress.total) * 100}%` }}
                       ></div>
                     </div>
@@ -686,19 +786,35 @@ export default function BulkExpenseRefundClient() {
                   {/* Individual File Status */}
                   <div className="space-y-3">
                     {extractedData.map((item) => (
-                      <div key={item.fileId} className="flex items-center justify-between p-4 bg-wp-dark-card/60 border border-wp-border rounded-lg">
+                      <div key={item.fileId} className={`
+                        bg-wp-dark-card/60 border-wp-border flex items-center
+                        justify-between rounded-lg border p-4
+                      `}>
                         <div className="flex items-center space-x-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            item.status === 'extracted' ? 'bg-green-400/20 text-green-400' :
-                            item.status === 'error' ? 'bg-red-400/20 text-red-400' :
+                          <div className={`
+                            flex h-8 w-8 items-center justify-center
+                            rounded-full
+                            ${
+                            item.status === 'extracted' ? `
+                              bg-green-400/20 text-green-400
+                            ` :
+                            item.status === 'error' ? `
+                              bg-red-400/20 text-red-400
+                            ` :
                             'bg-wp-primary/20 text-wp-primary'
-                          }`}>
+                          }
+                          `}>
                             {item.status === 'extracted' ? '✓' : 
                              item.status === 'error' ? '✕' : 
-                             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>}
+                             <div className={`
+                               h-4 w-4 animate-spin rounded-full border-2
+                               border-current border-t-transparent
+                             `}></div>}
                           </div>
                           <div>
-                            <p className="wp-body-small text-wp-text-primary font-medium">{item.fileName}</p>
+                            <p className={`
+                              wp-body-small text-wp-text-primary font-medium
+                            `}>{item.fileName}</p>
                             <p className="wp-body-small text-wp-text-muted">
                               {item.status === 'extracted' ? 'Extraction completed' :
                                item.status === 'error' ? item.errorMessage || 'Extraction failed' :
@@ -712,10 +828,14 @@ export default function BulkExpenseRefundClient() {
                           <button
                             type="button"
                             onClick={() => removeExtractedItem(parseInt(item.fileId))}
-                            className="p-2 text-wp-text-muted hover:text-red-400 transition-colors duration-300"
+                            className={`
+                              text-wp-text-muted p-2 transition-colors
+                              duration-300
+                              hover:text-red-400
+                            `}
                             title="Remove this receipt"
                           >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </button>
@@ -729,7 +849,12 @@ export default function BulkExpenseRefundClient() {
                     <button
                       type="button"
                       onClick={startOver}
-                      className="flex-1 py-3 px-4 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body font-medium text-wp-text-secondary hover:text-wp-text-primary hover:bg-wp-dark-card/80 transition-all duration-300"
+                      className={`
+                        bg-wp-dark-card/60 border-wp-border wp-body
+                        text-wp-text-secondary flex-1 rounded-lg border px-4
+                        py-3 font-medium transition-all duration-300
+                        hover:text-wp-text-primary hover:bg-wp-dark-card/80
+                      `}
                     >
                       Start Over
                     </button>
@@ -738,7 +863,12 @@ export default function BulkExpenseRefundClient() {
                       <button
                         type="button"
                         onClick={addMoreFiles}
-                        className="flex-1 py-3 px-4 bg-wp-primary/20 border border-wp-primary/30 text-wp-primary rounded-lg wp-body font-medium hover:bg-wp-primary/30 transition-all duration-300"
+                        className={`
+                          bg-wp-primary/20 border-wp-primary/30 text-wp-primary
+                          wp-body flex-1 rounded-lg border px-4 py-3 font-medium
+                          transition-all duration-300
+                          hover:bg-wp-primary/30
+                        `}
                       >
                         Add More Files
                       </button>
@@ -748,7 +878,11 @@ export default function BulkExpenseRefundClient() {
                       <button
                         type="button"
                         onClick={() => setCurrentStep('review')}
-                        className="flex-1 wp-button-primary py-3 px-4 wp-body transition-all duration-300 hover:scale-105"
+                        className={`
+                          wp-button-primary wp-body flex-1 px-4 py-3
+                          transition-all duration-300
+                          hover:scale-105
+                        `}
                       >
                         Review Data ({extractedData.filter(item => item.status === 'extracted').length} ready)
                       </button>
@@ -757,7 +891,7 @@ export default function BulkExpenseRefundClient() {
 
                   {/* Progress status message */}
                   {extractionProgress.current === extractionProgress.total && extractedData.length === 0 && (
-                    <div className="text-center pt-4">
+                    <div className="pt-4 text-center">
                       <p className="wp-body text-wp-text-muted">No receipts remaining. Click &quot;Start Over&quot; to upload new files.</p>
                     </div>
                   )}
@@ -776,27 +910,44 @@ export default function BulkExpenseRefundClient() {
                 </div>
 
                 {/* Bulk Actions Toolbar */}
-                <div className="bg-wp-dark-card/60 border border-wp-border rounded-lg p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className={`
+                  bg-wp-dark-card/60 border-wp-border rounded-lg border p-4
+                `}>
+                  <div className={`
+                    flex flex-wrap items-center justify-between gap-4
+                  `}>
                     <div className="flex items-center gap-6">
                       <button
                         type="button"
                         onClick={selectAllItems}
-                        className="px-3 py-2 bg-wp-primary/20 text-wp-primary rounded-lg wp-body-small hover:bg-wp-primary/30 transition-all duration-300"
+                        className={`
+                          bg-wp-primary/20 text-wp-primary wp-body-small
+                          rounded-lg px-3 py-2 transition-all duration-300
+                          hover:bg-wp-primary/30
+                        `}
                       >
                         Select All
                       </button>
                       <button
                         type="button"
                         onClick={selectNoneItems}
-                        className="px-3 py-2 bg-wp-dark-card/60 border border-wp-border text-wp-text-secondary rounded-lg wp-body-small hover:bg-wp-dark-card/80 transition-all duration-300"
+                        className={`
+                          bg-wp-dark-card/60 border-wp-border
+                          text-wp-text-secondary wp-body-small rounded-lg border
+                          px-3 py-2 transition-all duration-300
+                          hover:bg-wp-dark-card/80
+                        `}
                       >
                         Select None
                       </button>
                       <button
                         type="button"
                         onClick={deleteSelectedItems}
-                        className="px-3 py-2 bg-red-600/20 text-red-400 rounded-lg wp-body-small hover:bg-red-600/30 transition-all duration-300"
+                        className={`
+                          wp-body-small rounded-lg bg-red-600/20 px-3 py-2
+                          text-red-400 transition-all duration-300
+                          hover:bg-red-600/30
+                        `}
                       >
                         Delete Selected
                       </button>
@@ -806,11 +957,15 @@ export default function BulkExpenseRefundClient() {
                 </div>
 
                 {/* Bulk Team Member Application */}
-                <div className="bg-wp-dark-card/60 border border-wp-border rounded-lg p-4">
-                  <h3 className="wp-body font-medium text-wp-primary mb-3">Bulk Apply Team Member</h3>
-                  <div className="flex gap-3 items-end">
+                <div className={`
+                  bg-wp-dark-card/60 border-wp-border rounded-lg border p-4
+                `}>
+                  <h3 className="wp-body text-wp-primary mb-3 font-medium">Bulk Apply Team Member</h3>
+                  <div className="flex items-end gap-3">
                     <div className="flex-1">
-                      <label className="block wp-body-small text-wp-text-secondary mb-2">
+                      <label className={`
+                        wp-body-small text-wp-text-secondary mb-2 block
+                      `}>
                         Select team member to apply to all checked expenses
                       </label>
                       <Select
@@ -869,7 +1024,11 @@ export default function BulkExpenseRefundClient() {
                           item.selected ? { ...item, teamMemberEmail: bulkTeamMember } : item
                         ));
                       }}
-                      className="px-4 py-2 bg-wp-primary text-white rounded-lg hover:bg-wp-primary/90 transition-colors wp-body-small font-medium"
+                      className={`
+                        bg-wp-primary wp-body-small rounded-lg px-4 py-2
+                        font-medium text-white transition-colors
+                        hover:bg-wp-primary/90
+                      `}
                     >
                       Apply to Selected
                     </button>
@@ -881,37 +1040,74 @@ export default function BulkExpenseRefundClient() {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
-                      <tr className="border-b border-wp-border">
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">Select</th>
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">File</th>
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">Title</th>
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">Amount</th>
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">Currency</th>
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">Exchange Rate</th>
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">Concept</th>
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">Team Member</th>
-                        <th className="text-left p-3 wp-body-small text-wp-text-muted uppercase tracking-wider">Status</th>
+                      <tr className="border-wp-border border-b">
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Select</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>File</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Title</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Amount</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Currency</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Exchange Rate</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Concept</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Team Member</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {formData.map((item, index) => (
-                        <tr key={index} className="border-b border-wp-border/50">
+                        <tr key={index} className="border-wp-border/50 border-b">
                           <td className="p-3">
                             <input
                               type="checkbox"
                               checked={item.selected}
                               onChange={(e) => updateFormItem(index, 'selected', e.target.checked)}
-                              className="w-4 h-4 text-wp-primary bg-transparent border-wp-border rounded focus:ring-wp-primary"
+                              className={`
+                                text-wp-primary border-wp-border h-4 w-4 rounded
+                                bg-transparent
+                                focus:ring-wp-primary
+                              `}
                             />
                           </td>
                           <td className="p-3">
                             <div className="flex items-center space-x-2">
-                              <div className="w-6 h-6 bg-red-500/20 rounded flex items-center justify-center">
-                                <svg className="w-3 h-3 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                              <div className={`
+                                flex h-6 w-6 items-center justify-center rounded
+                                bg-red-500/20
+                              `}>
+                                <svg className="h-3 w-3 text-red-400" fill="currentColor" viewBox="0 0 24 24">
                                   <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
                                 </svg>
                               </div>
-                              <span className="wp-body-small text-wp-text-primary truncate max-w-32" title={extractedData[index]?.fileName}>
+                              <span className={`
+                                wp-body-small text-wp-text-primary max-w-32
+                                truncate
+                              `} title={extractedData[index]?.fileName}>
                                 {extractedData[index]?.fileName}
                               </span>
                             </div>
@@ -921,7 +1117,13 @@ export default function BulkExpenseRefundClient() {
                               type="text"
                               value={item.title}
                               onChange={(e) => updateFormItem(index, 'title', e.target.value)}
-                              className="w-full px-2 py-1 bg-transparent border border-wp-border rounded wp-body-small text-wp-text-primary focus:outline-none focus:ring-1 focus:ring-wp-primary"
+                              className={`
+                                border-wp-border wp-body-small
+                                text-wp-text-primary w-full rounded border
+                                bg-transparent px-2 py-1
+                                focus:ring-wp-primary focus:ring-1
+                                focus:outline-none
+                              `}
                             />
                           </td>
                           <td className="p-3">
@@ -930,7 +1132,13 @@ export default function BulkExpenseRefundClient() {
                               step="0.01"
                               value={item.amount}
                               onChange={(e) => updateFormItem(index, 'amount', e.target.value)}
-                              className="w-full px-2 py-1 bg-transparent border border-wp-border rounded wp-body-small text-wp-text-primary focus:outline-none focus:ring-1 focus:ring-wp-primary"
+                              className={`
+                                border-wp-border wp-body-small
+                                text-wp-text-primary w-full rounded border
+                                bg-transparent px-2 py-1
+                                focus:ring-wp-primary focus:ring-1
+                                focus:outline-none
+                              `}
                             />
                           </td>
                           <td className="p-3">
@@ -953,7 +1161,13 @@ export default function BulkExpenseRefundClient() {
                               min="0"
                               value={item.exchangeRate}
                               onChange={(e) => updateFormItem(index, 'exchangeRate', e.target.value)}
-                              className="w-full px-2 py-1 bg-transparent border border-wp-border rounded wp-body-small text-wp-text-primary focus:outline-none focus:ring-1 focus:ring-wp-primary"
+                              className={`
+                                border-wp-border wp-body-small
+                                text-wp-text-primary w-full rounded border
+                                bg-transparent px-2 py-1
+                                focus:ring-wp-primary focus:ring-1
+                                focus:outline-none
+                              `}
                             />
                           </td>
                           <td className="p-3">
@@ -1025,11 +1239,19 @@ export default function BulkExpenseRefundClient() {
                             </div>
                           </td>
                           <td className="p-3">
-                            <div className={`inline-flex items-center px-2 py-1 rounded-full wp-body-small ${
-                              extractedData[index]?.status === 'extracted' ? 'bg-green-400/20 text-green-400' :
-                              extractedData[index]?.status === 'error' ? 'bg-red-400/20 text-red-400' :
+                            <div className={`
+                              wp-body-small inline-flex items-center
+                              rounded-full px-2 py-1
+                              ${
+                              extractedData[index]?.status === 'extracted' ? `
+                                bg-green-400/20 text-green-400
+                              ` :
+                              extractedData[index]?.status === 'error' ? `
+                                bg-red-400/20 text-red-400
+                              ` :
                               'bg-wp-primary/20 text-wp-primary'
-                            }`}>
+                            }
+                            `}>
                               {extractedData[index]?.status === 'extracted' ? 'Ready' :
                                extractedData[index]?.status === 'error' ? 'Error' :
                                'Processing'}
@@ -1045,14 +1267,23 @@ export default function BulkExpenseRefundClient() {
                   <button
                     type="button"
                     onClick={goBack}
-                    className="flex-1 py-3 px-4 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body font-medium text-wp-text-secondary hover:text-wp-text-primary hover:bg-wp-dark-card/80 transition-all duration-300"
+                    className={`
+                      bg-wp-dark-card/60 border-wp-border wp-body
+                      text-wp-text-secondary flex-1 rounded-lg border px-4 py-3
+                      font-medium transition-all duration-300
+                      hover:text-wp-text-primary hover:bg-wp-dark-card/80
+                    `}
                   >
                     Back to Upload
                   </button>
                   <button
                     type="button"
                     onClick={() => setCurrentStep('confirmation')}
-                    className="flex-1 wp-button-primary py-3 px-4 wp-body transition-all duration-300 hover:scale-105"
+                    className={`
+                      wp-button-primary wp-body flex-1 px-4 py-3 transition-all
+                      duration-300
+                      hover:scale-105
+                    `}
                   >
                     Continue to Confirmation
                   </button>
@@ -1071,18 +1302,28 @@ export default function BulkExpenseRefundClient() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="bg-wp-dark-card/60 border border-wp-border rounded-lg p-6">
-                    <h3 className="wp-body font-semibold text-wp-text-primary mb-4">Submission Summary</h3>
+                  <div className={`
+                    bg-wp-dark-card/60 border-wp-border rounded-lg border p-6
+                  `}>
+                    <h3 className={`
+                      wp-body text-wp-text-primary mb-4 font-semibold
+                    `}>Submission Summary</h3>
                     
                     {/* Team Member Distribution */}
-                    <div className="mb-6 p-4 bg-wp-primary/10 rounded-lg border border-wp-primary/30">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <svg className="w-5 h-5 text-wp-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className={`
+                      bg-wp-primary/10 border-wp-primary/30 mb-6 rounded-lg
+                      border p-4
+                    `}>
+                      <div className="mb-4 flex items-center space-x-3">
+                        <svg className="text-wp-primary h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        <p className="wp-body font-medium text-wp-primary">Team Member Distribution</p>
+                        <p className="wp-body text-wp-primary font-medium">Team Member Distribution</p>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className={`
+                        grid grid-cols-1 gap-4
+                        sm:grid-cols-2
+                      `}>
                         {(() => {
                           const selectedItems = formData.filter(item => item.selected);
                           const groupedByTeamMember = selectedItems.reduce((acc, item) => {
@@ -1102,12 +1343,22 @@ export default function BulkExpenseRefundClient() {
                               (member ? (member.name || `${member.lastName} ${member.firstName}`) : email);
 
                             return (
-                              <div key={email} className="flex justify-between items-center p-3 bg-wp-dark-card/40 rounded-lg">
+                              <div key={email} className={`
+                                bg-wp-dark-card/40 flex items-center
+                                justify-between rounded-lg p-3
+                              `}>
                                 <div>
-                                  <p className="wp-body-small font-medium text-wp-text-primary">{displayName}</p>
-                                  <p className="wp-body-small text-wp-text-muted">{stats.count} expense{stats.count !== 1 ? 's' : ''}</p>
+                                  <p className={`
+                                    wp-body-small text-wp-text-primary
+                                    font-medium
+                                  `}>{displayName}</p>
+                                  <p className={`
+                                    wp-body-small text-wp-text-muted
+                                  `}>{stats.count} expense{stats.count !== 1 ? 's' : ''}</p>
                                 </div>
-                                <p className="wp-body-small font-medium text-wp-primary">
+                                <p className={`
+                                  wp-body-small text-wp-primary font-medium
+                                `}>
                                   ${stats.totalAmount.toFixed(2)}
                                 </p>
                               </div>
@@ -1117,7 +1368,10 @@ export default function BulkExpenseRefundClient() {
                       </div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-4">
+                    <div className={`
+                      grid gap-4
+                      md:grid-cols-3
+                    `}>
                       <div className="text-center">
                         <p className="wp-heading-2 text-wp-primary">{formData.filter(item => item.selected).length}</p>
                         <p className="wp-body-small text-wp-text-muted">Items to Submit</p>
@@ -1137,11 +1391,19 @@ export default function BulkExpenseRefundClient() {
 
                   {/* Items to be submitted */}
                   <div className="space-y-3">
-                    <h3 className="wp-body font-semibold text-wp-text-primary">Items to be submitted:</h3>
+                    <h3 className="wp-body text-wp-text-primary font-semibold">Items to be submitted:</h3>
                     {formData.map((item, itemIndex) => 
                       item.selected && (
-                        <div key={itemIndex} className="p-4 bg-wp-dark-card/60 border border-wp-border rounded-lg">
-                          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                        <div key={itemIndex} className={`
+                          bg-wp-dark-card/60 border-wp-border rounded-lg border
+                          p-4
+                        `}>
+                          <div className={`
+                            grid gap-4
+                            md:grid-cols-2
+                            lg:grid-cols-3
+                            xl:grid-cols-6
+                          `}>
                             <div>
                               <p className="wp-body-small text-wp-text-muted">Title</p>
                               <p className="wp-body text-wp-text-primary">{item.title}</p>
@@ -1174,7 +1436,9 @@ export default function BulkExpenseRefundClient() {
                             </div>
                             <div>
                               <p className="wp-body-small text-wp-text-muted">File</p>
-                              <p className="wp-body text-wp-text-primary truncate">{extractedData[itemIndex]?.fileName}</p>
+                              <p className={`
+                                wp-body text-wp-text-primary truncate
+                              `}>{extractedData[itemIndex]?.fileName}</p>
                             </div>
                           </div>
                         </div>
@@ -1186,7 +1450,12 @@ export default function BulkExpenseRefundClient() {
                     <button
                       type="button"
                       onClick={goBack}
-                      className="flex-1 py-3 px-4 bg-wp-dark-card/60 border border-wp-border rounded-lg wp-body font-medium text-wp-text-secondary hover:text-wp-text-primary hover:bg-wp-dark-card/80 transition-all duration-300"
+                      className={`
+                        bg-wp-dark-card/60 border-wp-border wp-body
+                        text-wp-text-secondary flex-1 rounded-lg border px-4
+                        py-3 font-medium transition-all duration-300
+                        hover:text-wp-text-primary hover:bg-wp-dark-card/80
+                      `}
                     >
                       Back to Review
                     </button>
@@ -1194,16 +1463,25 @@ export default function BulkExpenseRefundClient() {
                       type="button"
                       onClick={handleBulkSubmission}
                       disabled={loading || formData.filter(item => item.selected).length === 0}
-                      className="flex-1 wp-button-primary py-3 px-4 wp-body disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                      className={`
+                        wp-button-primary wp-body flex flex-1 items-center
+                        justify-center space-x-2 px-4 py-3 transition-all
+                        duration-300
+                        hover:scale-105
+                        disabled:cursor-not-allowed disabled:opacity-50
+                      `}
                     >
                       {loading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <div className={`
+                            h-5 w-5 animate-spin rounded-full border-2
+                            border-white border-t-transparent
+                          `}></div>
                           <span>Submitting...</span>
                         </>
                       ) : (
                         <>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                           </svg>
                           <span>Submit All Expense Refunds</span>

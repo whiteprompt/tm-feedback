@@ -27,19 +27,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   secondaryCta,
 }) => {
   return (
-    <Section size="sm" className="md:py-8 py-0 text-center">
+    <Section size="sm" className={`
+      py-0 text-center
+      md:py-8
+    `}>
         {badge && (
-          <Badge className="text-base md:text-4xl px-6 justify-center">{badge}</Badge>
+          <Badge className={`
+            justify-center px-6 text-base
+            md:text-4xl
+          `}>{badge}</Badge>
         )}
-        <h1 className="text-4xl mt-4 md:text-5xl lg:text-2xl font-bold leading-tight text-white">
+        <h1 className={`
+          mt-4 text-4xl leading-tight font-bold text-white
+          md:text-5xl
+          lg:text-2xl
+        `}>
           {headline}
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-400 leading-relaxed mx-auto">
+        <p className={`
+          mx-auto text-lg leading-relaxed text-gray-400
+          md:text-xl
+        `}>
           {subheadline}
         </p>
         
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4">
+        <div className={`
+          mt-4 flex flex-col items-center justify-center gap-4
+          sm:flex-row
+        `}>
         {primaryCta && (
           
             <Button
