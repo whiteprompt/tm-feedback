@@ -15,26 +15,7 @@ interface CompanyNewsCarouselProps {
 }
 
 export default function CompanyNewsCarousel({
-  newsItems = [
-    {
-      title: "Company News Q3",
-      notionUrl: "https://docs.google.com/document/d/e/2PACX-1vSPSfczxzg8L163tvUOtvGohZqF0NoGLaDhaZ55k1S617-FMegX3hTq-WgB_RApGAatKRN75jtw8n0r/pub",
-      description: "Find here a small newsletter with some Company News for 2025 Q3.",
-      date: "2025-09-30"
-    },
-    {
-      title: "Exciting Leadership transition",
-      notionUrl: "https://docs.google.com/document/d/e/2PACX-1vRaTuedd3rL9wh1e-5oDQvPEDE8lpfhwqoNU3dvsBSw5QHvQGt_CLX6eG6GkuDRQ3yowplDJaL4BWMka/pub",
-      description: "Read about the exciting leadership transition at Whiteprompt.",
-      date: "2025-02-03"
-    },
-    {
-      title: "EOY celebration",
-      notionUrl: "https://docs.google.com/document/d/e/2PACX-1vSdjHYGzbsNlg864LOgRbfE0azqXcROZ-gXIYCbL8lWP_ayuA_IjFTGOBKb-CldVrdHJ8ipyxy7b63d/pub",
-      description: "Important updates from the leadership team.",
-      date: "2024-12-19"
-    }
-  ],
+  newsItems = [],
   autoPlayInterval = 5000
 }: CompanyNewsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -72,6 +53,8 @@ export default function CompanyNewsCarousel({
     setCurrentIndex((prev) => (prev + 1) % newsItems.length);
     pauseAndResume();
   };
+
+
 
   if (!newsItems || newsItems.length === 0) {
     return (
