@@ -35,7 +35,7 @@ export default function CompanyNewsCarousel({
       date: "2024-12-19"
     }
   ],
-  autoPlayInterval = 4000
+  autoPlayInterval = 5000
 }: CompanyNewsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -84,7 +84,7 @@ export default function CompanyNewsCarousel({
   }
 
   return (
-    <section className="wp-slide-up mb-16">
+    <section className="wp-slide-up">
       <div className="wp-card p-8">
         <div className="mb-6 flex items-center justify-between">
           {newsItems.length > 1 && (

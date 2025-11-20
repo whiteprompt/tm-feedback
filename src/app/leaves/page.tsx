@@ -230,7 +230,8 @@ export default function LeavesPage() {
         {/* Leaves Tabs Section */}
         <FullWidthContainerSection
           headline='My leaves'
-          description='Review all your previously submitted leaves.'>
+          description='Review all your previously submitted leaves.'
+        >
           <Tabs
             tabs={[
               {

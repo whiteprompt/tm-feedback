@@ -115,13 +115,11 @@ export default function LeaveFormClient() {
 
   return (
     <div className="wp-card wp-fade-in p-8">
-
       <ErrorBanner 
         error={error} 
         onDismiss={() => setError('')}
         title="Error submitting leave request"
       />
-
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className={`
           grid grid-cols-1 gap-6
@@ -148,7 +146,6 @@ export default function LeaveFormClient() {
               `}
             />
           </div>
-
           {/* End Date */}
           <div>
             <label htmlFor="toDate" className={`

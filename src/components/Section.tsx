@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge'
 interface SectionProps {
   children: React.ReactNode;
   className?: string;
+  classNameDetails?: string;
   size?: 'sm' | 'md' | 'lg';
   background?: 'primary' | 'secondary' | 'gradient';
 }
@@ -11,8 +12,9 @@ interface SectionProps {
 export const Section: React.FC<SectionProps> = ({
   children,
   className = '',
+  classNameDetails = '',
   size = 'md',
-  background = 'primary',
+  background = 'primary'
 }) => {
   const sizeClasses = {
     sm: 'py-0 md:py-16',
@@ -30,10 +32,12 @@ export const Section: React.FC<SectionProps> = ({
 
   return (
     <section className={classes}>
-      <div className={`
-        mx-auto max-w-7xl px-4
-        md:px-8
-      `}>{children}</div>
+      <div className={twMerge(`
+        px-4md:px-8
+        mx-auto max-w-7xl
+      `,classNameDetails)}>
+        {children}
+      </div>
     </section>
   );
 };

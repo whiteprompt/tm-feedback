@@ -73,7 +73,7 @@ export default function LeavesSummaryTable({ leaves }: LeavesSummaryTableProps) 
   }
 
   return (
-    <div className="wp-card wp-fade-in mb-8 p-6">
+    <div className="wp-card wp-fade-in p-6">
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead>

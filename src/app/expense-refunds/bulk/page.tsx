@@ -19,7 +19,9 @@ export default function BulkExpenseRefundPage() {
           onClick: () => router.push("/expense-refunds"),
         }}
       />
-      <FullWidthContainerSection>
+      <FullWidthContainerSection
+      classNameContent='w-full'
+      >
         <BulkExpenseRefundClient />
       </FullWidthContainerSection>
     </PageLayout>

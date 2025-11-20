@@ -10,6 +10,7 @@ interface FullWidthContainerSectionProps {
   description?: string;
   children: React.ReactNode;
   id?: string;
+  classNameContent?: string;
   primaryCta?: {
     text: string;
     onClick: () => void;
@@ -23,6 +24,7 @@ interface FullWidthContainerSectionProps {
 export const FullWidthContainerSection: React.FC<FullWidthContainerSectionProps> = ({
   headline,
   description,
+  classNameContent = 'w-[90%]',
   children,
   id,
   primaryCta,
@@ -31,8 +33,11 @@ export const FullWidthContainerSection: React.FC<FullWidthContainerSectionProps>
   return (
     <div id={id}>
       <Divider />
-      <Section size="sm">
-        <div className="space-y-16">
+      <Section size="sm" classNameDetails={classNameContent}>
+        <div className={`
+          space-y-16
+          md:space-y-16
+        `}>
           {(headline || description || primaryCta || secondaryCta) && (
             <div className="text-center">
               {headline && (
@@ -82,17 +87,9 @@ export const FullWidthContainerSection: React.FC<FullWidthContainerSectionProps>
               )}
             </div>
           )}
-
-          {/* Content - Centered with spacing */}
-          <div className="flex w-full justify-center px-4">
-            <div className="w-full max-w-7xl">
-              <div className="flex justify-center">
-                <div className="w-full">
-                  {children}
-                </div>
-              </div>
-            </div>
-          </div>
+          <>
+            {children}
+          </>
         </div>
       </Section>
     </div>

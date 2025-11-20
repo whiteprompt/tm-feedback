@@ -14,7 +14,7 @@ export default function Feedbacks() {
   const { feedbacks, loading, error } = useFeedbacks();
 
   return (
-    <section className="wp-slide-up mb-16">
+    <section className="wp-slide-up">
       <div className="wp-card p-8">
         {loading ? (
           <div className="py-12 text-center">

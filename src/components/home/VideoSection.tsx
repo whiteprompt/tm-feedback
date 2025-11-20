@@ -30,7 +30,7 @@ export default function VideoSection({
   };
 
   return (
-    <section className="wp-slide-up mb-16">
+    <section className="wp-slide-up">
       <div className="wp-card p-8">
         <div className="mb-6 text-center">
           <h2 className="wp-heading-2 mb-4">{title}</h2>

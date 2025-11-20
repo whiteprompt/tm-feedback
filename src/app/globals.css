@@ -4,33 +4,46 @@
   /* Whiteprompt Design System - Based on whiteprompt.com/from-idea-to-mvp */
 
   /* Primary Background Colors */
-  --wp-bg-primary: #1A1A1A;       /* Dark charcoal - main background */
-  --wp-bg-secondary: #4A4D57;     /* Medium gray - secondary backgrounds */
-  --wp-bg-card: #2A2A2A;          /* Card background */
+  --wp-bg-primary: #1A1A1A;
+  /* Dark charcoal - main background */
+  --wp-bg-secondary: #4A4D57;
+  /* Medium gray - secondary backgrounds */
+  --wp-bg-card: #2A2A2A;
+  /* Card background */
 
   /* Accent Colors */
-  --wp-primary: #00D9FF;          /* Cyan - primary accent */
-  --wp-primary-dark: #00B8D4;     /* Darker cyan for hover states */
-  --wp-accent: #00D9FF;           /* Cyan accent (same as primary) */
+  --wp-primary: #00D9FF;
+  /* Cyan - primary accent */
+  --wp-primary-dark: #00B8D4;
+  /* Darker cyan for hover states */
+  --wp-accent: #00D9FF;
+  /* Cyan accent (same as primary) */
 
   /* Badge/Pill Colors */
-  --wp-badge: #3D4068;            /* Purple-tinted badge background */
+  --wp-badge: #3D4068;
+  /* Purple-tinted badge background */
 
   /* Text Colors */
-  --wp-text-primary: #FFFFFF;     /* White - primary text */
-  --wp-text-secondary: #A0A0A0;   /* Light gray - secondary text */
-  --wp-text-muted: #64748B;       /* Muted gray */
+  --wp-text-primary: #FFFFFF;
+  /* White - primary text */
+  --wp-text-secondary: #A0A0A0;
+  /* Light gray - secondary text */
+  --wp-text-muted: #64748B;
+  /* Muted gray */
 
   /* Border Colors */
-  --wp-border: #3A3D45;           /* Subtle dark gray borders */
-  --wp-border-light: #4A4D57;     /* Lighter border variant */
+  --wp-border: #3A3D45;
+  /* Subtle dark gray borders */
+  --wp-border-light: #4A4D57;
+  /* Lighter border variant */
 
   /* Legacy purple for existing components */
   --wp-purple: #6366F1;
   --wp-purple-dark: #4F46E5;
 
   /* Gradients */
-  --wp-gradient-primary: #1A1A1A; /* Solid background instead of gradient */
+  --wp-gradient-primary: #1A1A1A;
+  /* Solid background instead of gradient */
   --wp-gradient-card: linear-gradient(145deg, rgba(42, 42, 42, 0.9) 0%, rgba(26, 26, 26, 0.8) 100%);
   --wp-gradient-button: linear-gradient(135deg, #00D9FF 0%, #00B8D4 100%);
   --wp-gradient-purple: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
@@ -42,7 +55,7 @@
   --wp-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
   --wp-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
   --wp-shadow-glow: 0 0 30px rgba(0, 217, 255, 0.3);
-  
+
   /* Typography */
   --wp-font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --wp-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -103,7 +116,7 @@ body {
 /* Button Styles */
 .wp-button-primary {
   background: var(--wp-gradient-button);
-  color: white;
+  color: black;
   border: none;
   border-radius: 12px;
   padding: 12px 24px;

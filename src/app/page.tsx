@@ -87,6 +87,7 @@ export default function HomePage() {
         <FullWidthContainerSection
           headline="Stay Connected with Company News"
           description="Keep your team informed and engaged with announcements, updates, and important company-wide communications."
+          classNameContent="w-[70%]"
         >
           <CompanyNewsCarousel />
         </FullWidthContainerSection>

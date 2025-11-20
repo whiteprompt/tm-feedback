@@ -294,7 +294,7 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
 
   return (
     <>
-      <div className="wp-card wp-fade-in mb-8 p-6">
+      <div className="wp-card wp-fade-in p-6">
         {!isLastActiveContractHourly && (
           <div className="mb-6">
             <div className={`

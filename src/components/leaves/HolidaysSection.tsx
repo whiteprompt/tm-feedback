@@ -46,7 +46,7 @@ export default function HolidaysSection({ countryAcronym }: { countryAcronym: st
   }, [session]);
 
   return (
-    <div className="wp-card wp-fade-in mb-8 p-6">
+    <div className="wp-card wp-fade-in p-6">
       {holidaysLoading ? (
         <div className="flex items-center justify-center py-8">
           <div className={`

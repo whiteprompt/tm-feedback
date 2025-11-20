@@ -82,7 +82,7 @@ export default function LeavesList({
 
   return (
     <>
-      <div className="wp-slide-up mb-16">
+      <div className="wp-slide-up">
         <div className="wp-card p-8">
           {/* Filter Section */}
           {onStatusFilterChange && (
@@ -205,13 +205,13 @@ export default function LeavesList({
                         wp-body-small text-wp-text-muted px-6 py-4 text-center
                         font-semibold tracking-wider uppercase
                       `}>
-                        Start Date
+                        Start
                       </th>
                       <th className={`
                         wp-body-small text-wp-text-muted px-6 py-4 text-center
                         font-semibold tracking-wider uppercase
                       `}>
-                        End Date
+                        End
                       </th>
                       <th className={`
                         wp-body-small text-wp-text-muted px-6 py-4 text-center
