@@ -18,10 +18,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // token.email = user.email;
+        token.email = user.email;
         token.name = user.name;
         token.image = user.image;
-        token.email = "paula.vergara@whiteprompt.com";
+        // token.email = "paula.vergara@whiteprompt.com";
       }
       return token;
     },
