@@ -7,8 +7,7 @@ interface BadgeProps {
 
 export const Badge: React.FC<BadgeProps> = ({ children, className = '' }) => {
   const classes = `
-    inline-block rounded-full bg-[#3D4068] px-4 py-2 text-sm font-medium
-    text-white
+    inline-block px-4 py-2 text-sm font-medium text-white
     ${className}
   `;
 

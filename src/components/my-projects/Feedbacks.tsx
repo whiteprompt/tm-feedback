@@ -2,6 +2,7 @@
 
 import { useFeedbacks } from '@/contexts/FeedbacksContext';
 import ErrorDisplay from '@/components/ErrorDisplay';
+import { CommentIcon } from '@/components/icons/CommentIcon';
 
 const SATISFACTION_MAP = {
   'happy': { emoji: '😊', label: 'Happy', color: 'text-green-400' },
@@ -32,12 +33,10 @@ export default function Feedbacks() {
         ) : feedbacks.length === 0 ? (
           <div className="py-12 text-center">
             <div className="text-wp-text-muted mb-4">
-              <svg className="mx-auto h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-              </svg>
+              <CommentIcon />
             </div>
-            <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Feedbacks Yet</h3>
-            <p className="wp-body text-wp-text-muted mb-6">You haven't submitted any project feedbacks yet. Start by sharing your experience on a project!</p>
+            {/* <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Feedbacks Yet</h3> */}
+            <p className="wp-body text-wp-text-muted mb-6">You haven't submitted feedback yet. Start by sharing your experience on a Project!</p>
           </div>
         ) : (
           <div className="space-y-6">

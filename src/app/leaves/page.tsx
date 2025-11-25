@@ -208,9 +208,8 @@ export default function LeavesPage() {
   return (
     <PageLayout>
       <HeroSection
-        badge="My leaves"
-        headline="Manage your leaves and vacations all in one place."
-        subheadline="Here&rsquo;s your complete leaves information."
+        headline="My Leaves"
+        subheadline="Manage your leaves and vacations all in one place."
         primaryCta={{
           text: "Submit a new Leave",
           onClick: () => router.push("/leaves/new"),
@@ -224,14 +223,14 @@ export default function LeavesPage() {
       <div>
         {/* Vacations Summary Table */}
         <FullWidthContainerSection
-          headline='Vacations summary'
-          description='Find the information related to the vacations you have taken.'
+          headline='Vacations Balance'
+          description='View your available days and yearly accrual.'
         >
           <VacationsSummaryTable leaves={leaves} initialBalance={teamMember?.annualLeavesBalance || 0} />
         </FullWidthContainerSection>
         {/* Leaves Tabs Section */}
         <FullWidthContainerSection
-          headline='My leaves'
+          headline='Leaves Summary'
           description='Review all your previously submitted leaves.'
         >
           <Tabs

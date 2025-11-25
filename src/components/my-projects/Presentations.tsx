@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { DataCard } from '@/components/DataCard';
-import { EmptyStateIcon } from '@/components/icons/EmptyStateIcon';
+import { FolderIcon } from '@/components/icons/FolderIcon';
 
 interface Presentation {
   projectPlainName: string;
@@ -145,12 +145,12 @@ export default function Presentations() {
       isLoading={loading}
       wrapperClassName="mb-16 wp-slide-up"
       emptyState={{
-        icon: <EmptyStateIcon />,
-        title: 'No Client introductions',
-        message: 'No client introductions found for your account.',
+        icon: <FolderIcon />,
+        // title: 'No Client Presentations',
+        message: "We haven't found any Client presentations yet.",
       }}
       noDataState={{
-        icon: <EmptyStateIcon />,
+        icon: <FolderIcon />,
         title: 'Error',
         message: error || 'Failed to load presentations.',
       }}

@@ -30,8 +30,7 @@ export default function NotificationsPage() {
   return (
     <PageLayout>
       <HeroSection
-        badge="My notifications"
-        headline="Stay up to date with all your important updates and notifications."
+        headline="My notifications"
         subheadline="Here&rsquo;s your complete notifications information."
       />
 

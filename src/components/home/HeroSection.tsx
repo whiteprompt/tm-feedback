@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Section } from '../Section';
 import { Button } from './Button';
 import { Badge } from './Badge';
 
@@ -31,21 +30,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   secondaryCta,
 }) => {
   return (
-    <Section size="sm" className={`
-      py-0 text-center
-      md:py-8
-    `}>
+    <div className='mb-12 text-center'>
         {badge && (
           <Badge className={`
             justify-center px-6 text-base
             md:text-4xl
-          `}>{badge}</Badge>
+          `}>
+            {badge}
+          </Badge>
         )}
-        <h1 className={`
-          mt-4 text-4xl leading-tight font-bold text-white
-          md:text-5xl
-          lg:text-2xl
-        `}>
+        <h1 className={`text-5xl leading-tight font-bold text-white`}>
           {headline}
         </h1>
 
@@ -90,6 +84,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </Button>
         )}
         </div>
-    </Section>
+    </div>
   );
 };

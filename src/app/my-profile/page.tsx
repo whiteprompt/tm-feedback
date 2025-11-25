@@ -38,9 +38,8 @@ export default function TeamMemberPage() {
     <PageLayout>
       {/* Hero Section */}
       <HeroSection
-        badge="My main information"
-        headline={`Welcome back, ${teamMember?.firstName || 'Team Member'}!`}
-        subheadline="Here&rsquo;s your complete team member information."
+        headline={`Hi, ${teamMember?.firstName || teamMember?.lastName || 'Team Member'}!`}
+        subheadline="Manage your profile details and review your contract history."
       />
       {teamMemberError ? (
         <ErrorDisplay message={teamMemberError} />
@@ -55,12 +54,12 @@ export default function TeamMemberPage() {
       ) : (
         <div>
           <FullWidthContainerSection
-            headline='My personal information'
-            description='Find your main personal information here.'>
+            headline='My Personal information'
+            description='Access your official employee record and personal data.'>
             <PersonalInformationCard teamMember={teamMember} />
           </FullWidthContainerSection>
           <FullWidthContainerSection
-            headline='My contracts'
+            headline='My Contracts'
             description='Find the information related to the contracts you have signed with the company.'>
             <ContractsCard teamMember={teamMember} />
           </FullWidthContainerSection>

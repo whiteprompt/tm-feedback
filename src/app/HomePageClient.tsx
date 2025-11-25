@@ -49,9 +49,9 @@ export default function HomePageClient({ newsItems }: HomePageClientProps) {
     <PageLayout>
       {/* Hero Section */}
       <HeroSection
-        badge="Team Member Portal"
-        headline="Manage Your Tasks & Stay Updated"
-        subheadline="Your central hub for managing every task across the company—from feedback and leave requests to expenses and projects. Stay connected with real-time company news and updates, all in one modern platform."
+        // badge="Welcome to the Portal!"
+        headline="Welcome to the Portal!"
+        subheadline="Your central hub for managing every task across the company—from feedback and requests to projects. Stay connected with real-time updates, all in one modern platform."
         primaryCta={{
           text: "Learn More",
           onClick: handleLearnMore,
@@ -59,15 +59,15 @@ export default function HomePageClient({ newsItems }: HomePageClientProps) {
       />
       <div>
         <FullWidthContainerSection
-          headline="Stay Informed with Real-Time Notifications"
-          description="Never miss important updates. Get instant notifications for you need to know."
+          headline="Real-Time Notifications"
+          description="Never miss important updates. Get instant notifications for what you need to know."
         >
           <UnreadNotificationsTable />
         </FullWidthContainerSection>
 
         <FullWidthContainerSection
-          headline="Stay Connected with Company News"
-          description="Keep your team informed and engaged with announcements, updates, and important company-wide communications."
+          headline="Company News"
+          description="Stay informed and engaged with announcements, updates, and important company-wide communications."
           classNameContent="w-[70%]"
         >
           <CompanyNewsCarousel newsItems={newsItems} />
@@ -75,15 +75,15 @@ export default function HomePageClient({ newsItems }: HomePageClientProps) {
 
         <FullWidthContainerSection
           headline={`Next Holidays in ${teamMember?.country}`}
-          description={`Official holidays for ${new Date().getFullYear()} - ${new Date().getFullYear() + 1}`}
+          description={`Official holidays for ${new Date().getFullYear()}`}
         >
           <HolidaysSection countryAcronym={teamMember?.countryAcronym || 'ar'} />
         </FullWidthContainerSection>
 
         <FullWidthContainerSection
           id="video-section"
-          headline="See How It Works"
-          description="Watch this video to discover what the app does and understand its general purpose. Learn how our platform helps you manage tasks, stay connected, and streamline your workflow."
+          headline="How does the portal work?"
+          description="Stay informed and engaged with announcements, updates, and important company-wide communications."
         >
           <VideoSection />
         </FullWidthContainerSection>

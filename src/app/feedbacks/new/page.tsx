@@ -33,8 +33,8 @@ export default function Page() {
     return (
       <PageLayout>
         <HeroSection
-          badge="Submit New Feedback"
-          headline="Submit a new feedback for your project allocations."
+          // badge="Submit New Feedback"
+          headline="Submit New Feedback"
           subheadline="Submit a new feedback for your project allocations."
           primaryCta={{
             text: "Go back to feedbacks",

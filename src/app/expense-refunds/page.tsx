@@ -90,9 +90,8 @@ export default function ExpenseRefundsPage() {
   return (
     <PageLayout>
       <HeroSection
-        badge="My expense refunds"
-        headline="Manage your expense refunds all in one place."
-        subheadline="Here&rsquo;s your complete expense refunds information."
+        headline='My Expense Refunds'
+        subheadline="Manage your reimbursement requests in one place."
         primaryCta={{
           text: "Submit New Expense Refund",
           onClick: () => router.push("/expense-refunds/bulk"),
@@ -105,7 +104,10 @@ export default function ExpenseRefundsPage() {
       />
       
       <div>
-      <FullWidthContainerSection>
+      <FullWidthContainerSection
+        headline='Reimbursement History'
+        description='View details of past and pending requests.'
+      >
         {error ? (
           <ErrorDisplay message={error} />
         ) : (

@@ -120,9 +120,9 @@ export default function OtherRequestsPage() {
   return (
     <PageLayout>
       <HeroSection
-        badge="Other Requests"
-        headline="Access Company Processes & Resources"
-        subheadline="Find quick links to various company processes, from training requests to compensation management."
+        // badge="Other Requests"
+        headline='Other Requests'
+        subheadline="Find quick links to a variety of company request processes."
       />
       <Divider />
       <div className="mt-16 divide-y divide-gray-800">

@@ -11,9 +11,8 @@ export default function BulkExpenseRefundPage() {
   return (
     <PageLayout>
       <HeroSection
-        badge="Submit Bulk Expense Refunds"
-        headline="Submit multiple expense refunds efficiently with AI extraction"
-        subheadline="Upload multiple receipts and submit them efficiently"
+        headline="Submit Bulk Expense Refunds"
+        subheadline="Submit multiple expense refunds efficiently with AI extraction."
         primaryCta={{
           text: "Go back to list",
           onClick: () => router.push("/expense-refunds"),

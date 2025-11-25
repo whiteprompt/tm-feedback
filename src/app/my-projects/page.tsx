@@ -32,24 +32,24 @@ export default function MyProjectsPage() {
   return (
     <PageLayout>
       <HeroSection
-        badge="My projects"
-        headline="Manage your project allocations, processes, and feedbacks all in one place."
-        subheadline="Here&rsquo;s your complete project information."
+        // badge="Projects Overview"
+        headline="Projects Overview"
+        subheadline="Track your active assignments, client presentations, and performance reviews."
       />
       <div>
           <FullWidthContainerSection
-            headline='My project allocations'
-            description='Find your project allocations here.'>
+            headline='My Allocations'
+            description='Overview of your current and past projects.'>
             <Allocations />
           </FullWidthContainerSection>
           <FullWidthContainerSection
-            headline='Client introductions information'
+            headline='Client Presentations'
             description='Find the information related to the client introductions you have agreed with the company.'>
              <Presentations />
           </FullWidthContainerSection>
           <FullWidthContainerSection
-            headline='My allocations&rsquo; feedbacks'
-            description='Find the information related to the feedbacks you have submitted for your allocations.'
+            headline='My Feedbacks'
+            description='Share your experience and view feedback history.'
             primaryCta={{
               text: "Submit a new Feedback",
               onClick: () => router.push("/feedbacks/new"),
