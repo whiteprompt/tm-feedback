@@ -40,6 +40,7 @@ export default function TeamMemberPage() {
       <HeroSection
         headline={`Hi, ${teamMember?.firstName || teamMember?.lastName || 'Team Member'}!`}
         subheadline="Manage your profile details and review your contract history."
+        showScrollIndicator
       />
       {teamMemberError ? (
         <ErrorDisplay message={teamMemberError} />

@@ -32,6 +32,7 @@ export default function NotificationsPage() {
       <HeroSection
         headline="My notifications"
         subheadline="Here&rsquo;s your complete notifications information."
+        showScrollIndicator
       />
 
       <div>

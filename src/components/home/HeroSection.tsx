@@ -20,6 +20,7 @@ interface HeroSectionProps {
     href?: string;
     newTab?: boolean;
   };
+  showScrollIndicator?: boolean;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
@@ -28,9 +29,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   subheadline,
   primaryCta,
   secondaryCta,
+  showScrollIndicator = false,
 }) => {
   return (
-    <div className='mb-12 text-center'>
+    <div className='relative mb-12 text-center'>
         {badge && (
           <Badge className={`
             justify-center px-6 text-base
@@ -84,6 +86,26 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </Button>
         )}
         </div>
+
+        {/* Animated Scroll Indicator */}
+        {showScrollIndicator && (
+          <div className="mt-12 flex flex-col items-center gap-2">
+            <p className="text-sm text-gray-500">Scroll to explore</p>
+            <div className="animate-bounce">
+              <svg
+                className="h-6 w-6 text-gray-400"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              </svg>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

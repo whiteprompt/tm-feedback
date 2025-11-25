@@ -32,9 +32,9 @@ export default function MyProjectsPage() {
   return (
     <PageLayout>
       <HeroSection
-        // badge="Projects Overview"
         headline="Projects Overview"
         subheadline="Track your active assignments, client presentations, and performance reviews."
+        showScrollIndicator
       />
       <div>
           <FullWidthContainerSection
