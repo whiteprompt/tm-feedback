@@ -1,32 +1,30 @@
-import { Suspense } from 'react';
-import ExpenseRefundFormClient from './ExpenseRefundFormClient';
-import Navigation from '@/components/Navigation';
+'use client';
+
+import { useRouter } from 'next/navigation';
+import PageLayout from '@/components/PageLayout';
+import { HeroSection } from '@/components/home/HeroSection';
+import { FullWidthContainerSection } from '@/components/FullWidthContainerSection';
+import ExpenseRefundFormClient from '@/components/expense-refunds/ExpenseRefundFormClient';
 
 export const dynamic = 'force-dynamic';
 
 export default function Page() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen">
-        <Navigation />
-        <main className="wp-section-sm">
-          <div className="wp-slide-up">
-            <div className="wp-card p-8">
-              <div className="animate-pulse">
-                <div className="bg-wp-dark-card/50 mb-8 h-12 w-1/3 rounded"></div>
-                <div className="space-y-6">
-                  <div className="bg-wp-dark-card/50 h-16 rounded"></div>
-                  <div className="bg-wp-dark-card/50 h-16 rounded"></div>
-                  <div className="bg-wp-dark-card/50 h-32 rounded"></div>
-                  <div className="bg-wp-dark-card/50 h-16 rounded"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    }>
-      <ExpenseRefundFormClient />
-    </Suspense>
-  );
+  const router = useRouter();
+    return (
+      <PageLayout>
+        <HeroSection
+          headline="Submit Expense Refund"
+          subheadline="Submit expense refund manually with this form."
+          primaryCta={{
+            text: "Go back to list",
+            onClick: () => router.push("/expense-refunds"),
+          }}
+        />
+        <FullWidthContainerSection
+          classNameContent='w-full'
+        >
+          <ExpenseRefundFormClient />
+        </FullWidthContainerSection>
+      </PageLayout>
+    );
 } 

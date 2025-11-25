@@ -55,6 +55,12 @@ const requestLinks: { category: string; links: RequestLink[] }[] = [
         href: 'https://sites.google.com/whiteprompt.com/intranet/administration/first-steps-in-the-company/update-your-personal-information',
         icon: '📝',
       },
+      {
+        title: 'Social Event Refund',
+        description: 'Request a refund for a social event.',
+        href: 'https://tm-portal.whiteprompt.com/expense-refunds/bulk',
+        icon: '💰',
+      }
     ],
   },
   {

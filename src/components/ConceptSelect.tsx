@@ -53,37 +53,6 @@ export default function ConceptSelect({
       space-y-3
       ${className}
     `}>
-      {showQuickButtons && (
-        <div className="flex flex-wrap gap-2">
-          {QUICK_CONCEPTS.map((concept) => {
-            const buttonValue = getQuickButtonValue(concept.value);
-            const isActive = value === buttonValue || value === concept.value;
-            
-            return (
-              <button
-                key={concept.value}
-                type="button"
-                onClick={() => handleQuickSelect(concept.value)}
-                className={`
-                  rounded-lg px-3 py-1.5 text-sm font-medium transition-all
-                  duration-300
-                  ${
-                  isActive
-                    ? 'bg-wp-primary text-white'
-                    : `
-                      bg-wp-primary/20 text-wp-primary
-                      hover:bg-wp-primary/30
-                    `
-                }
-                `}
-              >
-                {concept.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-      
       <Select
         options={EXPENSE_CONCEPTS}
         value={currentConcept}
@@ -107,7 +76,7 @@ export default function ConceptSelect({
             backgroundColor: 'rgba(26, 26, 46, 0.6)',
             borderColor: 'rgba(64, 75, 104, 0.3)',
             color: '#E2E8F0',
-            minHeight: showQuickButtons ? '48px' : '32px',
+            minHeight: '48px',
             '&:hover': { borderColor: '#00A3B4' }
           }),
           singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
@@ -130,6 +99,37 @@ export default function ConceptSelect({
           })
         }}
       />
+      
+      {showQuickButtons && (
+        <div className="flex flex-wrap gap-2">
+          {QUICK_CONCEPTS.map((concept) => {
+            const buttonValue = getQuickButtonValue(concept.value);
+            const isActive = value === buttonValue || value === concept.value;
+            
+            return (
+              <button
+                key={concept.value}
+                type="button"
+                onClick={() => handleQuickSelect(concept.value)}
+                className={`
+                  rounded-lg px-3 py-1.5 text-sm font-medium transition-all
+                  duration-300
+                  ${
+                  isActive
+                    ? 'bg-gray-600 text-white'
+                    : `
+                      bg-gray-700/30 text-gray-400
+                      hover:bg-gray-700/50
+                    `
+                }
+                `}
+              >
+                {concept.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

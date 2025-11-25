@@ -41,32 +41,6 @@ export default function CurrencySelect({
       space-y-3
       ${className}
     `}>
-      {showQuickButtons && (
-        <div className="flex flex-wrap gap-2">
-          {QUICK_CURRENCIES.map((currency) => (
-            <button
-              key={currency.value}
-              type="button"
-              onClick={() => handleQuickSelect(currency.value)}
-              className={`
-                rounded-lg px-3 py-1.5 text-sm font-medium transition-all
-                duration-300
-                ${
-                value === currency.value
-                  ? 'bg-wp-primary text-white'
-                  : `
-                    bg-wp-primary/20 text-wp-primary
-                    hover:bg-wp-primary/30
-                  `
-              }
-              `}
-            >
-              {currency.value}
-            </button>
-          ))}
-        </div>
-      )}
-      
       <Select
         options={CURRENCIES}
         value={currentCurrency}
@@ -89,7 +63,7 @@ export default function CurrencySelect({
             backgroundColor: 'rgba(26, 26, 46, 0.6)',
             borderColor: 'rgba(64, 75, 104, 0.3)',
             color: '#E2E8F0',
-            minHeight: compact ? '32px' : (showQuickButtons ? '48px' : '32px'),
+            minHeight: compact ? '32px' : '48px',
             fontSize: compact ? '14px' : '16px',
             '&:hover': { borderColor: '#00A3B4' }
           }),
@@ -113,6 +87,32 @@ export default function CurrencySelect({
           })
         }}
       />
+      
+      {showQuickButtons && (
+        <div className="flex flex-wrap gap-2">
+          {QUICK_CURRENCIES.map((currency) => (
+            <button
+              key={currency.value}
+              type="button"
+              onClick={() => handleQuickSelect(currency.value)}
+              className={`
+                rounded-lg px-3 py-1.5 text-sm font-medium transition-all
+                duration-300
+                ${
+                value === currency.value
+                  ? 'bg-gray-600 text-white'
+                  : `
+                    bg-gray-700/30 text-gray-400
+                    hover:bg-gray-700/50
+                  `
+              }
+              `}
+            >
+              {currency.value}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

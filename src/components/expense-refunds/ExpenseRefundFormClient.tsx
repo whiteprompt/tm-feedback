@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Navigation from '@/components/Navigation';
 import ConceptSelect from '@/components/ConceptSelect';
 import CurrencySelect from '@/components/CurrencySelect';
 import ErrorBanner from '@/components/ErrorBanner';
@@ -258,18 +257,8 @@ export default function ExpenseRefundFormClient() {
       from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary
       min-h-screen bg-linear-to-br
     `}>
-      <Navigation />
-        <main className="wp-section-sm">
-          <div className="wp-container">
-          {/* Header */}
-          <div className={`
-            wp-fade-in mb-16 flex flex-col gap-6
-            sm:flex-row sm:items-center sm:justify-between
-          `}>
-            <h1 className="wp-heading-1 text-wp-text-primary mb-4">Submit Expense Refund</h1>
-            <p className="wp-body text-wp-text-secondary">Submit a new expense refund request</p>
-          </div>
-
+      <main className="wp-section-sm">
+        <div className="wp-container">
           {/* Form Card */}
           <div className="wp-card p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -382,13 +371,11 @@ export default function ExpenseRefundFormClient() {
                   }
                 </p>
               </div>
-            </div>
 
-            <div className={`
-              grid gap-6
-              md:grid-cols-2
-            `}>
-              <div className="space-y-3">
+              <div className={`
+                space-y-3
+                md:col-span-2
+              `}>
                 <label className={`
                   wp-body-small text-wp-text-muted font-semibold tracking-wider
                   uppercase
@@ -506,12 +493,8 @@ export default function ExpenseRefundFormClient() {
                   }
                 }}
                 className={`
-                  bg-wp-dark-card/60 border-wp-border wp-body
-                  text-wp-text-secondary flex-1 rounded-lg border px-6 py-4
-                  font-medium transition-all duration-300
-                  hover:text-wp-text-primary hover:bg-wp-dark-card/80
-                  focus:ring-wp-primary focus:border-wp-primary focus:ring-2
-                  focus:outline-none
+                  bg-wp-dark-card/60 border-wp-border wp-body flex-1
+                  cursor-pointer rounded-lg border px-6 py-4
                 `}
               >
                 Cancel
@@ -520,10 +503,10 @@ export default function ExpenseRefundFormClient() {
                 type="submit"
                 disabled={loading}
                 className={`
-                  wp-button-primary wp-body flex flex-1 items-center
-                  justify-center space-x-2 px-6 py-4 transition-all duration-300
+                  wp-button-primary flex flex-1 items-center justify-center
+                  space-x-2 px-6 py-4 transition-all duration-300
                   hover:scale-105
-                  disabled:cursor-not-allowed disabled:opacity-50
+                  disabled:cursor-not-allowed
                 `}
               >
                 {loading ? (
@@ -536,9 +519,6 @@ export default function ExpenseRefundFormClient() {
                   </>
                 ) : (
                   <>
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
                     <span>Submit Expense Refund</span>
                   </>
                 )}

@@ -31,6 +31,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   secondaryCta,
   showScrollIndicator = false,
 }) => {
+  const handleScrollDown = () => {
+    window.scrollBy({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className='relative mb-12 text-center'>
         {badge && (
@@ -89,9 +96,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         {/* Animated Scroll Indicator */}
         {showScrollIndicator && (
-          <div className="mt-12 flex flex-col items-center gap-2">
-            <p className="text-sm text-gray-500">Scroll to explore</p>
-            <div className="animate-bounce">
+          <div className="mt-4 flex flex-col items-center">
+            <button
+              onClick={handleScrollDown}
+              className={`
+                animate-bounce cursor-pointer rounded-full p-2 transition-colors
+                hover:text-white
+                focus:ring-2 focus:ring-gray-400 focus:ring-offset-2
+                focus:ring-offset-gray-900 focus:outline-none
+              `}
+              aria-label="Scroll down"
+            >
               <svg
                 className="h-6 w-6 text-gray-400"
                 fill="none"
@@ -103,7 +118,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               >
                 <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
               </svg>
-            </div>
+            </button>
           </div>
         )}
     </div>
