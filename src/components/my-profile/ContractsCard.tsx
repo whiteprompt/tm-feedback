@@ -54,7 +54,7 @@ export const ContractsCard: React.FC<ContractsCardProps> = ({
           `}>
             <div>
               <label className="wp-body-small text-wp-text-muted">Type</label>
-              <p className="wp-body text-wp-text-primary font-medium">{contract.type}</p>
+              <p className="wp-body text-wp-text-primary font-medium">{contract.amountType}</p>
             </div>
             <div>
               <label className="wp-body-small text-wp-text-muted">Amount</label>
