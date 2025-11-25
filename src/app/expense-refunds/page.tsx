@@ -98,8 +98,9 @@ export default function ExpenseRefundsPage() {
           onClick: () => router.push("/expense-refunds/bulk"),
         }}
         secondaryCta={{
-          text: "Obtain your refund",
-          onClick: () => router.push("https://sites.google.com/whiteprompt.com/intranet/administration/get-your-refund"),
+          text: "Obtain your refund process",
+          href: "https://sites.google.com/whiteprompt.com/intranet/administration/get-your-refund",
+          newTab: true,
         }}
       />
       

@@ -93,6 +93,7 @@ export default function LeavesPage() {
       const targetStatuses = statusMap[statusFilter] || [];
       const filtered = leaves.filter(leave => targetStatuses.includes(leave.status));
       setFilteredLeaves(filtered);
+      console.log(filtered);
     }
   }, [leaves, statusFilter]);
 
@@ -215,8 +216,9 @@ export default function LeavesPage() {
           onClick: () => router.push("/leaves/new"),
         }}
         secondaryCta={{
-          text: "Request a Leave",
-          onClick: () => router.push("https://sites.google.com/whiteprompt.com/intranet/administration/leaves/notify-your-leave"),
+          text: "Request a Leave process",
+          href: "https://sites.google.com/whiteprompt.com/intranet/administration/leaves/notify-your-leave",
+          newTab: true,
         }}
       />
       <div>
@@ -235,7 +237,11 @@ export default function LeavesPage() {
           <Tabs
             tabs={[
               {
-                label: 'List View',
+                label: 'By year',
+                content: <LeavesSummaryTable leaves={leaves} />
+              },
+              {
+                label: 'Details',
                 content: error ? (
                   <ErrorDisplay message={error} />
                 ) : (
@@ -256,10 +262,6 @@ export default function LeavesPage() {
                     calculateBusinessDays={calculateBusinessDays}
                   />
                 )
-              },
-              {
-                label: 'By year',
-                content: <LeavesSummaryTable leaves={leaves} />
               }
             ]}
           />

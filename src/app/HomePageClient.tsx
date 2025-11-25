@@ -37,11 +37,6 @@ export default function HomePageClient({ newsItems }: HomePageClientProps) {
     return null;
   }
 
-  const handleScheduleCall = () => {
-    // Navigate to contact or scheduling page
-    router.push('/my-profile');
-  };
-
   const handleLearnMore = () => {
     // Scroll to video section
     const element = document.getElementById('video-section');
@@ -58,10 +53,6 @@ export default function HomePageClient({ newsItems }: HomePageClientProps) {
         headline="Manage Your Tasks & Stay Updated"
         subheadline="Your central hub for managing every task across the company—from feedback and leave requests to expenses and projects. Stay connected with real-time company news and updates, all in one modern platform."
         primaryCta={{
-          text: "Get Started",
-          onClick: handleScheduleCall,
-        }}
-        secondaryCta={{
           text: "Learn More",
           onClick: handleLearnMore,
         }}
@@ -75,11 +66,11 @@ export default function HomePageClient({ newsItems }: HomePageClientProps) {
         </FullWidthContainerSection>
 
         <FullWidthContainerSection
-          id="video-section"
-          headline="See How It Works"
-          description="Watch this video to discover what the app does and understand its general purpose. Learn how our platform helps you manage tasks, stay connected, and streamline your workflow."
+          headline="Stay Connected with Company News"
+          description="Keep your team informed and engaged with announcements, updates, and important company-wide communications."
+          classNameContent="w-[70%]"
         >
-          <VideoSection />
+          <CompanyNewsCarousel newsItems={newsItems} />
         </FullWidthContainerSection>
 
         <FullWidthContainerSection
@@ -90,11 +81,11 @@ export default function HomePageClient({ newsItems }: HomePageClientProps) {
         </FullWidthContainerSection>
 
         <FullWidthContainerSection
-          headline="Stay Connected with Company News"
-          description="Keep your team informed and engaged with announcements, updates, and important company-wide communications."
-          classNameContent="w-[70%]"
+          id="video-section"
+          headline="See How It Works"
+          description="Watch this video to discover what the app does and understand its general purpose. Learn how our platform helps you manage tasks, stay connected, and streamline your workflow."
         >
-          <CompanyNewsCarousel newsItems={newsItems} />
+          <VideoSection />
         </FullWidthContainerSection>
       </div>
     </PageLayout>

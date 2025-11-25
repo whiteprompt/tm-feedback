@@ -10,6 +10,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
   children: React.ReactNode;
+  href?: string;
+  target?: string;
+  rel?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -21,6 +24,9 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   className = '',
   disabled = false,
+  href,
+  target,
+  rel,
   ...props
 }) => {
   const baseClasses = 'inline-flex items-center justify-center gap-2 font-medium transition-all duration-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#1A1A1A] disabled:opacity-50 disabled:cursor-not-allowed';
@@ -47,11 +53,31 @@ export const Button: React.FC<ButtonProps> = ({
     ${className}
   `;
 
-  return (
-    <button className={classes} disabled={disabled} {...props}>
+  const content = (
+    <>
       {icon && iconPosition === 'left' && <span className="shrink-0">{icon}</span>}
       <span>{children}</span>
       {icon && iconPosition === 'right' && <span className="shrink-0">{icon}</span>}
+    </>
+  );
+
+  if (href) {
+    return (
+      <a 
+        href={href} 
+        className={classes} 
+        target={target} 
+        rel={rel}
+        aria-disabled={disabled}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <button className={classes} disabled={disabled} {...props}>
+      {content}
     </button>
   );
 };

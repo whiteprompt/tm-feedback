@@ -19,19 +19,20 @@ export default function ExternalLinkCard({
   
   return (
     <div className={`
-      wp-fade-in mb-8
+      wp-fade-in
       ${className}
     `}>
       <a
         href={href}
         {...(isPlaceholder ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
         className={`
-          group wp-card flex h-full flex-col p-6 transition-all duration-300
+          group wp-card flex h-full min-h-[180px] flex-col p-6 transition-all
+          duration-300
           hover:shadow-wp-primary/20 hover:shadow-xl
           ${
           isPlaceholder 
             ? `
-              cursor-not-allowed opacity-60
+              cursor-not-allowed
               hover:scale-100
             ` 
             : 'hover:scale-105'

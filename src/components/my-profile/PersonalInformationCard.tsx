@@ -20,12 +20,11 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, value, className = '' }) =
     ${className}
   `}>
     <label className={`
-      wp-body-small text-wp-text-muted block font-semibold tracking-wider
-      uppercase
+      wp-white-body-small block font-semibold tracking-wider uppercase
     `}>
       {label}
     </label>
-    <p className="wp-body text-wp-text-primary font-medium">{value}</p>
+    <p className="wp-body font-medium text-white">{value}</p>
   </div>
 );
 
@@ -33,7 +32,38 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
   teamMember,
 }) => {
   return (
-    <div className="wp-card p-8">
+    <div className="wp-card relative p-8">
+      {/* Edit Button */}
+      <a
+        href="https://sites.google.com/whiteprompt.com/intranet/administration/first-steps-in-the-company/update-your-personal-information"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`
+          group absolute top-4 right-4 rounded-lg p-2 transition-colors
+          hover:bg-white/10
+        `}
+        aria-label="Edit personal information"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`
+            text-gray-400 transition-colors
+            group-hover:text-white
+          `}
+        >
+          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+          <path d="m15 5 4 4" />
+        </svg>
+      </a>
+
       <div className={`
         grid grid-cols-1 gap-8
         md:grid-cols-2
@@ -64,12 +94,11 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
         `}>
           <div>
             <label className={`
-              wp-body-small text-wp-text-muted mb-2 block font-semibold
-              tracking-wider uppercase
+              mb-2 block font-semibold tracking-wider text-white uppercase
             `}>
               Access Tools
             </label>
-            <p className="wp-body-small text-wp-text-muted mb-4">
+            <p className="wp-body-small mb-4">
               List of active tools assigned to your account
             </p>
           </div>
@@ -78,8 +107,8 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
               <span 
                 key={index} 
                 className={`
-                  bg-wp-primary/20 text-wp-primary rounded-full px-3 py-1
-                  text-sm font-medium
+                  rounded-full bg-gray-500/20 px-3 py-1 text-sm font-medium
+                  text-gray-300
                 `}
               >
                 {access}

@@ -11,11 +11,15 @@ interface HeroSectionProps {
   subheadline: string;
   primaryCta?: {
     text: string;
-    onClick: () => void;
+    onClick?: () => void;
+    href?: string;
+    newTab?: boolean;
   };
   secondaryCta?: {
     text: string;
-    onClick: () => void;
+    onClick?: () => void;
+    href?: string;
+    newTab?: boolean;
   };
 }
 
@@ -62,6 +66,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               variant="secondary"
               size="lg"
               onClick={primaryCta.onClick}
+              href={primaryCta.href}
+              target={primaryCta.newTab ? '_blank' : undefined}
+              rel={primaryCta.newTab ? 'noopener noreferrer' : undefined}
               icon={<span>→</span>}
               iconPosition="right"
               className='cursor-pointer'
@@ -74,6 +81,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               variant="outlined"
               size="lg"
               onClick={secondaryCta.onClick}
+              href={secondaryCta.href}
+              target={secondaryCta.newTab ? '_blank' : undefined}
+              rel={secondaryCta.newTab ? 'noopener noreferrer' : undefined}
               className='cursor-pointer'
             >
               {secondaryCta.text}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useFeedbacks } from '@/contexts/FeedbacksContext';
-import Link from 'next/link';
 import ErrorDisplay from '@/components/ErrorDisplay';
 
 const SATISFACTION_MAP = {
@@ -39,14 +38,6 @@ export default function Feedbacks() {
             </div>
             <h3 className="wp-heading-3 text-wp-text-muted mb-2">No Feedbacks Yet</h3>
             <p className="wp-body text-wp-text-muted mb-6">You haven't submitted any project feedbacks yet. Start by sharing your experience on a project!</p>
-            <Link href="/feedbacks/new" className={`
-              wp-button-primary inline-flex items-center gap-2
-            `}>
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Submit Your First Feedback
-            </Link>
           </div>
         ) : (
           <div className="space-y-6">

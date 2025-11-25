@@ -58,7 +58,7 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
 
     // Fill in all years between min and max
     const allYears: string[] = [];
-    for (let year = maxYear; year >= minYear; year--) {
+    for (let year = minYear; year <= maxYear; year++) {
       allYears.push(year.toString());
     }
 
@@ -316,6 +316,12 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                 `}>
                   Category
                 </th>
+                <th className={`
+                  wp-body-small text-wp-text-muted px-6 py-4 text-center
+                  font-semibold tracking-wider uppercase
+                `}>
+                  &lt; 2024
+                </th>
                 {leavesSummary.years.map(year => (
                   <th key={year} className={`
                     wp-body-small text-wp-text-muted px-6 py-4 text-center
@@ -324,12 +330,6 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                     {year}
                   </th>
                 ))}
-                <th className={`
-                  wp-body-small text-wp-text-muted px-6 py-4 text-center
-                  font-semibold tracking-wider uppercase
-                `}>
-                  &lt; 2024
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -346,6 +346,11 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                     Annual vacations
                   </span>
                 </td>
+                <td className={`
+                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
+                `}>
+                  -
+                </td>
                 {leavesSummary.years.map(year => (
                   <td key={year} className={`
                     wp-body text-wp-text-primary px-6 py-4 text-center
@@ -356,11 +361,6 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                       : 'TBD'}
                   </td>
                 ))}
-                <td className={`
-                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
-                `}>
-                  -
-                </td>
               </tr>
               {/* Vacations taken row */}
               <tr className={`
@@ -375,6 +375,11 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                     Vacations taken
                   </span>
                 </td>
+                <td className={`
+                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
+                `}>
+                  -
+                </td>
                 {leavesSummary.years.map(year => (
                   <td key={year} className={`
                     wp-body text-wp-text-primary px-6 py-4 text-center
@@ -383,11 +388,6 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                     {vacationsTakenByYear[year] || 0}
                   </td>
                 ))}
-                <td className={`
-                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
-                `}>
-                  -
-                </td>
               </tr>
               {/* Vacations Balance row */}
               <tr className={`
@@ -401,6 +401,11 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                   `}>
                     Vacations balance
                   </span>
+                </td>
+                <td className={`
+                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
+                `}>
+                  {initialBalance !== undefined ? initialBalance : '-'}
                 </td>
                 {leavesSummary.years.map(year => {
                   const vacations = averagePaidAnnualLeaveByYear[year];
@@ -428,11 +433,6 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
                     </td>
                   );
                 })}
-                <td className={`
-                  wp-body text-wp-text-primary px-6 py-4 text-center font-medium
-                `}>
-                  {initialBalance !== undefined ? initialBalance : '-'}
-                </td>
               </tr>
             </tbody>
           </table>

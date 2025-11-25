@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { HeroSection } from '@/components/home/HeroSection';
-import { FullWidthContainerSection } from '@/components/FullWidthContainerSection';
 import ExternalLinkCard from '@/components/ExternalLinkCard';
+import Divider from '@/components/Divider';
 
 interface RequestLink {
   title: string;
@@ -29,19 +29,31 @@ const requestLinks: { category: string; links: RequestLink[] }[] = [
       {
         title: 'Get Cursor License',
         description: 'Request a license for Cursor IDE to enhance your development workflow.',
-        href: '#', // TODO: Update with actual URL when available
+        href: 'https://docs.google.com/forms/d/e/1FAIpQLSfPAY9ZKwcwtrteqds1udIUs6ZfhXmH6qIRIQowwE5X6RKiCQ/alreadyresponded',
         icon: '💻',
+      },
+      {
+        title: 'Online Tech Talk',
+        description: 'Propose an online tech talk for your employment.',
+        href: 'https://sites.google.com/whiteprompt.com/intranet/architecture/ott-propose',
+        icon: '🚀',
       },
     ],
   },
   {
-    category: 'Recruiting',
+    category: 'Recruiting & Staffing',
     links: [
       {
         title: 'Refer a Friend',
         description: 'Refer talented professionals to join our team and help us grow.',
         href: 'https://sites.google.com/whiteprompt.com/intranet/recruiting/refer-a-friend',
         icon: '👥',
+      },
+      {
+        title: 'Update Personal Information',
+        description: 'Update your personal information for your employment.',
+        href: 'https://sites.google.com/whiteprompt.com/intranet/administration/first-steps-in-the-company/update-your-personal-information',
+        icon: '📝',
       },
     ],
   },
@@ -51,8 +63,14 @@ const requestLinks: { category: string; links: RequestLink[] }[] = [
       {
         title: 'Submit Your Hours',
         description: 'Submit and forecast your timesheet hours for accurate project tracking.',
-        href: 'https://sites.google.com/whiteprompt.com/intranet/administration/time-tracking/timesheet-forecasting',
+        href: 'https://sites.google.com/whiteprompt.com/intranet/administration/time-tracking/submit-your-weekly-timesheet',
         icon: '⏰',
+      },
+      {
+        title: 'Working Certificate',
+        description: 'Request a working certificate for your employment.',
+        href: 'https://sites.google.com/whiteprompt.com/intranet/administration/working-certificates',
+        icon: '📄',
       },
     ],
   },
@@ -71,6 +89,12 @@ const requestLinks: { category: string; links: RequestLink[] }[] = [
         href: 'https://sites.google.com/whiteprompt.com/intranet/administration/get-your-compensation/create-your-invoice-from-scratch',
         icon: '📄',
       },
+      {
+        title: 'Resignation',
+        description: 'Request a resignation letter for your employment.',
+        href: 'https://sites.google.com/whiteprompt.com/intranet/administration/leaving-the-company/resignation-request',
+        icon: '👋',
+      }
     ],
   },
 ];
@@ -100,25 +124,27 @@ export default function OtherRequestsPage() {
         headline="Access Company Processes & Resources"
         subheadline="Find quick links to various company processes, from training requests to compensation management."
       />
-      <div>
+      <Divider />
+      <div className="mt-16 divide-y divide-gray-800">
         {requestLinks.map((category) => (
-          <FullWidthContainerSection
-            key={category.category}
-            headline={category.category}
-            description={`Access ${category.category.toLowerCase()} related processes and resources.`}
-          >
-            <div className={`
-              ${
-              category.links.length === 1 
-                ? 'flex justify-center' 
-                : `
-                  grid grid-cols-1 items-stretch gap-6
+          <div key={category.category} className={`
+            grid grid-cols-1 gap-6 py-12
+            first:pt-0
+            last:pb-0
+            md:grid-cols-12
+          `}>
+            <div className="md:col-span-4">
+              <h2 className="text-2xl font-bold text-white">{category.category}</h2>
+              <p className="mt-2 text-gray-400">
+                Access {category.category.toLowerCase()} related processes and resources.
+              </p>
+            </div>
+            <div className="md:col-span-8">
+              {category.links.length > 1 ? (
+                <div className={`
+                  grid grid-cols-1 gap-6
                   md:grid-cols-2
-                `
-            }
-            `}>
-              {category.links.length === 1 && (
-                <div className="w-full max-w-2xl">
+                `}>
                   {category.links.map((link) => (
                     <ExternalLinkCard
                       key={link.title}
@@ -126,27 +152,27 @@ export default function OtherRequestsPage() {
                       description={link.description}
                       href={link.href}
                       icon={link.icon}
-                      className="h-full"
+                      className="h-full w-full"
                     />
                   ))}
                 </div>
-              )}
-              {category.links.length > 1 && (
-                <>
+              ) : (
+                <div className="flex justify-center">
                   {category.links.map((link) => (
-                    <ExternalLinkCard
-                      key={link.title}
-                      title={link.title}
-                      description={link.description}
-                      href={link.href}
-                      icon={link.icon}
-                      className="h-full"
-                    />
+                    <div key={link.title} className="w-full max-w-md">
+                      <ExternalLinkCard
+                        title={link.title}
+                        description={link.description}
+                        href={link.href}
+                        icon={link.icon}
+                        className="w-full"
+                      />
+                    </div>
                   ))}
-                </>
+                </div>
               )}
             </div>
-          </FullWidthContainerSection>
+          </div>
         ))}
       </div>
     </PageLayout>

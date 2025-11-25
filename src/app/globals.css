@@ -221,6 +221,12 @@ body {
   color: var(--wp-text-muted);
 }
 
+.wp-white-body-small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--wp-text-primary);
+}
+
 /* Layout Helpers */
 .wp-container {
   max-width: 1200px;

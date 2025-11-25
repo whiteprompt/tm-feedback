@@ -23,21 +23,19 @@ interface LeavesListProps {
 }
 
 const STATUS_COLORS = {
-  'Done': 'bg-gradient-to-r from-green-500 to-green-600 text-white',
-  'Rejected': 'bg-gradient-to-r from-red-500 to-red-600 text-white',
-  'In progress': 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white',
-  'Requires approval': 'bg-gradient-to-r from-pink-500 to-pink-600 text-white',
-  'Not started': 'bg-gradient-to-r from-gray-500 to-gray-600 text-white',
+  'Done': 'bg-green-500/10 text-green-500',
+  'Rejected': 'bg-red-500/10 text-red-500',
+  'In progress': 'bg-yellow-500/10 text-yellow-500',
+  'Requires approval': 'bg-pink-500/10 text-pink-500',
+  'Not started': 'bg-gray-500/10 text-gray-500',
 } as const;
 
 const LEAVE_TYPE_COLORS = {
-  'Vacation': 'bg-gradient-to-r from-blue-500 to-blue-600 text-white',
-  'Sick': 'bg-gradient-to-r from-orange-500 to-orange-600 text-white',
-  'Personal': 'bg-gradient-to-r from-purple-500 to-purple-600 text-white',
-  'Maternity': 'bg-gradient-to-r from-pink-500 to-pink-600 text-white',
-  'Paternity': 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white',
-  'Emergency': 'bg-gradient-to-r from-red-500 to-red-600 text-white',
-  'Unknown': 'bg-gradient-to-r from-gray-500 to-gray-600 text-white',
+  'Annual': 'bg-blue-500/10 text-blue-500',
+  'Illness': 'bg-orange-500/10 text-orange-500',
+  'Unpaid': 'bg-green-500/10 text-green-500',
+  'Maternity': 'bg-pink-500/10 text-pink-500',
+  'Other': 'bg-gray-500/10 text-gray-500'
 } as const;
 
 const renderEmptyState = (config: { icon?: React.ReactNode; title?: string; message: string }) => (
@@ -196,7 +194,7 @@ export default function LeavesList({
                   <thead>
                     <tr className="border-wp-border border-b">
                       <th className={`
-                        wp-body-small text-wp-text-muted px-6 py-4 text-center
+                        wp-body-medium text-wp-text-muted px-6 py-4 text-center
                         font-semibold tracking-wider uppercase
                       `}>
                         Type
@@ -229,12 +227,6 @@ export default function LeavesList({
                         wp-body-small text-wp-text-muted px-6 py-4 text-center
                         font-semibold tracking-wider uppercase
                       `}>
-                        Comments
-                      </th>
-                      <th className={`
-                        wp-body-small text-wp-text-muted px-6 py-4 text-center
-                        font-semibold tracking-wider uppercase
-                      `}>
                         Actions
                       </th>
                     </tr>
@@ -248,22 +240,32 @@ export default function LeavesList({
                         <td className="px-6 py-6 text-center">
                           <span className={`
                             rounded-full px-4 py-2 text-sm font-semibold
-                            ${LEAVE_TYPE_COLORS[leave.type as keyof typeof LEAVE_TYPE_COLORS] || LEAVE_TYPE_COLORS.Unknown}
+                            ${LEAVE_TYPE_COLORS[leave.type as keyof typeof LEAVE_TYPE_COLORS] || `
+                              bg-gray-500/10 text-gray-500
+                            `}
                           `}>
-                            {leave.type}
+                            {leave.type?.replace('leave', '')?.trim()}
                           </span>
                         </td>
                         <td className={`
                           wp-body-small text-wp-text-secondary px-6 py-6
                           text-center
                         `}>
-                          {new Date(leave.fromDate).toLocaleDateString()}
+                          {leave.fromDate ? new Date(leave.fromDate).toLocaleDateString('en-US', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          }) : '-'}
                         </td>
                         <td className={`
                           wp-body-small text-wp-text-secondary px-6 py-6
                           text-center
                         `}>
-                          {new Date(leave.toDate).toLocaleDateString()}
+                          {leave.toDate ? new Date(leave.toDate).toLocaleDateString('en-US', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          }) : '-'}
                         </td>
                         <td className={`
                           wp-body text-wp-text-primary px-6 py-6 text-center
@@ -279,18 +281,12 @@ export default function LeavesList({
                             {leave.status || 'Done'}
                           </span>
                         </td>
-                        <td className={`
-                          wp-body-small text-wp-text-secondary max-w-xs truncate
-                          px-6 py-6 text-center
-                        `}>
-                          {leave.comments || '-'}
-                        </td>
                         <td className="px-6 py-6 text-center">
                           <div className={`
                             flex items-center justify-center space-x-2
                           `}>
                             {/* Delete Button - Always visible */}
-                            {onDeleteClick && (
+                            {onDeleteClick && !['Done', 'Rejected'].includes(leave.status) && (
                               <button
                                 onClick={() => onDeleteClick(leave)}
                                 disabled={deletingLeaveId === leave.notionId}
@@ -318,7 +314,7 @@ export default function LeavesList({
                             )}
 
                             {/* Upload Certificate Button - Only for Illness leave and Maternity leave without certificate */}
-                            {onFileInputChange && ['Illness leave','Maternity leave'].includes(leave.type) && !leave.certificate && (
+                            {onFileInputChange && !['Done', 'Rejected'].includes(leave.status) && ['Illness leave','Maternity leave'].includes(leave.type) && !leave.certificate && (
                               <>
                                 <input
                                   type="file"
