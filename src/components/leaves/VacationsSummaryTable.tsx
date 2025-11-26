@@ -207,7 +207,7 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
   const vacationsTakenByYear = useMemo(() => {
     const vacationsTaken: { [year: string]: number } = {};
 
-    if (!teamMember?.contracts || teamMember.contracts.length === 0) {
+    if (!teamMember?.contracts?.length) {
       // If no contracts, default to just Annual leave
       leavesSummary.years.forEach(yearStr => {
         const annualLeave = leavesSummary.summary['Annual leave']?.[yearStr] || 0;

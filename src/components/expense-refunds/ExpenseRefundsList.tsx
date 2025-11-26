@@ -179,7 +179,11 @@ export default function ExpenseRefundsList({
       ) : (
         <div className="grid gap-4">
           {data.map((refund: ExpenseRefund) => {
-            const overallStatus = STATUS_MAP[refund.finalStatus as keyof typeof STATUS_MAP];
+            let overallStatus = STATUS_MAP[refund.finalStatus as keyof typeof STATUS_MAP];
+            // fallback to In Progress if status is not found
+            if (!overallStatus) {
+              overallStatus = STATUS_MAP['In Progress']
+            }
             
             return (
               <div
