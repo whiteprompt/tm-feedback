@@ -11,6 +11,7 @@ export enum NotificationModule {
   MyProjects = "My Projects",
   MyProfile = "My Profile",
   Presentations = "Presentations",
+  Home = "Home",
 }
 
 export interface Notification {

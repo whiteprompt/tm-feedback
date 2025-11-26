@@ -27,6 +27,12 @@ export const getModuleIcon = (module: NotificationModule) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V3a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1h8z" />
         </svg>
       );
+    case NotificationModule.Home:
+      return (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
     default:
       return (
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,6 +53,8 @@ export const getModuleColor = (module: NotificationModule) => {
       return 'text-purple-500';
     case NotificationModule.MyProfile:
       return 'text-orange-500';
+    case NotificationModule.Home:
+      return 'text-gray-500';
     default:
       return 'text-[#00D9FF]';
   }
@@ -63,6 +71,8 @@ export const getNotificationRoute = (module: NotificationModule) => {
       return '/my-projects';
     case NotificationModule.MyProfile:
       return '/my-profile';
+    case NotificationModule.Home:
+      return '/';
     default:
       return '/';
   }
