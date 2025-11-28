@@ -6,14 +6,14 @@ interface ExternalNewsItem {
   url: string;
 }
 
-export interface NewsItem {
+export interface CompanyNews {
   title: string;
   notionUrl: string;
   description?: string;
   date?: string;
 }
 
-export async function getCompanyNews(): Promise<NewsItem[]> {
+export async function getCompanyNews(): Promise<CompanyNews[]> {
   try {
     const res = await fetch(
       'https://staffing.whiteprompt.com/shared-data/communications?type=public&status=Sent',
@@ -41,7 +41,7 @@ export async function getCompanyNews(): Promise<NewsItem[]> {
       date: item.date,
     }));
   } catch (error) {
-    console.error('Error fetching company news:', error);
+    console.error('Error fetching company news.', error);
     return [];
   }
 }

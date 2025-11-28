@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import HomePageClient from './HomePageClient';
 import { getCompanyNews } from '@/lib/api/news';
+import { getCompanyDeadLineEvents } from '@/lib/api';
 
 export default async function HomePage() {
   const session = await auth();
@@ -10,7 +11,8 @@ export default async function HomePage() {
     redirect('/auth/signin');
   }
 
-  const newsItems = await getCompanyNews();
+  const companyNews = await getCompanyNews();
+  const companyDeadLineEvents = await getCompanyDeadLineEvents();
 
-  return <HomePageClient newsItems={newsItems} />;
+  return <HomePageClient companyNews={companyNews} companyDeadLineEvents={companyDeadLineEvents} />;
 }

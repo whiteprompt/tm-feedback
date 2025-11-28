@@ -10,15 +10,17 @@ import { FullWidthContainerSection } from '@/components/FullWidthContainerSectio
 import UnreadNotificationsTable from '@/components/UnreadNotificationsTable';
 import HolidaysSection from '@/components/leaves/HolidaysSection';
 import CompanyNewsCarousel from '@/components/home/CompanyNewsCarousel';
+import CompanyEventsCalendar from '@/components/home/CompanyEventsCalendar';
 import VideoSection from '@/components/home/VideoSection';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
-import { NewsItem } from '@/lib/api/news';
+import { CompanyDeadLineEvents, CompanyNews } from '@/lib/api';
 
 interface HomePageClientProps {
-  newsItems: NewsItem[];
+  companyNews: CompanyNews[];
+  companyDeadLineEvents: CompanyDeadLineEvents[];
 }
 
-export default function HomePageClient({ newsItems }: HomePageClientProps) {
+export default function HomePageClient({ companyNews, companyDeadLineEvents }: HomePageClientProps) {
   const { status } = useSession();
   const router = useRouter();
   const { teamMember } = useTeamMember();
@@ -70,7 +72,14 @@ export default function HomePageClient({ newsItems }: HomePageClientProps) {
           description="Stay informed and engaged with announcements, updates, and important company-wide communications."
           classNameContent="w-[70%]"
         >
-          <CompanyNewsCarousel newsItems={newsItems} />
+          <CompanyNewsCarousel newsItems={companyNews} />
+        </FullWidthContainerSection>
+
+        <FullWidthContainerSection
+          headline="Company Events"
+          description="Stay organized with upcoming deadlines, meetings, and important company events."
+        >
+          <CompanyEventsCalendar companyDeadLineEvents={companyDeadLineEvents} />
         </FullWidthContainerSection>
 
         <FullWidthContainerSection
