@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { formatDate } from "@/utils/date";
+import { formatDate } from "@/lib/date";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { STAFFING_API_URL } from "@/lib/constants";
 import { teamMemberCache } from "@/lib/cache";

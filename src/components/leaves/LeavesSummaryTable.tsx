@@ -58,7 +58,7 @@ export default function LeavesSummaryTable({ leaves }: LeavesSummaryTableProps) 
 
     // Fill in all years between min and max
     const allYears: string[] = [];
-    for (let year = maxYear; year >= minYear; year--) {
+    for (let year = minYear; year <= maxYear; year++) {
       allYears.push(year.toString());
     }
 

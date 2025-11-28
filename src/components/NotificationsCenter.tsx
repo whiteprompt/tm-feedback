@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useNotifications } from '@/contexts/NotificationsContext';
 import { Notification } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
-import { getModuleIcon, getModuleColor, getNotificationRoute } from '@/utils/notification-helpers';
+import { getModuleIcon, getModuleColor, getNotificationRoute } from '@/lib/notifications/notification-helpers';
 
 export default function NotificationsCenter() {
   const router = useRouter();

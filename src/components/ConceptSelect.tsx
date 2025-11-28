@@ -14,9 +14,9 @@ interface ConceptSelectProps {
 }
 
 const QUICK_CONCEPTS = [
-  EXPENSE_CONCEPTS.find(c => c.value === "expenses")!,
   EXPENSE_CONCEPTS.find(c => c.value === "food-drinks")!,
   EXPENSE_CONCEPTS.find(c => c.value === "licenses")!,
+  EXPENSE_CONCEPTS.find(c => c.value === "social-events")!,
 ];
 
 export default function ConceptSelect({

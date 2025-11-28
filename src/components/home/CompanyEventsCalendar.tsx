@@ -199,13 +199,6 @@ export default function CompanyEventsCalendar({ companyDeadLineEvents }: { compa
                           }}
                         >
                           <div className="truncate font-semibold">{event.title}</div>
-                          {event.description && (
-                            <div className={`
-                              mt-0.5 line-clamp-2 text-[9px] opacity-80
-                            `}>
-                              {event.description}
-                            </div>
-                          )}
                         </div>
                       ))}
                     </div>

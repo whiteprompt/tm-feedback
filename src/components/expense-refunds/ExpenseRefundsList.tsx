@@ -17,8 +17,7 @@ export interface ExpenseRefund {
   amApproval: string;
   receipt: string;
   finalStatus: string;
-  rejectAdminReason: string;
-  rejectAMReason: string;
+  rejectedReason: string;
 }
 
 interface ExpenseRefundsListProps {
@@ -258,11 +257,11 @@ export default function ExpenseRefundsList({
                         </a>
                       )}
                     </div>
-                    {refund.finalStatus === 'Not Approved' && (refund.rejectAdminReason || refund.rejectAMReason) && (
+                    {refund.finalStatus === 'Not Approved' && refund.rejectedReason && (
                       <div className="border-wp-border/30 mt-3 border-t pt-3">
                         <p className="text-wp-text-muted mb-1 text-xs">Rejection Reason:</p>
                         <p className="text-sm text-red-400">
-                          {refund.rejectAdminReason || refund.rejectAMReason}
+                          {refund.rejectedReason}
                         </p>
                       </div>
                     )}

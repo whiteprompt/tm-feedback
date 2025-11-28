@@ -23,7 +23,7 @@ const requestLinks: { category: string; links: RequestLink[] }[] = [
       {
         title: 'Request a Training',
         description: 'Request access to training programs and professional development opportunities.',
-        href: 'https://sites.google.com/whiteprompt.com/intranet/staffing/training',
+        href: 'https://sites.google.com/whiteprompt.com/intranet/staffing/training-request',
         icon: '📚',
       },
       {
@@ -58,7 +58,7 @@ const requestLinks: { category: string; links: RequestLink[] }[] = [
       {
         title: 'Social Event Refund',
         description: 'Request a refund for a social event.',
-        href: 'https://tm-portal.whiteprompt.com/expense-refunds/bulk',
+        href: '/expense-refunds/new?type=Social',
         icon: '💰',
       }
     ],
@@ -84,7 +84,7 @@ const requestLinks: { category: string; links: RequestLink[] }[] = [
     category: 'Compensation',
     links: [
       {
-        title: 'Change Your Payment Method',
+        title: 'Choose Your Payment Method',
         description: 'Update your preferred payment method for compensation.',
         href: 'https://sites.google.com/whiteprompt.com/intranet/administration/get-your-compensation/choose-your-payment-method',
         icon: '💳',

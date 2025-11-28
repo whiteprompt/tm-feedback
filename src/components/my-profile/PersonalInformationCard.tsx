@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { TeamMember } from '@/lib/constants';
-import { formatDate } from '@/utils/date';
+import { formatDate } from '@/lib/date';
 
 interface PersonalInformationCardProps {
   teamMember: TeamMember;

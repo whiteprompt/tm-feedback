@@ -1,4 +1,4 @@
-import { beginOfMonth, endOfMonth } from '@/utils/date';
+import { beginOfMonth, endOfMonth } from '@/lib/date';
 
 export interface CompanyDeadLineEvents {
   id: string;

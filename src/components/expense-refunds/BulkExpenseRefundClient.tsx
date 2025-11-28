@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { CURRENCIES, ExpenseRefundForm, ExtractedData } from '@/lib/constants';
 import { twMerge } from 'tailwind-merge';
 import FilePreviewModal from '@/components/FilePreviewModal';
+import { useAdmin } from '@/contexts/AdminContext';
 
 interface ExtractedDataWithFile extends ExtractedData {
   fileId: string;
@@ -37,6 +38,7 @@ interface BulkExpenseRefundForm extends ExpenseRefundForm {
 type WizardStep = 'upload' | 'extraction' | 'review' | 'confirmation';
 
 export default function BulkExpenseRefundClient() {
+  const { isAdmin } = useAdmin();
   const { data: session, status } = useSession();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<WizardStep>('upload');
@@ -453,7 +455,6 @@ export default function BulkExpenseRefundClient() {
     setFiles(prev => prev.filter((_, idx) => !selectedIndices.includes(idx)));
   };
 
-
   const handleBulkSubmission = async () => {
     setLoading(true);
     setError('');
@@ -539,7 +540,6 @@ export default function BulkExpenseRefundClient() {
       maximumFractionDigits: 2,
     }).format(num);
   };
-
 
   if (status === 'loading' || !isClient) {
     return (
@@ -928,83 +928,84 @@ export default function BulkExpenseRefundClient() {
                 </div>
 
                 {/* Bulk Team Member Application */}
-                <div className={`
-                  bg-wp-dark-card/60 border-wp-border w-[70%] rounded-lg border
-                  p-4
-                `}>
-                  <h3 className="wp-body text-wp-primary mb-3 font-medium">Bulk Apply Team Member</h3>
-                  <div className="flex items-end gap-3">
-                    <div className="flex-1">
-                      <label className={`
-                        wp-body-small text-wp-text-secondary mb-2 block
-                      `}>
-                        Select team member to apply to all checked expenses
-                      </label>
-                      <Select
-                        value={teamMembers.length > 0 ? 
-                          teamMembers.find(member => member.email === bulkTeamMember) ? 
-                            { value: bulkTeamMember, label: teamMembers.find(member => member.email === bulkTeamMember)?.name || bulkTeamMember } : 
-                            { value: bulkTeamMember, label: bulkTeamMember === session?.user?.email ? 'Me' : bulkTeamMember } : 
-                          { value: bulkTeamMember, label: 'Me' }
-                        }
-                        onChange={(selected) => {
-                          if (selected) {
-                            setBulkTeamMember(selected.value);
+                {isAdmin && (
+                  <div className={`
+                    bg-wp-dark-card/60 border-wp-border w-[70%] rounded-lg
+                    border p-4
+                  `}>
+                    <h3 className="wp-body text-wp-primary mb-3 font-medium">Bulk Apply Team Member</h3>
+                    <div className="flex items-end gap-3">
+                      <div className="flex-1">
+                        <label className={`
+                          wp-body-small text-wp-text-secondary mb-2 block
+                        `}>
+                          Select team member to apply to all checked expenses
+                        </label>
+                        <Select
+                          value={teamMembers.length > 0 ? 
+                            teamMembers.find(member => member.email === bulkTeamMember) ? 
+                              { value: bulkTeamMember, label: teamMembers.find(member => member.email === bulkTeamMember)?.name || bulkTeamMember } : 
+                              { value: bulkTeamMember, label: bulkTeamMember === session?.user?.email ? 'Me' : bulkTeamMember } : 
+                            { value: bulkTeamMember, label: 'Me' }
                           }
+                          onChange={(selected) => {
+                            if (selected) {
+                              setBulkTeamMember(selected.value);
+                            }
+                          }}
+                          options={(() => {
+                            const options = [
+                              { value: session?.user?.email || '', label: 'Me' },
+                              ...teamMembers.map(member => ({
+                                value: member.email,
+                                label: `${member.name || `${member.lastName} ${member.firstName}`} (${member.email})`
+                              }))
+                            ];
+                            return options;
+                          })()}
+                          placeholder={loadingTeamMembers ? "Loading team members..." : "Select team member"}
+                          isLoading={loadingTeamMembers}
+                          className="basic-single"
+                          classNamePrefix="select"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              backgroundColor: 'rgba(26, 26, 46, 0.6)',
+                              borderColor: 'rgba(64, 75, 104, 0.3)',
+                              minHeight: '40px',
+                            }),
+                            singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
+                            menu: (base) => ({
+                              ...base,
+                              backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                              zIndex: 50
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
+                              color: '#E2E8F0'
+                            })
+                          }}
+                          menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                          menuPosition="fixed"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => prev.map(item => 
+                            item.selected ? { ...item, teamMemberEmail: bulkTeamMember } : item
+                          ));
                         }}
-                        options={(() => {
-                          const options = [
-                            { value: session?.user?.email || '', label: 'Me' },
-                            ...teamMembers.map(member => ({
-                              value: member.email,
-                              label: `${member.name || `${member.lastName} ${member.firstName}`} (${member.email})`
-                            }))
-                          ];
-                          return options;
-                        })()}
-                        placeholder={loadingTeamMembers ? "Loading team members..." : "Select team member"}
-                        isLoading={loadingTeamMembers}
-                        className="basic-single"
-                        classNamePrefix="select"
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                            borderColor: 'rgba(64, 75, 104, 0.3)',
-                            minHeight: '40px',
-                          }),
-                          singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                          menu: (base) => ({
-                            ...base,
-                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                            zIndex: 50
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                            color: '#E2E8F0'
-                          })
-                        }}
-                        menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                        menuPosition="fixed"
-                      />
+                        className={twMerge('wp-button-primary','transition-all',`
+                          duration-300
+                        `,`hover:scale-105`)}
+                      >
+                        Apply to Selected
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormData(prev => prev.map(item => 
-                          item.selected ? { ...item, teamMemberEmail: bulkTeamMember } : item
-                        ));
-                      }}
-                      className={twMerge('wp-button-primary','transition-all',`
-                        duration-300
-                      `,`hover:scale-105`)}
-                    >
-                      Apply to Selected
-                    </button>
                   </div>
-                </div>
-
+                )}
 
                 {/* Bulk Actions Links */}
                 <div className={`
@@ -1081,10 +1082,12 @@ export default function BulkExpenseRefundClient() {
                           wp-body-small text-wp-text-muted p-3 text-left
                           tracking-wider uppercase
                         `}>Concept</th>
-                        <th className={`
-                          wp-body-small text-wp-text-muted p-3 text-left
-                          tracking-wider uppercase
-                        `}>Team Member</th>
+                        {isAdmin && (
+                          <th className={`
+                            wp-body-small text-wp-text-muted p-3 text-left
+                            tracking-wider uppercase
+                          `}>Team Member</th>
+                        )}
                         <th className={`
                           wp-body-small text-wp-text-muted p-3 text-left
                           tracking-wider uppercase
@@ -1208,62 +1211,64 @@ export default function BulkExpenseRefundClient() {
                               />
                             </div>
                           </td>
-                          <td className="p-3">
-                            <div className="min-w-48">
-                              <Select
-                                value={(() => {
-                                  if (teamMembers.length > 0) {
-                                    const member = teamMembers.find(m => m.email === item.teamMemberEmail);
-                                    if (member) {
-                                      return { value: member.email, label: member.name || `${member.lastName} ${member.firstName}` };
-                                    }
-                                  }
-                                  return { 
-                                    value: item.teamMemberEmail, 
-                                    label: item.teamMemberEmail === session?.user?.email ? 'Me' : item.teamMemberEmail 
-                                  };
-                                })()}
-                                onChange={(selected) => {
-                                  if (selected) {
-                                    updateFormItem(index, 'teamMemberEmail', selected.value);
-                                  }
-                                }}
-                                options={[
-                                  { value: session?.user?.email || '', label: 'Me' },
-                                  ...teamMembers.map(member => ({
-                                    value: member.email,
-                                    label: `${member.name || `${member.lastName} ${member.firstName}`}`
-                                  }))
-                                ]}
-                                placeholder={loadingTeamMembers ? "Loading..." : "Select"}
-                                isLoading={loadingTeamMembers}
-                                className="basic-single"
-                                classNamePrefix="select"
-                                styles={{
-                                  control: (base) => ({
-                                    ...base,
-                                    backgroundColor: 'rgba(26, 26, 46, 0.6)',
-                                    borderColor: 'rgba(64, 75, 104, 0.3)',
-                                    minHeight: '32px',
-                                    fontSize: '14px'
-                                  }),
-                                  singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
-                                  menu: (base) => ({
-                                    ...base,
-                                    backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                                    zIndex: 50
-                                  }),
-                                  option: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
-                                    color: '#E2E8F0'
-                                  })
-                                }}
-                                menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                                menuPosition="fixed"
-                              />
-                            </div>
-                          </td>
+                          {isAdmin && (
+                            <td className="p-3">
+                              <div className="min-w-48">
+                                  <Select
+                                    value={(() => {
+                                      if (teamMembers.length > 0) {
+                                        const member = teamMembers.find(m => m.email === item.teamMemberEmail);
+                                        if (member) {
+                                          return { value: member.email, label: member.name || `${member.lastName} ${member.firstName}` };
+                                        }
+                                      }
+                                      return { 
+                                        value: item.teamMemberEmail, 
+                                        label: item.teamMemberEmail === session?.user?.email ? 'Me' : item.teamMemberEmail 
+                                      };
+                                    })()}
+                                    onChange={(selected) => {
+                                      if (selected) {
+                                        updateFormItem(index, 'teamMemberEmail', selected.value);
+                                      }
+                                    }}
+                                    options={[
+                                      { value: session?.user?.email || '', label: 'Me' },
+                                      ...teamMembers.map(member => ({
+                                        value: member.email,
+                                        label: `${member.name || `${member.lastName} ${member.firstName}`}`
+                                      }))
+                                    ]}
+                                    placeholder={loadingTeamMembers ? "Loading..." : "Select"}
+                                    isLoading={loadingTeamMembers}
+                                    className="basic-single"
+                                    classNamePrefix="select"
+                                    styles={{
+                                      control: (base) => ({
+                                        ...base,
+                                        backgroundColor: 'rgba(26, 26, 46, 0.6)',
+                                        borderColor: 'rgba(64, 75, 104, 0.3)',
+                                        minHeight: '32px',
+                                        fontSize: '14px'
+                                      }),
+                                      singleValue: (base) => ({ ...base, color: '#E2E8F0' }),
+                                      menu: (base) => ({
+                                        ...base,
+                                        backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                                        zIndex: 50
+                                      }),
+                                      option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isFocused ? '#00A3B4' : 'transparent',
+                                        color: '#E2E8F0'
+                                      })
+                                    }}
+                                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                                    menuPosition="fixed"
+                                  />
+                              </div>
+                            </td>
+                          )}
                           <td className="p-3">
                             <div className={`
                               wp-body-small inline-flex items-center
@@ -1329,66 +1334,67 @@ export default function BulkExpenseRefundClient() {
                     `}>Submission Summary</h3>
                     
                     {/* Team Member Distribution */}
-                    <div className={`
-                      bg-wp-primary/10 border-wp-primary/30 mb-6 rounded-lg
-                      border p-4
-                    `}>
-                      <div className="mb-4 flex items-center space-x-3">
-                        <svg className="text-wp-primary h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <p className="wp-body text-wp-primary font-medium">Team Member Distribution</p>
-                      </div>
+                    {isAdmin && (
                       <div className={`
-                        grid grid-cols-1 gap-4
-                        sm:grid-cols-2
+                        bg-wp-primary/10 border-wp-primary/30 mb-6 rounded-lg
+                        border p-4
                       `}>
-                        {(() => {
-                          const selectedItems = formData.filter(item => item.selected);
-                          const groupedByTeamMember = selectedItems.reduce((acc, item) => {
-                            const email = item.teamMemberEmail;
-                            if (!acc[email]) {
-                              acc[email] = { count: 0, totalAmount: 0 };
-                            }
-                            acc[email].count += 1;
-                            acc[email].count += 1;
-                            const amount = parseFloat(item.amount) || 0;
-                            const exchangeRate = parseFloat(item.exchangeRate) || 1;
-                            acc[email].totalAmount += amount / exchangeRate;
-                            return acc;
-                          }, {} as Record<string, { count: number; totalAmount: number }>);
+                        <div className="mb-4 flex items-center space-x-3">
+                          <svg className="text-wp-primary h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                          <p className="wp-body text-wp-primary font-medium">Team Member Distribution</p>
+                        </div>
+                        <div className={`
+                          grid grid-cols-1 gap-4
+                          sm:grid-cols-2
+                        `}>
+                          {(() => {
+                            const selectedItems = formData.filter(item => item.selected);
+                            const groupedByTeamMember = selectedItems.reduce((acc, item) => {
+                              const email = item.teamMemberEmail;
+                              if (!acc[email]) {
+                                acc[email] = { count: 0, totalAmount: 0 };
+                              }
+                              acc[email].count += 1;
+                              const amount = parseFloat(item.amount) || 0;
+                              const exchangeRate = parseFloat(item.exchangeRate) || 1;
+                              acc[email].totalAmount += amount / exchangeRate;
+                              return acc;
+                            }, {} as Record<string, { count: number; totalAmount: number }>);
 
-                          return Object.entries(groupedByTeamMember).map(([email, stats]) => {
-                            const isCurrentUser = email === session?.user?.email;
-                            const member = teamMembers.find(m => m.email === email);
-                            const displayName = isCurrentUser ? 'Me' : 
-                              (member ? (member.name || `${member.lastName} ${member.firstName}`) : email);
+                            return Object.entries(groupedByTeamMember).map(([email, stats]) => {
+                              const isCurrentUser = email === session?.user?.email;
+                              const member = teamMembers.find(m => m.email === email);
+                              const displayName = isCurrentUser ? 'Me' : 
+                                (member ? (member.name || `${member.lastName} ${member.firstName}`) : email);
 
-                            return (
-                              <div key={email} className={`
-                                bg-wp-dark-card/40 flex items-center
-                                justify-between rounded-lg p-3
-                              `}>
-                                <div>
-                                  <p className={`
-                                    wp-body-small text-wp-text-primary
-                                    font-medium
-                                  `}>{displayName}</p>
-                                  <p className={`
-                                    wp-body-small text-wp-text-muted
-                                  `}>{stats.count} expense{stats.count !== 1 ? 's' : ''}</p>
-                                </div>
-                                <p className={`
-                                  wp-body-small text-wp-primary font-medium
+                              return (
+                                <div key={email} className={`
+                                  bg-wp-dark-card/40 flex items-center
+                                  justify-between rounded-lg p-3
                                 `}>
-                                  ${formatAmount(stats.totalAmount)}
-                                </p>
-                              </div>
-                            );
-                          });
-                        })()}
+                                  <div>
+                                    <p className={`
+                                      wp-body-small text-wp-text-primary
+                                      font-medium
+                                    `}>{displayName}</p>
+                                    <p className={`
+                                      wp-body-small text-wp-text-muted
+                                    `}>{stats.count} expense{stats.count !== 1 ? 's' : ''}</p>
+                                  </div>
+                                  <p className={`
+                                    wp-body-small text-wp-primary font-medium
+                                  `}>
+                                    ${formatAmount(stats.totalAmount)}
+                                  </p>
+                                </div>
+                              );
+                            });
+                          })()}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className={`
                       grid gap-4
@@ -1435,6 +1441,10 @@ export default function BulkExpenseRefundClient() {
                               <p className="wp-body text-wp-text-primary">{item.title}</p>
                             </div>
                             <div>
+                              <p className="wp-body-small text-wp-text-muted">Date</p>
+                              <p className="wp-body text-wp-text-primary">{new Date(item.submittedDate).toLocaleDateString('en-US')}</p>
+                            </div>
+                            <div>
                               <p className="wp-body-small text-wp-text-muted">Original Amount</p>
                               <p className="wp-body text-wp-text-primary">{formatAmount(item.amount)} {item.currency}</p>
                             </div>
@@ -1466,12 +1476,6 @@ export default function BulkExpenseRefundClient() {
                                 })()}
                               </p>
                             </div>
-                            <div>
-                              <p className="wp-body-small text-wp-text-muted">File</p>
-                              <p className={`
-                                wp-body text-wp-text-primary truncate
-                              `}>{extractedData[itemIndex]?.fileName}</p>
-                            </div>
                           </div>
                         </div>
                       )
@@ -1482,12 +1486,7 @@ export default function BulkExpenseRefundClient() {
                     <button
                       type="button"
                       onClick={goBack}
-                      className={`
-                        bg-wp-dark-card/60 border-wp-border wp-body
-                        text-wp-text-secondary flex-1 rounded-lg border px-4
-                        py-3 font-medium transition-all duration-300
-                        hover:text-wp-text-primary hover:bg-wp-dark-card/80
-                      `}
+                      className={twMerge('wp-button-secondary','flex-1')}
                     >
                       Back to Review
                     </button>
@@ -1496,7 +1495,7 @@ export default function BulkExpenseRefundClient() {
                       onClick={handleBulkSubmission}
                       disabled={loading || formData.filter(item => item.selected).length === 0}
                       className={`
-                        wp-button-primary wp-body flex flex-1 items-center
+                        wp-button-primary flex flex-1 items-center
                         justify-center space-x-2 px-4 py-3 transition-all
                         duration-300
                         hover:scale-105
@@ -1513,10 +1512,7 @@ export default function BulkExpenseRefundClient() {
                         </>
                       ) : (
                         <>
-                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                          </svg>
-                          <span>Submit All Expense Refunds</span>
+                          Submit All Expense Refunds
                         </>
                       )}
                     </button>

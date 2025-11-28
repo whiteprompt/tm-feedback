@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { LeaveType } from '@/lib/types';
 import ErrorBanner from '@/components/ErrorBanner';
 
+const classInput = `bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full rounded-lg border-2 px-4 py-3 transition-all duration-200 focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2 [color-scheme:dark]`;
+
 interface LeaveFormData {
   fromDate: string;
   toDate: string;
@@ -139,11 +141,7 @@ export default function LeaveFormClient() {
               value={formData.fromDate}
               onChange={handleInputChange}
               required
-              className={`
-                bg-wp-dark-secondary border-wp-border text-wp-text-primary
-                w-full rounded-lg border-2 px-4 py-3 transition-all duration-200
-                focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
-              `}
+              className={classInput}
             />
           </div>
           {/* End Date */}
@@ -160,11 +158,7 @@ export default function LeaveFormClient() {
               value={formData.toDate}
               onChange={handleInputChange}
               required
-              className={`
-                bg-wp-dark-secondary border-wp-border text-wp-text-primary
-                w-full rounded-lg border-2 px-4 py-3 transition-all duration-200
-                focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
-              `}
+              className={classInput}
             />
           </div>
         </div>
@@ -198,11 +192,7 @@ export default function LeaveFormClient() {
             value={formData.type}
             onChange={handleInputChange}
             required
-            className={`
-              bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full
-              rounded-lg border-2 px-4 py-3 transition-all duration-200
-              focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
-            `}
+            className={classInput}
           >
             <option value={LeaveType.AnnualLeave}>Annual Leave</option>
             <option value={LeaveType.UnpaidLeave}>Unpaid Leave</option>
@@ -224,11 +214,7 @@ export default function LeaveFormClient() {
             value={formData.approvedByEmail}
             onChange={handleInputChange}
             required
-            className={`
-              bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full
-              rounded-lg border-2 px-4 py-3 transition-all duration-200
-              focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
-            `}
+            className={classInput}
           >
             <option value="">Select approver...</option>
             <option value="mariano.selvaggi@whiteprompt.com">mariano.selvaggi@whiteprompt.com</option>
@@ -269,13 +255,14 @@ export default function LeaveFormClient() {
           <label htmlFor="certificate" className={`
             wp-body text-wp-text-primary mb-2 block font-medium
           `}>
-            Certificate/Medical Note (Optional)
+            Certificate/Medical Note *
           </label>
           <div className="relative">
             <input
               type="file"
               id="certificate"
               name="certificate"
+              lang='en'
               onChange={handleFileChange}
               accept=".jpg,.jpeg,.png,.pdf"
               className={`
@@ -326,7 +313,7 @@ export default function LeaveFormClient() {
           </button>
           <button
             type="submit"
-            disabled={isSubmitting || !formData.fromDate || !formData.toDate || !formData.approvedByEmail}
+            disabled={isSubmitting || !formData.fromDate || !formData.toDate || !formData.approvedByEmail || !formData.certificate}
             className={`
               bg-wp-primary flex items-center space-x-2 rounded-lg px-6 py-3
               font-medium text-white transition-all duration-200

@@ -1,0 +1,1 @@
+export const ADMIN_USERS = ['marianos.selvaggi@whiteprompt.com', 'paula.vergara@whiteprompt.com']

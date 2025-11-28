@@ -9,18 +9,47 @@ import ConfirmationModal from '@/components/ConfirmationModal';
 import { useRouter } from 'next/navigation';
 import { ExpenseRefundForm } from '@/lib/constants';
 
-export default function ExpenseRefundFormClient() {
+interface TypeConfig {
+  title: string;
+  description: string;
+  concept: string;
+  receiptLabel: string;
+  receiptRequired: boolean;
+  descriptionLabel: string;
+  amount: number;
+}
+
+interface ExpenseRefundFormClientProps {
+  type?: string;
+}
+
+// Configuration for different expense types
+const TYPE_CONFIGS: Record<string, TypeConfig> = {
+  Social: {
+    title: 'Social Event',
+    description: 'Social Event',
+    concept: 'Social Events',
+    receiptLabel: 'Social Event picture',
+    receiptRequired: true,
+    descriptionLabel: 'Comments',
+    amount: 20
+  },
+};
+
+export default function ExpenseRefundFormClient({ type }: ExpenseRefundFormClientProps) {
+  // Get configuration for the current type
+  const typeConfig = type ? TYPE_CONFIGS[type] : null;
   const { data: session, status } = useSession();
   const router = useRouter();
   const [formData, setFormData] = useState<ExpenseRefundForm>({
-    title: '',
-    description: '',
-    amount: '',
+    title: typeConfig?.title || '',
+    description: typeConfig?.description || '',
     currency: 'USD',
-    concept: '',
+    concept: typeConfig?.concept || '',
     submittedDate: new Date().toISOString().split('T')[0],
     exchangeRate: '1',
     teamMemberEmail: session?.user?.email || '',
+    amount: typeConfig?.amount ? typeConfig.amount.toString() : '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -43,17 +72,17 @@ export default function ExpenseRefundFormClient() {
   // Track form changes
   useEffect(() => {
     const initialFormData = {
-      title: '',
-      description: '',
+      title: typeConfig?.title || '',
+      description: typeConfig?.description || '',
       amount: '',
       currency: 'USD',
-      concept: '',
+      concept: typeConfig?.concept || '',
       submittedDate: new Date().toISOString().split('T')[0],
     };
 
     const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
     setHasUnsavedChanges(hasChanges);
-  }, [formData]);
+  }, [formData, typeConfig]);
 
   // Handle beforeunload event
   useEffect(() => {
@@ -183,6 +212,12 @@ export default function ExpenseRefundFormClient() {
       return;
     }
 
+    if (typeConfig?.receiptRequired && !formData.receiptFile) {
+      setError(`Please upload a ${typeConfig.receiptLabel || 'receipt'}`);
+      setLoading(false);
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
@@ -209,11 +244,11 @@ export default function ExpenseRefundFormClient() {
 
       // Reset form and unsaved changes flag
       setFormData({
-        title: '',
-        description: '',
+        title: typeConfig?.title || '',
+        description: typeConfig?.description || '',
         amount: '',
         currency: 'USD',
-        concept: '',
+        concept: typeConfig?.concept || '',
         submittedDate: new Date().toISOString().split('T')[0],
         exchangeRate: '1',
         teamMemberEmail: session?.user?.email || '',
@@ -418,7 +453,9 @@ export default function ExpenseRefundFormClient() {
                 wp-body-small text-wp-text-muted font-semibold tracking-wider
                 uppercase
               `}>
-                Description <span className="text-red-400">*</span>
+                {typeConfig?.descriptionLabel || 'Description'} <span className={`
+                  text-red-400
+                `}>*</span>
               </label>
               <p className="wp-body-small text-wp-text-secondary mb-4">
                 Please provide a detailed description of the expense, including the business purpose and any relevant context.
@@ -445,7 +482,8 @@ export default function ExpenseRefundFormClient() {
                 wp-body-small text-wp-text-muted font-semibold tracking-wider
                 uppercase
               `}>
-                Receipt
+                {typeConfig?.receiptLabel || 'Receipt'}
+                {typeConfig?.receiptRequired && <span className="text-red-400">*</span>}
               </label>
               <p className="wp-body-small text-wp-text-secondary mb-4">
                 Upload a receipt for your expense (JPG, PNG, or PDF format, max 5MB).
@@ -454,7 +492,9 @@ export default function ExpenseRefundFormClient() {
                 <input
                   type="file"
                   accept="image/jpeg,image/jpg,image/png,application/pdf"
+                  lang='en'
                   onChange={handleFileChange}
+                  required={typeConfig?.receiptRequired}
                   className={`
                     bg-wp-dark-card/60 border-wp-border wp-body
                     text-wp-text-primary w-full rounded-lg border px-4 py-3

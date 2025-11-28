@@ -8,8 +8,8 @@ import {
   ReactNode,
 } from 'react';
 import { useSession } from 'next-auth/react';
+import { ADMIN_USERS } from './admins';
 
-const ALLOWED_ADMIN_EMAILS = ['mariano.selvaggi@whiteprompt.com'];
 
 interface AdminContextType {
   isAdmin: boolean;
@@ -22,7 +22,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    setIsAdmin(session?.user?.email ? ALLOWED_ADMIN_EMAILS.includes(session.user.email) : false);
+    setIsAdmin(session?.user?.email ? ADMIN_USERS.includes(session.user.email) : false);
   }, [session?.user?.email]);
 
   return (

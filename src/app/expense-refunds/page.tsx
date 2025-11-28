@@ -98,7 +98,7 @@ export default function ExpenseRefundsPage() {
         }}
         secondaryCta={{
           text: "Obtain your refund process",
-          href: "https://sites.google.com/whiteprompt.com/intranet/administration/get-your-refund",
+          href: "https://sites.google.com/whiteprompt.com/intranet/administration/get-your-refund/obtain-your-refund",
           newTab: true,
         }}
       />

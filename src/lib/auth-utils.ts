@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { cookies, headers } from "next/headers";
+import { ADMIN_USERS } from "../contexts/admins";
 
 export async function getAuthenticatedUser() {
   // Force dynamic rendering and ensure proper request context
@@ -32,8 +33,7 @@ export async function getAuthenticatedAdmin() {
     return { error, isAdmin: false };
   }
 
-  const ALLOWED_ADMIN_EMAILS = ["mariano.selvaggi@whiteprompt.com"];
-  const isAdmin = ALLOWED_ADMIN_EMAILS.includes(email!);
+  const isAdmin = ADMIN_USERS.includes(email!);
 
   if (!isAdmin) {
     return {

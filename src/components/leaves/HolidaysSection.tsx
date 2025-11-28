@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Holiday } from '@/lib/types';
-import { beginOfMonth } from '@/utils/date';
+import { beginOfMonth } from '@/lib/date';
 import { addYears, format } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
