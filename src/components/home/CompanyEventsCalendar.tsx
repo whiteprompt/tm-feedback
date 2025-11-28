@@ -57,7 +57,7 @@ export default function CompanyEventsCalendar({ companyDeadLineEvents }: { compa
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -83,14 +83,26 @@ export default function CompanyEventsCalendar({ companyDeadLineEvents }: { compa
   const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
   const calendarDays = [];
 
-  // Add empty cells for days before the first day of the month
-  for (let i = 0; i < startingDayOfWeek; i++) {
-    calendarDays.push(null);
+  // Adjust starting day for Monday-Friday week (0=Monday, 4=Friday)
+  // Sunday (0) becomes -1, Monday (1) becomes 0, ..., Friday (5) becomes 4, Saturday (6) becomes -1
+  const adjustedStartDay = startingDayOfWeek === 0 ? -1 : startingDayOfWeek === 6 ? -1 : startingDayOfWeek - 1;
+
+  // Add empty cells for days before the first day of the month (only if it's a weekday)
+  if (adjustedStartDay >= 0) {
+    for (let i = 0; i < adjustedStartDay; i++) {
+      calendarDays.push(null);
+    }
   }
 
-  // Add cells for each day of the month
+  // Add cells for each day of the month, but skip weekends
   for (let day = 1; day <= daysInMonth; day++) {
-    calendarDays.push(day);
+    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const dayOfWeek = date.getDay();
+    
+    // Skip weekends (0 = Sunday, 6 = Saturday)
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      calendarDays.push(day);
+    }
   }
 
   const handleEventClick = (event: CompanyEvent) => {
@@ -113,7 +125,7 @@ export default function CompanyEventsCalendar({ companyDeadLineEvents }: { compa
         rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm
       `}>
         {/* Days of Week Header */}
-        <div className="mb-4 grid grid-cols-7 gap-2">
+        <div className="mb-4 grid grid-cols-5 gap-2">
           {daysOfWeek.map(day => (
             <div
               key={day}
@@ -125,7 +137,7 @@ export default function CompanyEventsCalendar({ companyDeadLineEvents }: { compa
         </div>
 
         {/* Calendar Days */}
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-5 gap-2">
           {calendarDays.map((day, index) => {
             if (day === null) {
               return <div key={`empty-${index}`} className="aspect-square" />;
