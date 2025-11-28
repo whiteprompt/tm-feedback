@@ -17,7 +17,7 @@ export const Section: React.FC<SectionProps> = ({
   background = 'primary'
 }) => {
   const sizeClasses = {
-    sm: 'py-0 md:py-16',
+    sm: 'py-8 md:py-16',
     md: 'py-16 md:py-24',
     lg: 'py-20 md:py-32',
   };
@@ -32,10 +32,7 @@ export const Section: React.FC<SectionProps> = ({
 
   return (
     <section className={classes}>
-      <div className={twMerge(`
-        px-4md:px-8
-        mx-auto max-w-7xl
-      `,classNameDetails)}>
+      <div className={twMerge(`mx-auto max-w-7xl`,classNameDetails)}>
         {children}
       </div>
     </section>
