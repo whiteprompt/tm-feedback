@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import ConceptSelect from '@/components/ConceptSelect';
 import CurrencySelect from '@/components/CurrencySelect';
 import ErrorBanner from '@/components/ErrorBanner';
-import ConfirmationModal from '@/components/ConfirmationModal';
+import FormActionButtons from '@/components/FormActionButtons';
 import { useRouter } from 'next/navigation';
 import { ExpenseRefundForm } from '@/lib/constants';
 
@@ -56,8 +56,6 @@ export default function ExpenseRefundFormClient({ type }: ExpenseRefundFormClien
   const [isClient, setIsClient] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [fetchingExchangeRate, setFetchingExchangeRate] = useState(false);
-  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -97,35 +95,9 @@ export default function ExpenseRefundFormClient({ type }: ExpenseRefundFormClien
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
-  // Handle navigation
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const link = target.closest('a');
-      
-      if (link && hasUnsavedChanges) {
-        e.preventDefault();
-        setPendingNavigation(() => () => router.push(link.href));
-        setShowLeaveWarning(true);
-      }
-    };
 
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, [hasUnsavedChanges, router]);
 
-  const confirmNavigation = () => {
-    if (pendingNavigation) {
-      pendingNavigation();
-      setPendingNavigation(null);
-    }
-    setShowLeaveWarning(false);
-  };
 
-  const cancelNavigation = () => {
-    setPendingNavigation(null);
-    setShowLeaveWarning(false);
-  };
 
   // Fetch exchange rate when currency changes
   useEffect(() => {
@@ -522,65 +494,19 @@ export default function ExpenseRefundFormClient({ type }: ExpenseRefundFormClien
               title="Error submitting expense refund"
             />
 
-            <div className="flex gap-6 pt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  if (hasUnsavedChanges) {
-                    setPendingNavigation(() => () => router.push('/expense-refunds'));
-                    setShowLeaveWarning(true);
-                  } else {
-                    router.push('/expense-refunds');
-                  }
-                }}
-                className={`
-                  bg-wp-dark-card/60 border-wp-border wp-body flex-1
-                  cursor-pointer rounded-lg border px-6 py-4
-                `}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className={`
-                  wp-button-primary flex flex-1 items-center justify-center
-                  space-x-2 px-6 py-4 transition-all duration-300
-                  hover:scale-105
-                  disabled:cursor-not-allowed
-                `}
-              >
-                {loading ? (
-                  <>
-                    <div className={`
-                      h-5 w-5 animate-spin rounded-full border-2 border-white
-                      border-t-transparent
-                    `}></div>
-                    <span>Submitting...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Submit Expense Refund</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <FormActionButtons
+              isSubmitting={loading}
+              hasUnsavedChanges={hasUnsavedChanges}
+              cancelRoute="/other-requests"
+              submitText="Submit Expense Refund"
+              submittingText="Submitting..."
+            />
           </form>
           </div>
         </div>
       </main>
 
-      {/* Navigation Warning Dialog */}
-      <ConfirmationModal
-        isOpen={showLeaveWarning}
-        onClose={cancelNavigation}
-        onConfirm={confirmNavigation}
-        title="You have unsaved changes"
-        message="Are you sure you want to leave? Your progress will be lost."
-        confirmLabel="Leave"
-        cancelLabel="Cancel"
-        variant="warning"
-      />
+
     </div>
   );
 } 

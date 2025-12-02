@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LeaveType } from '@/lib/types';
 import ErrorBanner from '@/components/ErrorBanner';
-import ConfirmationModal from '../ConfirmationModal';
+import FormActionButtons from '@/components/FormActionButtons';
 
 const classInput = `bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full rounded-lg border-2 px-4 py-3 transition-all duration-200 focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2 [color-scheme:dark]`;
 
@@ -32,9 +32,7 @@ export default function LeaveFormClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
 
   // Track form changes
   useEffect(() => {
@@ -132,18 +130,7 @@ export default function LeaveFormClient() {
     }
   };
 
-    const confirmNavigation = () => {
-    if (pendingNavigation) {
-      pendingNavigation();
-      setPendingNavigation(null);
-    }
-    setShowLeaveWarning(false);
-  };
 
-  const cancelNavigation = () => {
-    setPendingNavigation(null);
-    setShowLeaveWarning(false);
-  };
 
   if (success) {
     return (
@@ -352,67 +339,17 @@ export default function LeaveFormClient() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex gap-6 pt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  if (hasUnsavedChanges) {
-                    setPendingNavigation(() => () => router.push('/leaves'));
-                    setShowLeaveWarning(true);
-                  } else {
-                    router.push('/leaves');
-                  }
-                }}
-                className={`
-                  bg-wp-dark-card/60 border-wp-border wp-body
-                  text-wp-text-secondary flex-1 rounded-lg border px-6 py-4
-                  font-medium transition-all duration-300
-                  hover:text-wp-text-primary hover:bg-wp-dark-card/80
-                  focus:ring-wp-primary focus:border-wp-primary focus:ring-2
-                  focus:outline-none
-                `}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`
-                  wp-button-primary flex flex-1 items-center justify-center
-                  space-x-2 px-6 py-4 transition-all duration-300
-                  hover:scale-105
-                  disabled:cursor-not-allowed
-                `}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className={`
-                      h-5 w-5 animate-spin rounded-full border-2 border-white
-                      border-t-transparent
-                    `}></div>
-                    <span>Submitting...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Submit Feedback</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <FormActionButtons
+              isSubmitting={isSubmitting}
+              hasUnsavedChanges={hasUnsavedChanges}
+              cancelRoute="/leaves"
+              submitText="Submit Feedback"
+              submittingText="Submitting..."
+            />
           </form>
         </div>
       </main>
-      {/* Navigation Warning Dialog */}
-      <ConfirmationModal
-          isOpen={showLeaveWarning}
-          onClose={cancelNavigation}
-          onConfirm={confirmNavigation}
-          title="You have unsaved changes"
-          message="Are you sure you want to leave? Your progress will be lost."
-          confirmLabel="Leave"
-          cancelLabel="Cancel"
-          variant="warning"
-      />
+
     </div>
   );
 }

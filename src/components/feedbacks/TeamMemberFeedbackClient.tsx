@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
 import { useFeedbacks } from '@/contexts/FeedbacksContext';
 import { Allocation } from '@/lib/constants';
-import ConfirmationModal from '../ConfirmationModal';
+import FormActionButtons from '@/components/FormActionButtons';
 
 interface Project {
   id: string;
@@ -49,8 +49,6 @@ export default function TeamMemberFeedbackClient() {
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
 
 
   useEffect(() => {
@@ -102,27 +100,7 @@ export default function TeamMemberFeedbackClient() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
-  // Handle navigation
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const link = target.closest('a');
-      
-      if (link && hasUnsavedChanges) {
-        e.preventDefault();
-        const shouldLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
-        if (!shouldLeave) {
-          // If user cancels, do nothing and stay on the page
-          return;
-        }
-        // Only navigate if user confirms
-        router.push(link.href);
-      }
-    };
 
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, [hasUnsavedChanges, router]);
 
   const handleProjectChange = (selected: Project | null) => {
     setSelectedProject(selected);
@@ -255,18 +233,7 @@ export default function TeamMemberFeedbackClient() {
     }
   };
 
-  const confirmNavigation = () => {
-    if (pendingNavigation) {
-      pendingNavigation();
-      setPendingNavigation(null);
-    }
-    setShowLeaveWarning(false);
-  };
 
-  const cancelNavigation = () => {
-    setPendingNavigation(null);
-    setShowLeaveWarning(false);
-  };
 
   if (status === 'loading' || !isClient) {
     return (
@@ -556,67 +523,17 @@ export default function TeamMemberFeedbackClient() {
                 onDismiss={() => setError('')}
                 title="Error submitting feedback"
               />
-              <div className="flex gap-6 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (hasUnsavedChanges) {
-                      setPendingNavigation(() => () => router.push('/my-projects?section=feedbacks'));
-                      setShowLeaveWarning(true);
-                    } else {
-                      router.push('/my-projects?section=feedbacks');
-                    }
-                  }}
-                  className={`
-                    bg-wp-dark-card/60 border-wp-border wp-body
-                    text-wp-text-secondary flex-1 rounded-lg border px-6 py-4
-                    font-medium transition-all duration-300
-                    hover:text-wp-text-primary hover:bg-wp-dark-card/80
-                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
-                    focus:outline-none
-                  `}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`
-                    wp-button-primary flex flex-1 items-center justify-center
-                    space-x-2 px-6 py-4 transition-all duration-300
-                    hover:scale-105
-                    disabled:cursor-not-allowed
-                  `}
-                >
-                  {loading ? (
-                    <>
-                      <div className={`
-                        h-5 w-5 animate-spin rounded-full border-2 border-white
-                        border-t-transparent
-                      `}></div>
-                      <span>Submitting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Submit Feedback</span>
-                    </>
-                  )}
-                </button>
-              </div>
+              <FormActionButtons
+                isSubmitting={loading}
+                hasUnsavedChanges={hasUnsavedChanges}
+                cancelRoute="/my-projects?section=feedbacks"
+                submitText="Submit Feedback"
+                submittingText="Submitting..."
+              />
             </form>
           </div>
       </main>
-      {/* Navigation Warning Dialog */}
-      <ConfirmationModal
-        isOpen={showLeaveWarning}
-        onClose={cancelNavigation}
-        onConfirm={confirmNavigation}
-        title="You have unsaved changes"
-        message="Are you sure you want to leave? Your progress will be lost."
-        confirmLabel="Leave"
-        cancelLabel="Cancel"
-        variant="warning"
-      />
+
     </div>
   );
 } 
