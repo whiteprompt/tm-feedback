@@ -8,6 +8,7 @@ import { LEAVES_MIN_YEAR } from './constants';
 interface VacationsSummaryTableProps {
   leaves: Leave[];
   initialBalance?: number;
+  isLastActiveContractHourly: boolean;
 }
 
 const LEAVE_TYPE_COLORS = {
@@ -16,7 +17,7 @@ const LEAVE_TYPE_COLORS = {
   'Vacations Balance': 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white',
 } as const;
 
-export default function VacationsSummaryTable({ leaves, initialBalance }: VacationsSummaryTableProps) {
+export default function VacationsSummaryTable({ leaves, initialBalance, isLastActiveContractHourly }: VacationsSummaryTableProps) {
   const { teamMember } = useTeamMember();
 
   // Process leaves to get years and summary for vacations taken calculation
@@ -64,52 +65,6 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
 
     return { summary, years: allYears };
   }, [leaves]);
-
-  // Determine if the last active contract is hourly
-  const isLastActiveContractHourly = useMemo(() => {
-    if (!teamMember?.contracts || teamMember.contracts.length === 0) {
-      return false;
-    }
-
-    const currentDate = new Date();
-
-    // Filter contracts that are currently active (started and not ended, or open)
-    const activeContracts = (teamMember.contracts || []).filter(contract => {
-      if (!contract.start) return false;
-
-      const contractStart = new Date(contract.start);
-      if (contractStart > currentDate) return false; // Not started yet
-
-      // If contract has no end date, it's still active (open contract)
-      if (!contract.end) {
-        return true;
-      }
-
-      const contractEnd = new Date(contract.end);
-      return contractEnd >= currentDate; // Still active
-    });
-
-    if (activeContracts.length === 0) {
-      return false;
-    }
-
-    // Find the last active contract (most recent start date, or open contract)
-    const lastActiveContract = activeContracts.reduce((latest, contract) => {
-      if (!latest) return contract;
-      
-      const contractStart = new Date(contract.start);
-      const latestStart = new Date(latest.start);
-      
-      // Prefer open contracts (no end date)
-      if (!contract.end && latest.end) return contract;
-      if (contract.end && !latest.end) return latest;
-      
-      // If both have end dates or both are open, pick the one with latest start date
-      return contractStart > latestStart ? contract : latest;
-    });
-
-    return lastActiveContract?.amountType === 'Hourly';
-  }, [teamMember]);
 
   // Calculate average of paidAnnualLeave per year based on active contracts
   const averagePaidAnnualLeaveByYear = useMemo(() => {
@@ -196,7 +151,7 @@ export default function VacationsSummaryTable({ leaves, initialBalance }: Vacati
 
         const sum = validLeaves.reduce((acc, value) => acc + value, 0);
         const average = (sum / validLeaves.length) * prorationFactor;
-        averages[yearStr] = Math.ceil(average); // Round to upper number
+        averages[yearStr] = Math.floor(average);
       }
     });
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
@@ -96,6 +96,52 @@ export default function LeavesPage() {
       console.log(filtered);
     }
   }, [leaves, statusFilter]);
+
+  // Determine if the last active contract is hourly
+  const isLastActiveContractHourly = useMemo(() => {
+    if (!teamMember?.contracts || teamMember.contracts.length === 0) {
+      return false;
+    }
+
+    const currentDate = new Date();
+
+    // Filter contracts that are currently active (started and not ended, or open)
+    const activeContracts = (teamMember.contracts || []).filter(contract => {
+      if (!contract.start) return false;
+
+      const contractStart = new Date(contract.start);
+      if (contractStart > currentDate) return false; // Not started yet
+
+      // If contract has no end date, it's still active (open contract)
+      if (!contract.end) {
+        return true;
+      }
+
+      const contractEnd = new Date(contract.end);
+      return contractEnd >= currentDate; // Still active
+    });
+
+    if (activeContracts.length === 0) {
+      return false;
+    }
+
+    // Find the last active contract (most recent start date, or open contract)
+    const lastActiveContract = activeContracts.reduce((latest, contract) => {
+      if (!latest) return contract;
+      
+      const contractStart = new Date(contract.start);
+      const latestStart = new Date(latest.start);
+      
+      // Prefer open contracts (no end date)
+      if (!contract.end && latest.end) return contract;
+      if (contract.end && !latest.end) return latest;
+      
+      // If both have end dates or both are open, pick the one with latest start date
+      return contractStart > latestStart ? contract : latest;
+    });
+
+    return lastActiveContract?.amountType === 'Hourly';
+  }, [teamMember]);
 
   // Handle delete click - shows confirmation modal
   const handleDeleteClick = (leave: Leave) => {
@@ -221,13 +267,21 @@ export default function LeavesPage() {
         }}
       />
       <div>
-        {/* Vacations Summary Table */}
-        <FullWidthContainerSection
-          headline='Vacations Balance'
-          description='View your available days and yearly accrual.'
-        >
-          <VacationsSummaryTable leaves={leaves} initialBalance={teamMember?.annualLeavesBalance || 0} />
-        </FullWidthContainerSection>
+        {!isLastActiveContractHourly && (
+          <>
+            {/* Vacations Summary Table */}
+            <FullWidthContainerSection
+              headline='Vacations Balance'
+              description='View your available days and yearly accrual.'
+            >
+              <VacationsSummaryTable 
+              leaves={leaves} 
+              initialBalance={teamMember?.annualLeavesBalance || 0}
+              isLastActiveContractHourly={isLastActiveContractHourly}
+            />
+            </FullWidthContainerSection>
+          </>
+        )}
         {/* Leaves Tabs Section */}
         <FullWidthContainerSection
           headline='Leaves Summary'
