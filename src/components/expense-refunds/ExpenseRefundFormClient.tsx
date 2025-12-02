@@ -32,7 +32,7 @@ const TYPE_CONFIGS: Record<string, TypeConfig> = {
     receiptLabel: 'Social Event picture',
     receiptRequired: true,
     descriptionLabel: 'Comments',
-    amount: 20
+    amount: 30
   },
 };
 
@@ -437,11 +437,12 @@ export default function ExpenseRefundFormClient({ type }: ExpenseRefundFormClien
                   value={formData.submittedDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, submittedDate: e.target.value }))}
                   className={`
-                    bg-wp-dark-card/60 border-wp-border wp-body
-                    text-wp-text-primary w-full rounded-lg border px-4 py-3
-                    transition-all duration-300
-                    focus:ring-wp-primary focus:border-wp-primary focus:ring-2
-                    focus:outline-none
+                    bg-wp-dark-secondary border-wp-border text-wp-text-primary
+                    w-full rounded-lg border-2 px-4 py-3
+                    [color-scheme:dark]
+                    transition-all duration-200
+                    focus:border-wp-primary focus:ring-wp-primary/20
+                    focus:ring-2
                   `}
                   required
                 />

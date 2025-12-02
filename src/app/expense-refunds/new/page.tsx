@@ -19,7 +19,7 @@ export default async function Page({ searchParams }: PageProps) {
           headline="Submit Expense Refund"
           subheadline="Submit expense refund manually with this form."
           primaryCta={{
-            text: "Go back to feedbacks",
+            text: "Go back to other requests",
             href: '/other-requests',
           }}
         />

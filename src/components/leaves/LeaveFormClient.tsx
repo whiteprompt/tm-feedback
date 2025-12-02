@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LeaveType } from '@/lib/types';
 import ErrorBanner from '@/components/ErrorBanner';
+import ConfirmationModal from '../ConfirmationModal';
 
 const classInput = `bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full rounded-lg border-2 px-4 py-3 transition-all duration-200 focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2 [color-scheme:dark]`;
 
@@ -31,6 +32,24 @@ export default function LeaveFormClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+
+  // Track form changes
+  useEffect(() => {
+    const initialFormData = {
+      fromDate: '',
+      toDate: '',
+      type: LeaveType.AnnualLeave,
+      comments: '',
+      certificate: null,
+      approvedByEmail: '',
+    };
+
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+    setHasUnsavedChanges(hasChanges);
+  }, [formData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -50,11 +69,28 @@ export default function LeaveFormClient() {
 
   const calculateDays = () => {
     if (!formData.fromDate || !formData.toDate) return 0;
-    const fromDate = new Date(formData.fromDate);
-    const toDate = new Date(formData.toDate);
-    const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
-    return diffDays;
+    
+    // Parse dates as local dates to avoid timezone issues
+    const [fromYear, fromMonth, fromDay] = formData.fromDate.split('-').map(Number);
+    const [toYear, toMonth, toDay] = formData.toDate.split('-').map(Number);
+    
+    const fromDate = new Date(fromYear, fromMonth - 1, fromDay);
+    const toDate = new Date(toYear, toMonth - 1, toDay);
+    
+    let count = 0;
+    const currentDate = new Date(fromDate);
+    
+    // Loop through each day and count only weekdays (Monday-Friday)
+    while (currentDate <= toDate) {
+      const dayOfWeek = currentDate.getDay();
+      // 0 = Sunday, 6 = Saturday, so we count 1-5 (Monday-Friday)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        count++;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    return count;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,6 +132,19 @@ export default function LeaveFormClient() {
     }
   };
 
+    const confirmNavigation = () => {
+    if (pendingNavigation) {
+      pendingNavigation();
+      setPendingNavigation(null);
+    }
+    setShowLeaveWarning(false);
+  };
+
+  const cancelNavigation = () => {
+    setPendingNavigation(null);
+    setShowLeaveWarning(false);
+  };
+
   if (success) {
     return (
       <div className="wp-card wp-fade-in p-8 text-center">
@@ -116,229 +165,254 @@ export default function LeaveFormClient() {
   }
 
   return (
-    <div className="wp-card wp-fade-in p-8">
-      <ErrorBanner 
-        error={error} 
-        onDismiss={() => setError('')}
-        title="Error submitting leave request"
-      />
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className={`
-          grid grid-cols-1 gap-6
-          md:grid-cols-2
-        `}>
-          {/* Start Date */}
-          <div>
-            <label htmlFor="fromDate" className={`
-              wp-body text-wp-text-primary mb-2 block font-medium
-            `}>
-              Start Date *
-            </label>
-            <input
-              type="date"
-              id="fromDate"
-              name="fromDate"
-              value={formData.fromDate}
-              onChange={handleInputChange}
-              required
-              className={classInput}
-            />
-          </div>
-          {/* End Date */}
-          <div>
-            <label htmlFor="toDate" className={`
-              wp-body text-wp-text-primary mb-2 block font-medium
-            `}>
-              End Date *
-            </label>
-            <input
-              type="date"
-              id="toDate"
-              name="toDate"
-              value={formData.toDate}
-              onChange={handleInputChange}
-              required
-              className={classInput}
-            />
-          </div>
-        </div>
-
-        {/* Days Calculation */}
-        {formData.fromDate && formData.toDate && (
-          <div className={`
-            bg-wp-primary/10 border-wp-primary/30 rounded-lg border p-4
-          `}>
-            <div className="flex items-center">
-              <svg className="text-wp-primary mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-8 4h8m-4-4v8m-4-4h8" />
-              </svg>
-              <span className="wp-body text-wp-primary font-medium">
-                Total days requested: {calculateDays()} day{calculateDays() !== 1 ? 's' : ''}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Leave Type */}
-        <div>
-          <label htmlFor="type" className={`
-            wp-body text-wp-text-primary mb-2 block font-medium
-          `}>
-            Leave Type *
-          </label>
-          <select
-            id="type"
-            name="type"
-            value={formData.type}
-            onChange={handleInputChange}
-            required
-            className={classInput}
-          >
-            <option value={LeaveType.AnnualLeave}>Annual Leave</option>
-            <option value={LeaveType.UnpaidLeave}>Unpaid Leave</option>
-            <option value={LeaveType.IllnessLeave}>Illness Leave</option>
-            <option value={LeaveType.PTOLeave}>PTO Leave</option>
-          </select>
-        </div>
-
-        {/* Approval By */}
-        <div>
-          <label htmlFor="approvedByEmail" className={`
-            wp-body text-wp-text-primary mb-2 block font-medium
-          `}>
-            Approval By *
-          </label>
-          <select
-            id="approvedByEmail"
-            name="approvedByEmail"
-            value={formData.approvedByEmail}
-            onChange={handleInputChange}
-            required
-            className={classInput}
-          >
-            <option value="">Select approver...</option>
-            <option value="mariano.selvaggi@whiteprompt.com">mariano.selvaggi@whiteprompt.com</option>
-            <option value="federico.matavos@whiteprompt.com">federico.matavos@whiteprompt.com</option>
-            <option value="diego.gallardo@whiteprompt.com">diego.gallardo@whiteprompt.com</option>
-            <option value="jeremias.gibilbank@whiteprompt.com">jeremias.gibilbank@whiteprompt.com</option>
-            <option value="vanesa.fernandez@whiteprompt.com">vanesa.fernandez@whiteprompt.com</option>
-            <option value="leonardo.tenaglia@whiteprompt.com">leonardo.tenaglia@whiteprompt.com</option>
-            <option value="nacho@whiteprompt.com">nacho@whiteprompt.com</option>
-          </select>
-        </div>
-
-        {/* Comments */}
-        <div>
-          <label htmlFor="comments" className={`
-            wp-body text-wp-text-primary mb-2 block font-medium
-          `}>
-            Comments
-          </label>
-          <textarea
-            id="comments"
-            name="comments"
-            value={formData.comments}
-            onChange={handleInputChange}
-            rows={4}
-            placeholder="Add any additional comments or details about your leave request..."
-            className={`
-              bg-wp-dark-secondary border-wp-border text-wp-text-primary w-full
-              resize-none rounded-lg border-2 px-4 py-3 transition-all
-              duration-200
-              focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
-            `}
+    <div className={`
+      from-wp-dark-primary via-wp-dark-secondary to-wp-dark-tertiary
+      min-h-screen bg-linear-to-r
+    `}>
+      <main className="wp-section-sm">
+        <div className="wp-card p-8">
+          <ErrorBanner 
+            error={error} 
+            onDismiss={() => setError('')}
+            title="Error submitting leave request"
           />
-        </div>
-
-        {/* Certificate Upload */}
-        <div>
-          <label htmlFor="certificate" className={`
-            wp-body text-wp-text-primary mb-2 block font-medium
-          `}>
-            Certificate/Medical Note *
-          </label>
-          <div className="relative">
-            <input
-              type="file"
-              id="certificate"
-              name="certificate"
-              lang='en'
-              onChange={handleFileChange}
-              accept=".jpg,.jpeg,.png,.pdf"
-              className={`
-                bg-wp-dark-secondary border-wp-border text-wp-text-primary
-                w-full rounded-lg border-2 px-4 py-3 transition-all duration-200
-                focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
-                file:bg-wp-primary file:mr-4 file:rounded-full file:border-0
-                file:px-4 file:py-2 file:text-sm file:font-semibold
-                file:text-white
-                hover:file:bg-wp-primary/90
-              `}
-            />
-          </div>
-          <p className="wp-body-small text-wp-text-muted mt-2">
-            Upload a certificate or medical note if required for your leave type. Accepted formats: JPG, PNG, PDF (max 5MB)
-          </p>
-          {formData.certificate && (
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className={`
-              bg-wp-dark-card border-wp-border mt-2 rounded-lg border p-3
+              grid grid-cols-1 gap-6
+              md:grid-cols-2
             `}>
-              <div className="flex items-center">
-                <svg className="text-wp-success mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="wp-body-small text-wp-text-primary">
-                  {formData.certificate.name} ({(formData.certificate.size / 1024 / 1024).toFixed(2)} MB)
-                </span>
+              {/* Start Date */}
+              <div>
+                <label htmlFor="fromDate" className={`
+                  wp-body text-wp-text-primary mb-2 block font-medium
+                `}>
+                  Start Date *
+                </label>
+                <input
+                  type="date"
+                  id="fromDate"
+                  name="fromDate"
+                  value={formData.fromDate}
+                  onChange={handleInputChange}
+                  required
+                  className={classInput}
+                />
+              </div>
+              {/* End Date */}
+              <div>
+                <label htmlFor="toDate" className={`
+                  wp-body text-wp-text-primary mb-2 block font-medium
+                `}>
+                  End Date *
+                </label>
+                <input
+                  type="date"
+                  id="toDate"
+                  name="toDate"
+                  value={formData.toDate}
+                  onChange={handleInputChange}
+                  required
+                  className={classInput}
+                />
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Submit Button */}
-        <div className={`
-          border-wp-border flex items-center justify-end space-x-4 border-t pt-6
-        `}>
-          <button
-            type="button"
-            onClick={() => router.push('/leaves')}
-            className={`
-              bg-wp-dark-secondary text-wp-text-primary border-wp-border
-              rounded-lg border px-6 py-3 font-medium transition-all
-              duration-200
-              hover:bg-wp-dark-card hover:border-wp-primary/50
-            `}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting || !formData.fromDate || !formData.toDate || !formData.approvedByEmail || !formData.certificate}
-            className={`
-              bg-wp-primary flex items-center space-x-2 rounded-lg px-6 py-3
-              font-medium text-white transition-all duration-200
-              hover:bg-wp-primary/90
-              disabled:bg-wp-text-muted disabled:cursor-not-allowed
-            `}
-          >
-            {isSubmitting ? (
-              <>
-                <div className={`
-                  h-4 w-4 animate-spin rounded-full border-b-2 border-white
-                `}></div>
-                <span>Submitting...</span>
-              </>
-            ) : (
-              <>
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                <span>Submit Leave Request</span>
-              </>
+            {/* Days Calculation */}
+            {formData.fromDate && formData.toDate && (
+              <div className={`
+                bg-wp-primary/10 border-wp-primary/30 rounded-lg border p-4
+              `}>
+                <div className="flex items-center">
+                  <svg className="text-wp-primary mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-8 4h8m-4-4v8m-4-4h8" />
+                  </svg>
+                  <span className="wp-body text-wp-primary font-medium">
+                    Total days requested: {calculateDays()} day{calculateDays() !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
             )}
-          </button>
+
+            {/* Leave Type */}
+            <div>
+              <label htmlFor="type" className={`
+                wp-body text-wp-text-primary mb-2 block font-medium
+              `}>
+                Leave Type *
+              </label>
+              <select
+                id="type"
+                name="type"
+                value={formData.type}
+                onChange={handleInputChange}
+                required
+                className={classInput}
+              >
+                <option value={LeaveType.AnnualLeave}>Annual Leave</option>
+                <option value={LeaveType.UnpaidLeave}>Unpaid Leave</option>
+                <option value={LeaveType.IllnessLeave}>Illness Leave</option>
+                <option value={LeaveType.PTOLeave}>PTO Leave</option>
+              </select>
+            </div>
+
+            {/* Approval By */}
+            <div>
+              <label htmlFor="approvedByEmail" className={`
+                wp-body text-wp-text-primary mb-2 block font-medium
+              `}>
+                Approval By *
+              </label>
+              <select
+                id="approvedByEmail"
+                name="approvedByEmail"
+                value={formData.approvedByEmail}
+                onChange={handleInputChange}
+                required
+                className={classInput}
+              >
+                <option value="">Select approver...</option>
+                <option value="mariano.selvaggi@whiteprompt.com">mariano.selvaggi@whiteprompt.com</option>
+                <option value="federico.matavos@whiteprompt.com">federico.matavos@whiteprompt.com</option>
+                <option value="diego.gallardo@whiteprompt.com">diego.gallardo@whiteprompt.com</option>
+                <option value="jeremias.gibilbank@whiteprompt.com">jeremias.gibilbank@whiteprompt.com</option>
+                <option value="vanesa.fernandez@whiteprompt.com">vanesa.fernandez@whiteprompt.com</option>
+                <option value="leonardo.tenaglia@whiteprompt.com">leonardo.tenaglia@whiteprompt.com</option>
+                <option value="nacho@whiteprompt.com">nacho@whiteprompt.com</option>
+              </select>
+            </div>
+
+            {/* Comments */}
+            <div>
+              <label htmlFor="comments" className={`
+                wp-body text-wp-text-primary mb-2 block font-medium
+              `}>
+                Comments
+              </label>
+              <textarea
+                id="comments"
+                name="comments"
+                value={formData.comments}
+                onChange={handleInputChange}
+                rows={4}
+                placeholder="Add any additional comments or details about your leave request..."
+                className={`
+                  bg-wp-dark-secondary border-wp-border text-wp-text-primary
+                  w-full resize-none rounded-lg border-2 px-4 py-3
+                  transition-all duration-200
+                  focus:border-wp-primary focus:ring-wp-primary/20 focus:ring-2
+                `}
+              />
+            </div>
+
+            {/* Certificate Upload */}
+            <div>
+              <label htmlFor="certificate" className={`
+                wp-body text-wp-text-primary mb-2 block font-medium
+              `}>
+                Certificate/Medical Note
+              </label>
+              <div className="relative">
+                <input
+                  type="file"
+                  id="certificate"
+                  name="certificate"
+                  lang='en'
+                  onChange={handleFileChange}
+                  accept=".jpg,.jpeg,.png,.pdf"
+                  className={`
+                    bg-wp-dark-secondary border-wp-border text-wp-text-primary
+                    w-full rounded-lg border-2 px-4 py-3 transition-all
+                    duration-200
+                    focus:border-wp-primary focus:ring-wp-primary/20
+                    focus:ring-2
+                    file:bg-wp-primary file:mr-4 file:rounded-full file:border-0
+                    file:px-4 file:py-2 file:text-sm file:font-semibold
+                    file:text-white
+                    hover:file:bg-wp-primary/90
+                  `}
+                />
+              </div>
+              <p className="wp-body-small text-wp-text-muted mt-2">
+                Upload a certificate or medical note if required for your leave type. Accepted formats: JPG, PNG, PDF (max 5MB)
+              </p>
+              {formData.certificate && (
+                <div className={`
+                  bg-wp-dark-card border-wp-border mt-2 rounded-lg border p-3
+                `}>
+                  <div className="flex items-center">
+                    <svg className="text-wp-success mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="wp-body-small text-wp-text-primary">
+                      {formData.certificate.name} ({(formData.certificate.size / 1024 / 1024).toFixed(2)} MB)
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex gap-6 pt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  if (hasUnsavedChanges) {
+                    setPendingNavigation(() => () => router.push('/leaves'));
+                    setShowLeaveWarning(true);
+                  } else {
+                    router.push('/leaves');
+                  }
+                }}
+                className={`
+                  bg-wp-dark-card/60 border-wp-border wp-body
+                  text-wp-text-secondary flex-1 rounded-lg border px-6 py-4
+                  font-medium transition-all duration-300
+                  hover:text-wp-text-primary hover:bg-wp-dark-card/80
+                  focus:ring-wp-primary focus:border-wp-primary focus:ring-2
+                  focus:outline-none
+                `}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`
+                  wp-button-primary flex flex-1 items-center justify-center
+                  space-x-2 px-6 py-4 transition-all duration-300
+                  hover:scale-105
+                  disabled:cursor-not-allowed
+                `}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className={`
+                      h-5 w-5 animate-spin rounded-full border-2 border-white
+                      border-t-transparent
+                    `}></div>
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit Feedback</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </main>
+      {/* Navigation Warning Dialog */}
+      <ConfirmationModal
+          isOpen={showLeaveWarning}
+          onClose={cancelNavigation}
+          onConfirm={confirmNavigation}
+          title="You have unsaved changes"
+          message="Are you sure you want to leave? Your progress will be lost."
+          confirmLabel="Leave"
+          cancelLabel="Cancel"
+          variant="warning"
+      />
     </div>
   );
 }

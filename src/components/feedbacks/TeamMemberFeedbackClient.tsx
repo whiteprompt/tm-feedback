@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useTeamMember } from '@/contexts/TeamMemberContext';
 import { useFeedbacks } from '@/contexts/FeedbacksContext';
 import { Allocation } from '@/lib/constants';
+import ConfirmationModal from '../ConfirmationModal';
 
 interface Project {
   id: string;
@@ -48,6 +49,9 @@ export default function TeamMemberFeedbackClient() {
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -69,6 +73,56 @@ export default function TeamMemberFeedbackClient() {
       })).filter((project: Project) => !project.name?.toLowerCase().includes('wp')));
     }
   }, [teamMember, isClient]);
+
+  // Track form changes
+  useEffect(() => {
+    const initialFormData = {
+      projectId: '',
+      role: '',
+      responsibilities: '',
+      technologies: [],
+      overallSatisfaction: 'neutral',
+      comments: '',
+    };
+
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+    setHasUnsavedChanges(hasChanges);
+  }, [formData]);
+
+  // Handle beforeunload event
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  // Handle navigation
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && hasUnsavedChanges) {
+        e.preventDefault();
+        const shouldLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+        if (!shouldLeave) {
+          // If user cancels, do nothing and stay on the page
+          return;
+        }
+        // Only navigate if user confirms
+        router.push(link.href);
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [hasUnsavedChanges, router]);
 
   const handleProjectChange = (selected: Project | null) => {
     setSelectedProject(selected);
@@ -122,56 +176,6 @@ export default function TeamMemberFeedbackClient() {
       technologies: prev.technologies.filter(t => t !== tech)
     }));
   };
-
-  // Track form changes
-  useEffect(() => {
-    const initialFormData = {
-      projectId: '',
-      role: '',
-      responsibilities: '',
-      technologies: [],
-      overallSatisfaction: 'neutral',
-      comments: '',
-    };
-
-    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
-    setHasUnsavedChanges(hasChanges);
-  }, [formData]);
-
-  // Handle beforeunload event
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasUnsavedChanges]);
-
-  // Handle navigation
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const link = target.closest('a');
-      
-      if (link && hasUnsavedChanges) {
-        e.preventDefault();
-        const shouldLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
-        if (!shouldLeave) {
-          // If user cancels, do nothing and stay on the page
-          return;
-        }
-        // Only navigate if user confirms
-        router.push(link.href);
-      }
-    };
-
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, [hasUnsavedChanges, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,6 +253,19 @@ export default function TeamMemberFeedbackClient() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const confirmNavigation = () => {
+    if (pendingNavigation) {
+      pendingNavigation();
+      setPendingNavigation(null);
+    }
+    setShowLeaveWarning(false);
+  };
+
+  const cancelNavigation = () => {
+    setPendingNavigation(null);
+    setShowLeaveWarning(false);
   };
 
   if (status === 'loading' || !isClient) {
@@ -544,10 +561,11 @@ export default function TeamMemberFeedbackClient() {
                   type="button"
                   onClick={() => {
                     if (hasUnsavedChanges) {
-                      const shouldLeave = window.confirm("You have unsaved changes. Are you sure you want to leave?");
-                      if (!shouldLeave) return;
+                      setPendingNavigation(() => () => router.push('/my-projects?section=feedbacks'));
+                      setShowLeaveWarning(true);
+                    } else {
+                      router.push('/my-projects?section=feedbacks');
                     }
-                    router.push('/my-projects');
                   }}
                   className={`
                     bg-wp-dark-card/60 border-wp-border wp-body
@@ -564,11 +582,10 @@ export default function TeamMemberFeedbackClient() {
                   type="submit"
                   disabled={loading}
                   className={`
-                    wp-button-primary wp-body flex flex-1 items-center
-                    justify-center space-x-2 px-6 py-4 transition-all
-                    duration-300
+                    wp-button-primary flex flex-1 items-center justify-center
+                    space-x-2 px-6 py-4 transition-all duration-300
                     hover:scale-105
-                    disabled:cursor-not-allowed disabled:opacity-50
+                    disabled:cursor-not-allowed
                   `}
                 >
                   {loading ? (
@@ -581,9 +598,6 @@ export default function TeamMemberFeedbackClient() {
                     </>
                   ) : (
                     <>
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
                       <span>Submit Feedback</span>
                     </>
                   )}
@@ -592,6 +606,17 @@ export default function TeamMemberFeedbackClient() {
             </form>
           </div>
       </main>
+      {/* Navigation Warning Dialog */}
+      <ConfirmationModal
+        isOpen={showLeaveWarning}
+        onClose={cancelNavigation}
+        onConfirm={confirmNavigation}
+        title="You have unsaved changes"
+        message="Are you sure you want to leave? Your progress will be lost."
+        confirmLabel="Leave"
+        cancelLabel="Cancel"
+        variant="warning"
+      />
     </div>
   );
 } 

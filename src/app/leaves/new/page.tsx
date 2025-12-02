@@ -31,11 +31,10 @@ export default function NewLeavePage() {
   return (
     <PageLayout>
       <HeroSection
-        badge="Submit New Leave Request"
-        headline="Request time off by filling out the form below."
+        headline="Submit New Leave Request"
         subheadline="Request time off by filling out the form below."
         primaryCta={{
-          text: "Go back to list",
+          text: "Go back to Leaves",
           onClick: () => router.push("/leaves"),
         }}
       />

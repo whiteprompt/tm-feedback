@@ -33,12 +33,11 @@ export default function Page() {
     return (
       <PageLayout>
         <HeroSection
-          // badge="Submit New Feedback"
           headline="Submit New Feedback"
           subheadline="Submit a new feedback for your project allocations."
           primaryCta={{
             text: "Go back to feedbacks",
-            onClick: () => router.push("/my-projects"),
+            onClick: () => router.push("/my-projects?section=feedbacks"),
           }}
         />
         <FullWidthContainerSection>
