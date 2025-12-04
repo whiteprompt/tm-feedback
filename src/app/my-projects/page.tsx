@@ -65,7 +65,7 @@ function MyProjectsContent() {
           </FullWidthContainerSection>
           <FullWidthContainerSection
             id="feedbacks"
-            headline='My Feedbacks'
+            headline='My Feedback'
             description='Share your experience and view feedback history.'
             primaryCta={{
               text: "Submit a new Feedback",
