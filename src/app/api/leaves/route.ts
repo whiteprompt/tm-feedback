@@ -16,7 +16,7 @@ export async function GET() {
 
     // Make the request to the staffing service
     const response = await fetch(
-      `${STAFFING_API_URL}/notion-webhooks/leaves?email=${email}`,
+      `${STAFFING_API_URL}/shared-data/leaves?email=${email}`,
       {
         headers: {
           Accept: "application/json",
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Make the request to the staffing service
-    const response = await fetch(`${STAFFING_API_URL}/notion-webhooks/leaves`, {
+    const response = await fetch(`${STAFFING_API_URL}/shared-data/leaves`, {
       method: "POST",
       body: leaveFormData,
       headers: {

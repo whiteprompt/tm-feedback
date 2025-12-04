@@ -15,7 +15,7 @@ export async function GET() {
 
     // Make the request to the staffing service
     const response = await fetch(
-      `${STAFFING_API_URL}/notion-webhooks/expense-refunds?email=${email}`,
+      `${STAFFING_API_URL}/shared-data/expense-refunds?email=${email}`,
       {
         headers: {
           Accept: "application/json",
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
 
     // Make the request to the staffing service
     const response = await fetch(
-      `${STAFFING_API_URL}/notion-webhooks/expense-refund`,
+      `${STAFFING_API_URL}/shared-data/expense-refunds`,
       {
         method: "POST",
         body: expenseRefundFormData,

@@ -53,7 +53,7 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      `https://staffing.whiteprompt.com/notion-webhooks/project-context?email=${encodeURIComponent(email)}`,
+      `https://staffing.whiteprompt.com/shared-data/project-context?email=${encodeURIComponent(email)}`,
       {
         headers: {
           "x-api-key": process.env.STAFFING_TOOL_API_KEY || "",
@@ -136,7 +136,7 @@ export async function POST(request: Request) {
     const context = `Role:${role}\nResponsibilities:${responsibilities}\nTechnologies:${technologies}\nOverall Satisfaction:${overallSatisfaction}\n${comments ? `Comments:${comments}` : ""}`;
 
     const response = await fetch(
-      `${STAFFING_API_URL}/notion-webhooks/project-context`,
+      `${STAFFING_API_URL}/shared-data/project-context`,
       {
         method: "POST",
         body: JSON.stringify({

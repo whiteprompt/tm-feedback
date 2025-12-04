@@ -63,7 +63,7 @@ export async function PATCH(
 
     // Make the request to the staffing service to update the certificate
     const response = await fetch(
-      `${STAFFING_API_URL}/notion-webhooks/leaves/${id}/certificate`,
+      `${STAFFING_API_URL}/shared-data/leaves/${id}/certificate`,
       {
         method: "PATCH",
         body: uploadFormData,

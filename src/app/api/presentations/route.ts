@@ -15,7 +15,7 @@ export async function GET() {
 
     // Make the request to the staffing service
     const response = await fetch(
-      `${STAFFING_API_URL}/notion-webhooks/bench-allocation?email=${email}`,
+      `${STAFFING_API_URL}/shared-data/presentations?email=${email}`,
       {
         headers: {
           Accept: "application/json",

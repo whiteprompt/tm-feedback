@@ -27,7 +27,7 @@ export async function DELETE(
 
     // Make the request to the staffing service to delete the leave
     const response = await fetch(
-      `${STAFFING_API_URL}/notion-webhooks/leaves/${id}`,
+      `${STAFFING_API_URL}/shared-data/leaves/${id}`,
       {
         method: "DELETE",
         headers: {

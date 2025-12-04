@@ -23,7 +23,7 @@ export async function GET() {
     }
 
     const notionUrl = new URL(
-      `${STAFFING_API_URL}/notion-webhooks/team-member?q=${email}&includeAllocations=true&includeContracts=true`
+      `${STAFFING_API_URL}/shared-data/team-member?q=${email}&includeAllocations=true&includeContracts=true`
     );
 
     const response = await fetch(notionUrl.toString(), {
