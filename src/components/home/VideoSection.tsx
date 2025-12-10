@@ -7,12 +7,21 @@ interface VideoSectionProps {
 }
 
 export default function VideoSection({
-  videoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ", // Placeholder video
+  videoUrl = "https://drive.google.com/file/d/1nAbBjB3h950Ox8LMyp70vrMbYJ6ASvSz/view?usp=sharing",
   title = "",
   description = ""
 }: VideoSectionProps) {
-  // Extract video ID from YouTube URL if full URL is provided
+  // Extract video ID from YouTube or Google Drive URL if full URL is provided
   const getEmbedUrl = (url: string) => {
+    // Handle Google Drive URLs
+    if (url.includes('drive.google.com')) {
+      const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (fileIdMatch && fileIdMatch[1]) {
+        return `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+      }
+    }
+    
+    // Handle YouTube URLs
     if (url.includes('youtube.com/watch?v=')) {
       const videoId = url.split('v=')[1]?.split('&')[0];
       return `https://www.youtube.com/embed/${videoId}`;
