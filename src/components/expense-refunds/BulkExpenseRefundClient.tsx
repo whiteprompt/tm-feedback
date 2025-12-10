@@ -150,8 +150,9 @@ export default function BulkExpenseRefundClient() {
 
     // Validate each file
     for (const file of fileArray) {
-      if (!['application/pdf'].includes(file.type)) {
-        errorMessage = 'Please upload only PDF files';
+      const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        errorMessage = 'Please upload only PDF or image files (JPEG, JPG, PNG)';
         continue;
       }
       
@@ -174,13 +175,15 @@ export default function BulkExpenseRefundClient() {
     }
 
     if (validFiles.length > 0) {
+      const previousFileCount = files.length;
       setFiles(prev => [...prev, ...validFiles]);
       setError('');
       
       // Automatically proceed to extraction if files are valid
       if (validFiles.length > 0) {
         setCurrentStep('extraction');
-        startBatchExtraction([...files, ...validFiles]);
+        // Only process the new files, starting from the previous file count
+        startBatchExtraction([...files, ...validFiles], previousFileCount);
       }
     }
   };
@@ -242,11 +245,17 @@ export default function BulkExpenseRefundClient() {
     setShowLeaveWarning(false);
   };
 
-  const startBatchExtraction = async (filesToProcess: File[]) => {
-    setExtractionProgress({ current: 0, total: filesToProcess.length });
-    const newExtractedData: ExtractedDataWithFile[] = [];
+  const startBatchExtraction = async (filesToProcess: File[], startIndex: number = 0) => {
+    // Calculate how many new files to process
+    const newFilesCount = filesToProcess.length - startIndex;
+    setExtractionProgress({ current: 0, total: newFilesCount });
+    
+    // Preserve existing extracted data
+    const existingExtractedData = startIndex > 0 ? extractedData : [];
+    const newExtractedData: ExtractedDataWithFile[] = [...existingExtractedData];
 
-    for (let i = 0; i < filesToProcess.length; i++) {
+    // Only process files from startIndex onwards
+    for (let i = startIndex; i < filesToProcess.length; i++) {
       const file = filesToProcess[i];
       const fileId = i.toString();
       
@@ -294,7 +303,7 @@ export default function BulkExpenseRefundClient() {
           currency: extractedInfo.output?.currency || '',
           concept: extractedInfo.output?.concept || '',
           exchangeRate: extractedInfo.output?.exchangeRate || '1',
-          date: ''
+          date: extractedInfo.output?.date || ''
         };
 
         newExtractedData[i] = {
@@ -313,7 +322,7 @@ export default function BulkExpenseRefundClient() {
         // Silently handle the error - UI will show error status
       }
 
-      setExtractionProgress({ current: i + 1, total: filesToProcess.length });
+      setExtractionProgress({ current: i - startIndex + 1, total: newFilesCount });
       setExtractedData([...newExtractedData]);
 
       // Small delay to respect API limits
@@ -398,7 +407,7 @@ export default function BulkExpenseRefundClient() {
           amount: item.amount || '',
           currency: currency,
           concept: item.concept || '',
-          submittedDate: new Date().toISOString().split('T')[0],
+          submittedDate: item.date || new Date().toISOString().split('T')[0],
           exchangeRate: exchangeRate,
           selected: item.status === 'extracted',
           teamMemberEmail: session?.user?.email || ''
@@ -743,12 +752,12 @@ export default function BulkExpenseRefundClient() {
                       
                       <div>
                         <p className="wp-body text-wp-text-primary mb-2">Drop your receipts here or click to browse</p>
-                        <p className="wp-body-small text-wp-text-muted">PDF files up to 5MB each, maximum 10 files</p>
+                        <p className="wp-body-small text-wp-text-muted">PDF or image files (JPEG, PNG) up to 5MB each, maximum 10 files</p>
                       </div>
                       
                       <input
                         type="file"
-                        accept="application/pdf"
+                        accept="application/pdf,image/jpeg,image/jpg,image/png"
                         multiple
                         onChange={handleFileChange}
                         className={`
