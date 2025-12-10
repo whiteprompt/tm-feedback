@@ -57,6 +57,7 @@ export default function CurrencySelect({
         isClearable={!required}
         menuPortalTarget={usePortal && typeof document !== 'undefined' ? document.body : null}
         menuPosition={usePortal ? 'fixed' : 'absolute'}
+        formatOptionLabel={(option) => option.value}
         styles={{
           control: (base) => ({
             ...base,

@@ -13,14 +13,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    externalFormData.append("file", file);
+    externalFormData.append("data", file);
 
     // Make the request to the external API with the secure API key and 10-second timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds
 
     const response = await fetch(
-      "https://whiteprompt.app.n8n.cloud/webhook/76ecec71-15dc-42b0-af4f-b03753b8d27d",
+      "https://whiteprompt.app.n8n.cloud/webhook/receipt-extraction",
       {
         method: "POST",
         headers: {

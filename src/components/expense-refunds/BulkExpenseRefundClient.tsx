@@ -12,6 +12,7 @@ import { CURRENCIES, ExpenseRefundForm, ExtractedData } from '@/lib/constants';
 import { twMerge } from 'tailwind-merge';
 import FilePreviewModal from '@/components/FilePreviewModal';
 import { useAdmin } from '@/contexts/AdminContext';
+import Tooltip from '@/components/Tooltip';
 
 interface ExtractedDataWithFile extends ExtractedData {
   fileId: string;
@@ -541,6 +542,43 @@ export default function BulkExpenseRefundClient() {
     }).format(num);
   };
 
+  // Validation function to check if all selected items have required fields
+  const validateSelectedItems = () => {
+    const selectedItems = formData.filter(item => item.selected);
+    
+    if (selectedItems.length === 0) {
+      return { isValid: false, message: 'No items selected' };
+    }
+
+    const invalidItems = selectedItems.filter(item => {
+      // Check if title is empty or only whitespace
+      const hasTitle = item.title && item.title.trim().length > 0;
+      
+      // Check if amount is empty, zero, or invalid
+      const hasAmount = item.amount && item.amount.trim().length > 0 && parseFloat(item.amount) > 0;
+      
+      // Check if exchange rate is empty or invalid
+      const hasExchangeRate = item.exchangeRate && item.exchangeRate.trim().length > 0 && parseFloat(item.exchangeRate) > 0;
+      
+      // Check if date is empty
+      const hasDate = item.submittedDate && item.submittedDate.trim().length > 0;
+      
+      // Check if concept is empty
+      const hasConcept = item.concept && item.concept.trim().length > 0;
+      
+      return !hasTitle || !hasAmount || !hasExchangeRate || !hasDate || !hasConcept;
+    });
+
+    if (invalidItems.length > 0) {
+      return { 
+        isValid: false, 
+        message: `${invalidItems.length} selected item${invalidItems.length > 1 ? 's' : ''} ${invalidItems.length > 1 ? 'are' : 'is'} missing required fields (title, amount, exchange rate, date, or concept)` 
+      };
+    }
+
+    return { isValid: true, message: '' };
+  };
+
   if (status === 'loading' || !isClient) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -927,6 +965,9 @@ export default function BulkExpenseRefundClient() {
                   </p>
                 </div>
 
+                {/* Error Banner */}
+                {error && <ErrorBanner error={error} onDismiss={() => setError('')} />}
+
                 {/* Bulk Team Member Application */}
                 {isAdmin && (
                   <div className={`
@@ -1061,11 +1102,19 @@ export default function BulkExpenseRefundClient() {
                         <th className={`
                           wp-body-small text-wp-text-muted p-3 text-left
                           tracking-wider uppercase
+                        `}>Status</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
                         `}>File</th>
                         <th className={`
                           wp-body-small text-wp-text-muted p-3 text-left
                           tracking-wider uppercase
                         `}>Title</th>
+                        <th className={`
+                          wp-body-small text-wp-text-muted p-3 text-left
+                          tracking-wider uppercase
+                        `}>Date</th>
                         <th className={`
                           wp-body-small text-wp-text-muted p-3 text-left
                           tracking-wider uppercase
@@ -1088,10 +1137,6 @@ export default function BulkExpenseRefundClient() {
                             tracking-wider uppercase
                           `}>Team Member</th>
                         )}
-                        <th className={`
-                          wp-body-small text-wp-text-muted p-3 text-left
-                          tracking-wider uppercase
-                        `}>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1110,15 +1155,26 @@ export default function BulkExpenseRefundClient() {
                             />
                           </td>
                           <td className="p-3">
-                            <div className="flex items-center space-x-2">
-                              <div className={`
-                                flex h-6 w-6 items-center justify-center rounded
-                                bg-red-500/20
-                              `}>
-                                <svg className="h-3 w-3 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                                </svg>
-                              </div>
+                            <div className={`
+                              wp-body-small inline-flex items-center
+                              rounded-full px-2 py-1
+                              ${
+                              extractedData[index]?.status === 'extracted' ? `
+                                bg-green-400/20 text-green-400
+                              ` :
+                              extractedData[index]?.status === 'error' ? `
+                                bg-red-400/20 text-red-400
+                              ` :
+                              'bg-wp-primary/20 text-wp-primary'
+                            }
+                            `}>
+                              {extractedData[index]?.status === 'extracted' ? 'Ready' :
+                               extractedData[index]?.status === 'error' ? 'Error' :
+                               'Processing'}
+                            </div>
+                          </td>
+                          <td className="p-3">
+                            <Tooltip content={extractedData[index]?.fileName || ''}>
                               <button
                                 type="button"
                                 onClick={() => {
@@ -1131,25 +1187,44 @@ export default function BulkExpenseRefundClient() {
                                   }
                                 }}
                                 className={`
-                                  wp-body-small text-wp-text-primary max-w-32
-                                  cursor-pointer truncate text-left
-                                  hover:text-wp-primary hover:underline
-                                `} 
-                                title={extractedData[index]?.fileName}
+                                  hover:bg-wp-primary/20 hover:text-wp-primary
+                                  flex h-8 w-8 items-center justify-center
+                                  rounded text-white transition-colors
+                                `}
+                                title="Click to preview file"
                               >
-                                {extractedData[index]?.fileName}
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
                               </button>
-                            </div>
+                            </Tooltip>
+                          </td>
+                          <td className="p-3">
+                            <Tooltip content={item.title}>
+                              <input
+                                type="text"
+                                value={item.title}
+                                onChange={(e) => updateFormItem(index, 'title', e.target.value)}
+                                className={`
+                                  border-wp-border w-full min-w-[180px] rounded
+                                  border bg-transparent px-2 py-1 text-white
+                                  focus:ring-wp-primary focus:ring-1
+                                  focus:outline-none
+                                `}
+                              />
+                            </Tooltip>
                           </td>
                           <td className="p-3">
                             <input
-                              type="text"
-                              value={item.title}
-                              onChange={(e) => updateFormItem(index, 'title', e.target.value)}
+                              type="date"
+                              value={item.submittedDate}
+                              onChange={(e) => updateFormItem(index, 'submittedDate', e.target.value)}
                               className={`
-                                border-wp-border wp-body-small
-                                text-wp-text-primary w-full min-w-[200px]
-                                rounded border bg-transparent px-2 py-1
+                                border-wp-border bg-wp-dark-secondary
+                                text-wp-text-primary w-full rounded border px-2
+                                py-1
+                                [color-scheme:dark]
                                 focus:ring-wp-primary focus:ring-1
                                 focus:outline-none
                               `}
@@ -1162,16 +1237,15 @@ export default function BulkExpenseRefundClient() {
                               value={item.amount}
                               onChange={(e) => updateFormItem(index, 'amount', e.target.value)}
                               className={`
-                                border-wp-border wp-body-small
-                                text-wp-text-primary w-full rounded border
-                                bg-transparent px-2 py-1
+                                border-wp-border w-full min-w-[120px] rounded
+                                border bg-transparent px-2 py-1 text-white
                                 focus:ring-wp-primary focus:ring-1
                                 focus:outline-none
                               `}
                             />
                           </td>
                           <td className="p-3">
-                            <div className="min-w-40">
+                            <div className="min-w-32">
                               <CurrencySelect
                                 value={item.currency}
                                 onChange={(value) => updateFormItem(index, 'currency', value)}
@@ -1191,9 +1265,8 @@ export default function BulkExpenseRefundClient() {
                               value={item.exchangeRate}
                               onChange={(e) => updateFormItem(index, 'exchangeRate', e.target.value)}
                               className={`
-                                border-wp-border wp-body-small
-                                text-wp-text-primary w-full rounded border
-                                bg-transparent px-2 py-1
+                                border-wp-border w-full rounded border
+                                bg-transparent px-2 py-1 text-white
                                 focus:ring-wp-primary focus:ring-1
                                 focus:outline-none
                               `}
@@ -1269,25 +1342,6 @@ export default function BulkExpenseRefundClient() {
                               </div>
                             </td>
                           )}
-                          <td className="p-3">
-                            <div className={`
-                              wp-body-small inline-flex items-center
-                              rounded-full px-2 py-1
-                              ${
-                              extractedData[index]?.status === 'extracted' ? `
-                                bg-green-400/20 text-green-400
-                              ` :
-                              extractedData[index]?.status === 'error' ? `
-                                bg-red-400/20 text-red-400
-                              ` :
-                              'bg-wp-primary/20 text-wp-primary'
-                            }
-                            `}>
-                              {extractedData[index]?.status === 'extracted' ? 'Ready' :
-                               extractedData[index]?.status === 'error' ? 'Error' :
-                               'Processing'}
-                            </div>
-                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1297,14 +1351,22 @@ export default function BulkExpenseRefundClient() {
                 <div className="flex gap-4 pt-4">
                   <button
                     type="button"
-                    onClick={goBack}
+                    onClick={() => setCurrentStep('extraction')}
                     className={twMerge('wp-button-secondary','flex-1')}
                   >
                     Back to Upload
                   </button>
                   <button
                     type="button"
-                    onClick={() => setCurrentStep('confirmation')}
+                    onClick={() => {
+                      const validation = validateSelectedItems();
+                      if (validation.isValid) {
+                        setError('');
+                        setCurrentStep('confirmation');
+                      } else {
+                        setError(validation.message);
+                      }
+                    }}
                     className={twMerge('wp-button-primary','flex-1',`
                       transition-all
                     `,`duration-300`,`hover:scale-105`)}
