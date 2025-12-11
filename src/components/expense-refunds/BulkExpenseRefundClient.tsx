@@ -389,6 +389,34 @@ export default function BulkExpenseRefundClient() {
       return '1';
     };
 
+    // Helper function to validate and format date
+    const validateDate = (dateString: string | undefined): string => {
+      if (!dateString || dateString.trim() === '') return '';
+      
+      // Check if it's a placeholder like "dd/mm/yyyy" or similar
+      const placeholderPatterns = [
+        /^dd\/mm\/yyyy$/i,
+        /^mm\/dd\/yyyy$/i,
+        /^yyyy\/mm\/dd$/i,
+        /^dd-mm-yyyy$/i,
+        /^mm-dd-yyyy$/i,
+        /^yyyy-mm-dd$/i
+      ];
+      
+      if (placeholderPatterns.some(pattern => pattern.test(dateString.trim()))) {
+        return '';
+      }
+      
+      // Try to parse the date to check if it's valid
+      const parsedDate = new Date(dateString);
+      if (isNaN(parsedDate.getTime())) {
+        return '';
+      }
+      
+      // Return the date in YYYY-MM-DD format for the input field
+      return parsedDate.toISOString().split('T')[0];
+    };
+
     // Convert extracted data to form data with proper exchange rates
     const newFormData: BulkExpenseRefundForm[] = await Promise.all(
       newExtractedData.map(async (item) => {
@@ -401,13 +429,16 @@ export default function BulkExpenseRefundClient() {
           exchangeRate = await getExchangeRateForCurrency(currency);
         }
         
+        // Validate the date - use empty string if invalid
+        const validatedDate = validateDate(item.date);
+        
         return {
           title: item.vendor || '',
           description: item.vendor || '',
           amount: item.amount || '',
           currency: currency,
           concept: item.concept || '',
-          submittedDate: item.date || new Date().toISOString().split('T')[0],
+          submittedDate: validatedDate || new Date().toISOString().split('T')[0],
           exchangeRate: exchangeRate,
           selected: item.status === 'extracted',
           teamMemberEmail: session?.user?.email || ''
@@ -810,6 +841,34 @@ export default function BulkExpenseRefundClient() {
                       ))}
                     </div>
                   )}
+
+                  {/* Navigation Buttons - Show when there are extracted files */}
+                  {extractedData.length > 0 && (
+                    <div className="mt-6 flex gap-3">
+                      <button
+                        type="button"
+                        onClick={startOver}
+                        className={`
+                          wp-button-secondary flex-1 px-4 py-3 transition-all
+                          duration-300
+                          hover:scale-105
+                        `}
+                      >
+                        Start Over
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep('review')}
+                        className={`
+                          wp-button-primary flex-1 px-4 py-3 transition-all
+                          duration-300
+                          hover:scale-105
+                        `}
+                      >
+                        Continue to Review ({extractedData.filter(item => item.status === 'extracted').length} ready)
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -915,10 +974,9 @@ export default function BulkExpenseRefundClient() {
                       type="button"
                       onClick={startOver}
                       className={`
-                        bg-wp-dark-card/60 border-wp-border wp-body
-                        text-wp-text-secondary flex-1 rounded-lg border px-4
-                        py-3 font-medium transition-all duration-300
-                        hover:text-wp-text-primary hover:bg-wp-dark-card/80
+                        wp-button-secondary flex-1 px-4 py-3 transition-all
+                        duration-300
+                        hover:scale-105
                       `}
                     >
                       Start Over
@@ -929,10 +987,9 @@ export default function BulkExpenseRefundClient() {
                         type="button"
                         onClick={addMoreFiles}
                         className={`
-                          bg-wp-primary/20 border-wp-primary/30 text-wp-primary
-                          wp-body flex-1 rounded-lg border px-4 py-3 font-medium
-                          transition-all duration-300
-                          hover:bg-wp-primary/30
+                          wp-button-secondary flex-1 px-4 py-3 transition-all
+                          duration-300
+                          hover:scale-105
                         `}
                       >
                         Add More Files
@@ -944,8 +1001,8 @@ export default function BulkExpenseRefundClient() {
                         type="button"
                         onClick={() => setCurrentStep('review')}
                         className={`
-                          wp-button-primary wp-body flex-1 px-4 py-3
-                          transition-all duration-300
+                          wp-button-primary flex-1 px-4 py-3 transition-all
+                          duration-300
                           hover:scale-105
                         `}
                       >
