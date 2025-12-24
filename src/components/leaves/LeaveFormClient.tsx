@@ -343,7 +343,7 @@ export default function LeaveFormClient() {
               isSubmitting={isSubmitting}
               hasUnsavedChanges={hasUnsavedChanges}
               cancelRoute="/leaves"
-              submitText="Submit Feedback"
+              submitText="Submit Leave"
               submittingText="Submitting..."
             />
           </form>
