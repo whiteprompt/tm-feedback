@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { TeamMember } from '@/lib/constants';
 import { formatDate } from '@/lib/date';
+import ResumeModal from './ResumeModal';
 
 interface PersonalInformationCardProps {
   teamMember: TeamMember;
@@ -12,25 +13,94 @@ interface InfoFieldProps {
   label: string;
   value: string | React.ReactNode;
   className?: string;
+  onClick?: () => void;
+  clickable?: boolean;
 }
 
-const InfoField: React.FC<InfoFieldProps> = ({ label, value, className = '' }) => (
-  <div className={`
-    space-y-2
-    ${className}
-  `}>
+const InfoField: React.FC<InfoFieldProps> = ({ 
+  label, 
+  value, 
+  className = '', 
+  onClick, 
+  clickable = false 
+}) => (
+  <div 
+    className={`
+      space-y-2
+      ${className}
+      ${clickable ? 'group cursor-pointer' : ''}
+    `}
+    onClick={onClick}
+  >
     <label className={`
       wp-white-body-small block font-semibold tracking-wider uppercase
     `}>
       {label}
     </label>
-    <p className="wp-body font-medium text-white">{value}</p>
+    <p className={`
+      wp-body font-medium text-white
+      ${clickable ? `
+        flex items-center gap-2 transition-colors
+        group-hover:text-blue-400
+      ` : ''}
+    `}>
+      {value}
+      {clickable && (
+        <svg 
+          className={`
+            h-4 w-4 transition-transform
+            group-hover:translate-x-1
+          `} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      )}
+    </p>
   </div>
 );
 
 export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = ({
   teamMember,
 }) => {
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [resumeContent, setResumeContent] = useState<string | null>(null);
+  const [isLoadingResume, setIsLoadingResume] = useState(false);
+  const [resumeError, setResumeError] = useState<string | null>(null);
+
+  const handleResumeClick = async () => {
+    setIsResumeModalOpen(true);
+    
+    // Only fetch if we don't have content yet
+    if (!resumeContent && !isLoadingResume) {
+      setIsLoadingResume(true);
+      setResumeError(null);
+      
+      try {
+        const response = await fetch(`/api/resume?teamMemberId=${teamMember.id}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch resume: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.content) {
+          setResumeContent(data.content);
+        } else {
+          throw new Error('Resume content not found in response');
+        }
+      } catch (error) {
+        console.error('Error fetching resume:', error);
+        setResumeError(error instanceof Error ? error.message : 'An error occurred');
+      } finally {
+        setIsLoadingResume(false);
+      }
+    }
+  };
+
   return (
     <div className="wp-card relative p-8">
       {/* Edit Button */}
@@ -75,6 +145,12 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
         <InfoField label="Personal Email" value={teamMember.personalEmail} />
         <InfoField label="Mobile" value={teamMember.mobile} />
         <InfoField label="Country" value={teamMember.country || 'Not specified'} />
+        <InfoField 
+          label="My Resume" 
+          value="View Resume" 
+          clickable={true}
+          onClick={handleResumeClick}
+        />
         
         {/* ID Type and ID Number in the same row */}
         <div className={`
@@ -117,6 +193,15 @@ export const PersonalInformationCard: React.FC<PersonalInformationCardProps> = (
           </div>
         </div>
       </div>
+
+      {/* Resume Modal */}
+      <ResumeModal
+        isOpen={isResumeModalOpen}
+        onClose={() => setIsResumeModalOpen(false)}
+        content={resumeContent}
+        isLoading={isLoadingResume}
+        error={resumeError}
+      />
     </div>
   );
 };
