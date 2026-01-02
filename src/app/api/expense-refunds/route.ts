@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
     const concept = formData.get("concept") as string;
     const submittedDate = formData.get("submittedDate") as string;
     const receiptFile = formData.get("receipt") as File;
+    const creatorEmail = authEmail; 
 
     // Validation
     if (
@@ -123,6 +124,8 @@ export async function POST(request: NextRequest) {
     if (receiptFile && receiptFile.size > 0) {
       expenseRefundFormData.append("receipt_file", receiptFile);
     }
+
+    expenseRefundFormData.append("creatorEmail", creatorEmail);
 
     // Make the request to the staffing service
     const response = await fetch(

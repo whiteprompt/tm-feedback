@@ -20,7 +20,7 @@ export default function HolidaysSection({ countryAcronym }: { countryAcronym: st
         setHolidaysLoading(true);
         setHolidaysError('');
 
-        // Get current month and add the next 6 months
+        // Get current month and add the next year
         const fromDate = format(beginOfMonth(new Date()), 'yyyy-MM-dd');
         const endDate = format(addYears(fromDate, 1), 'yyyy-MM-dd');
 
