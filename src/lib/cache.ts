@@ -1,6 +1,6 @@
 import { Redis } from "@upstash/redis";
 
-const TeamMember_TTL = 3600; // 1 hour in seconds
+const TeamMember_TTL = 5 * 60 * 60; // 5 hours in seconds
 const TeamMembers_TTL = 7 * 24 * 60 * 60; // 1 week in seconds
 const ExchangeRates_TTL = 24 * 60 * 60; // 24 hours in seconds
 const Holidays_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
