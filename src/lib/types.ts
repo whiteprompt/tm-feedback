@@ -3,6 +3,10 @@ export enum LeaveType {
   UnpaidLeave = "Unpaid leave",
   IllnessLeave = "Illness leave",
   PTOLeave = "PTO leave",
+  MarriageLeave = "Marriage leave",
+  StudyLeave = "Study leave",
+  MaternityLeave = "Maternity leave",
+  FamilyDeathLeave = "Family death leave",
 }
 
 export enum NotificationModule {

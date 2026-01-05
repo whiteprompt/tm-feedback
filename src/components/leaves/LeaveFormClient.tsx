@@ -239,6 +239,10 @@ export default function LeaveFormClient() {
                 <option value={LeaveType.UnpaidLeave}>Unpaid Leave</option>
                 <option value={LeaveType.IllnessLeave}>Illness Leave</option>
                 <option value={LeaveType.PTOLeave}>PTO Leave</option>
+                <option value={LeaveType.StudyLeave}>Study Leave</option>
+                <option value={LeaveType.MarriageLeave}>Marriage Leave</option>
+                <option value={LeaveType.MaternityLeave}>Maternity Leave</option>
+                <option value={LeaveType.FamilyDeathLeave}>Family death Leave</option>
               </select>
             </div>
 
