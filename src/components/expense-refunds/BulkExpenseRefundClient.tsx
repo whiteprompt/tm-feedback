@@ -515,7 +515,7 @@ export default function BulkExpenseRefundClient() {
       const submissionPromises = itemsToSubmit.map(async (item) => {
         const formDataToSend = new FormData();
         formDataToSend.append('title', item.title);
-        formDataToSend.append('description', item.description || '');
+        formDataToSend.append('description', item.title);
         formDataToSend.append('amount', item.amount);
         formDataToSend.append('currency', item.currency);
         formDataToSend.append('concept', item.concept);
@@ -1176,7 +1176,7 @@ export default function BulkExpenseRefundClient() {
                         <th className={`
                           wp-body-small text-wp-text-muted p-3 text-left
                           tracking-wider uppercase
-                        `}>Title</th>
+                        `}>Store</th>
                         <th className={`
                           wp-body-small text-wp-text-muted p-3 text-left
                           tracking-wider uppercase
@@ -1565,12 +1565,12 @@ export default function BulkExpenseRefundClient() {
                             xl:grid-cols-7
                           `}>
                             <div>
-                              <p className="wp-body-small text-wp-text-muted">Title</p>
+                              <p className="wp-body-small text-wp-text-muted">Store</p>
                               <p className="wp-body text-wp-text-primary">{item.title}</p>
                             </div>
                             <div>
                               <p className="wp-body-small text-wp-text-muted">Date</p>
-                              <p className="wp-body text-wp-text-primary">{new Date(item.submittedDate).toLocaleDateString('en-US')}</p>
+                              <p className="wp-body text-wp-text-primary">{new Date(item.submittedDate + 'T00:00:00').toLocaleDateString()}</p>
                             </div>
                             <div>
                               <p className="wp-body-small text-wp-text-muted">Original Amount</p>

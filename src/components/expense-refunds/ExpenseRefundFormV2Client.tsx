@@ -318,7 +318,7 @@ export default function ExpenseRefundFormV2Client() {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
+      formDataToSend.append('description', formData.title);
       formDataToSend.append('amount', formData.amount);
       formDataToSend.append('currency', formData.currency);
       formDataToSend.append('concept', formData.concept);
@@ -772,7 +772,7 @@ export default function ExpenseRefundFormV2Client() {
                       wp-body-small text-wp-text-muted font-semibold
                       tracking-wider uppercase
                     `}>
-                      Title <span className="text-red-400">*</span>
+                      Store <span className="text-red-400">*</span>
                     </label>
                     <input
                       type="text"

@@ -193,7 +193,7 @@ export default function ExpenseRefundFormClient({ type }: ExpenseRefundFormClien
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
+      formDataToSend.append('description', formData.title);
       formDataToSend.append('amount', formData.amount);
       formDataToSend.append('currency', formData.currency);
       formDataToSend.append('concept', formData.concept);

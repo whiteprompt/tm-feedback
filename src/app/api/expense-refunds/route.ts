@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const amount = parseFloat(formData.get("amount") as string);
     const currency = formData.get("currency") as string;
     const concept = formData.get("concept") as string;
-    const submittedDate = formData.get("submittedDate") as string;
+    const submittedDate = (formData.get("submittedDate") as string) || new Date().toISOString().split("T")[0];
     const receiptFile = formData.get("receipt") as File;
     const creatorEmail = authEmail; 
 
@@ -113,12 +113,12 @@ export async function POST(request: NextRequest) {
     // Prepare form data for the staffing service
     const expenseRefundFormData = new FormData();
     expenseRefundFormData.append("teamMemberEmail", email);
-    expenseRefundFormData.append("title", title);
-    expenseRefundFormData.append("description", description);
+    expenseRefundFormData.append("store", description);
     expenseRefundFormData.append("amount", amount.toString());
     expenseRefundFormData.append("currency", currency);
     expenseRefundFormData.append("concept", concept);
     expenseRefundFormData.append("exchangeRate", exchangeRate);
+    expenseRefundFormData.append("expenseDate", submittedDate);
 
     // Add receipt file if provided
     if (receiptFile && receiptFile.size > 0) {
