@@ -49,6 +49,8 @@ export const EXPENSE_CONCEPTS = [
   { value: "transportation", label: "Transportation" },
   { value: "travel", label: "Travel" },
   { value: "uncategorized-adjustments", label: "Uncategorized Adjustments" },
+  // GAUDI
+  { value: "gaudi-expenses", label: "Gaudi Expenses" },
 ];
 
 export const CURRENCIES = [
