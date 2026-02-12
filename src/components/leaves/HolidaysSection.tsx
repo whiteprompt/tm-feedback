@@ -31,7 +31,8 @@ export default function HolidaysSection({ countryAcronym }: { countryAcronym: st
         }
 
         const data = await response.json();
-        setHolidays(data?.sort((a: Holiday, b: Holiday) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+        const finalHolidays = data?.filter((holiday: Holiday) => holiday.wpHoliday)?.sort((a: Holiday, b: Holiday) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        setHolidays(finalHolidays);
       } catch (error) {
         console.error('Error fetching holidays:', error);
         setHolidaysError('Failed to load holidays');

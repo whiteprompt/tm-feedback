@@ -59,4 +59,5 @@ export interface Holiday {
   country: string;
   type?: string;
   description?: string;
+  wpHoliday?: boolean;
 }
