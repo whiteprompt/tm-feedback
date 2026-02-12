@@ -31,7 +31,7 @@ export default function HolidaysSection({ countryAcronym }: { countryAcronym: st
         }
 
         const data = await response.json();
-        setHolidays(data || []);
+        setHolidays(data?.sort((a: Holiday, b: Holiday) => new Date(a.date).getTime() - new Date(b.date).getTime()));
       } catch (error) {
         console.error('Error fetching holidays:', error);
         setHolidaysError('Failed to load holidays');
