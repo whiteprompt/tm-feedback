@@ -6,13 +6,21 @@ import { CreateNotificationRequest, NotificationModule } from "@/lib/types";
 export async function POST(request: NextRequest) {
   try {
     // Verify API key for external access
-    const apiKey = process.env.CRON_SECRET;
+    const expectedKey = process.env.CRON_SECRET;
+    const incomingKey = request.headers.get("x-api-key");
 
-    if (!apiKey) {
+    if (!expectedKey) {
       console.error("CRON_SECRET environment variable not set");
       return NextResponse.json(
         { error: "Server configuration error" },
         { status: 500 }
+      );
+    }
+
+    if (!incomingKey || incomingKey !== expectedKey) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
       );
     }
 
