@@ -208,6 +208,25 @@ function StepRow({
   );
 }
 
+/**
+ * Dedicated sub-component to handle scroll locking.
+ * This ensures the lock is only applied when the modal is actually in the DOM.
+ */
+function ScrollLock() {
+  useEffect(() => {
+    // Add class to both html and body for maximum compatibility (esp. Windows/Chrome)
+    document.documentElement.classList.add('wp-no-scroll');
+    document.body.classList.add('wp-no-scroll');
+    
+    return () => {
+      document.documentElement.classList.remove('wp-no-scroll');
+      document.body.classList.remove('wp-no-scroll');
+    };
+  }, []);
+
+  return null;
+}
+
 export default function OnboardingModal() {
   const { status: sessionStatus } = useSession();
   const {
@@ -229,15 +248,6 @@ export default function OnboardingModal() {
     document.addEventListener('keydown', handleKeyDown, true);
     return () => document.removeEventListener('keydown', handleKeyDown, true);
   }, []);
-
-  // Lock body scroll while modal is visible
-  useEffect(() => {
-    const shouldLock = sessionStatus === 'authenticated' && !loading && !isOnboardingComplete && !!onboardingStatus;
-    document.body.style.overflow = shouldLock ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [sessionStatus, loading, isOnboardingComplete, onboardingStatus]);
 
   if (sessionStatus !== 'authenticated') return null;
   if (loading) return null;
@@ -269,6 +279,8 @@ export default function OnboardingModal() {
         backdrop-blur-sm
       `}
     >
+      <ScrollLock />
+      
       {/* Modal card — responsive height and scrollable */}
       <div className={`
         wp-slide-up relative mx-4 flex max-h-[90vh] w-full max-w-3xl flex-col
@@ -335,9 +347,7 @@ export default function OnboardingModal() {
         </div>
 
         {/* Steps — scrollable on mobile if needed */}
-        <div className={`
-          custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-6 py-4
-        `}>
+        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-6 py-4">
           {STEPS.map((step) => {
             const isDone = Boolean(onboardingStatus[step.key]);
             return (

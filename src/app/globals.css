@@ -97,6 +97,12 @@ body {
   min-height: 100vh;
 }
 
+/* Global utility to prevent scrolling */
+.wp-no-scroll {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
 /* Modern Card Styling */
 .wp-card {
   background: var(--wp-gradient-card);
