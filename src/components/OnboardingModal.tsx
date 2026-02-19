@@ -232,10 +232,12 @@ export default function OnboardingModal() {
 
   // Lock body scroll while modal is visible
   useEffect(() => {
-    const shouldLock = sessionStatus === 'authenticated' && !loading && !isOnboardingComplete;
+    const shouldLock = sessionStatus === 'authenticated' && !loading && !isOnboardingComplete && !!onboardingStatus;
     document.body.style.overflow = shouldLock ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [sessionStatus, loading, isOnboardingComplete]);
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sessionStatus, loading, isOnboardingComplete, onboardingStatus]);
 
   if (sessionStatus !== 'authenticated') return null;
   if (loading) return null;
